@@ -1,12 +1,57 @@
 var MyWidget = SuperWidget.extend({
+    var: tablesIds = [
+        'tabelaDescontos'
+    ],
+
     init: function () {
         this.setupInputs();
+        this.setupButtons();
     },
 
     setupInputs: function () {
-        this.getFuncionarios('funcionario')
+        this.getFuncionarios('codFuncionario')
     },
 
+    setupButtons: function () {
+        this.consultarFuncionario();
+    },
+
+    processDataTable: function (produtos, salario) {
+        const columns = [
+            { title: 'Produto a ser pago', data: 'produto' },
+            { title: 'Valor do Produto', data: 'valor' },
+            { title: '10% do Salário', data: 'desconto' },
+            { title: 'QTD Parcelas', data: 'parcelas' }
+        ];
+
+        // Monta os dados para o DataTable
+        const data = produtos.map(produto => {
+            const desconto = salario * 0.10;
+            const qtdParcelas = Math.ceil(produto.valor / desconto);
+            return {
+                produto: produto.nome,
+                valor: produto.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+                desconto: desconto.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+                parcelas: qtdParcelas
+            };
+        });
+
+        // Limpa e inicializa a tabela
+        $(`#tabelaDescontos`).DataTable({
+            destroy: true,
+            paging: true,
+            pageLength: 5,
+            lengthChange: false, 
+            lengthMenu: false,
+            searching: false,
+            ordering: false,
+            info: false,
+            autoWidth: false,
+            columns: columns,
+            data: data
+        });
+    },
+    
     getFuncionarios: async function (inputId) {
         const novoArrayFuncionarios = [];
         const requestData = {
@@ -64,7 +109,7 @@ var MyWidget = SuperWidget.extend({
         initAutoComplete({
             name: inputId,
             source: novoArrayFuncionarios,
-            search: ['CCODIGO', 'CDESCRICAO'],
+            search: [ 'CCODIGO', 'CDESCRICAO' ],
             onSelect: async (autocomplete, item) => {
                 const dsFuncionario = item.description;
                 setInputValue(`#${inputId}`, dsFuncionario);
@@ -73,6 +118,113 @@ var MyWidget = SuperWidget.extend({
                 setInputValue(`#${inputId}`, '');
             },
         }, 'tagAutocomplete');
+    },
+
+    consultarFuncionario: function () {
+        const funcionarios = [
+            {
+                nome: "ADAN GUILHERME RODRIGUES",
+                cpf: "70223160156",
+                cargo: "INST ELETRICO B",
+                salario: 2361.93,
+                produtos: [
+                    { nome: "Ferramenta", valor: 180.00 },
+                    { nome: "Bota de Segurança", valor: 250.00 }
+                ]
+            },
+            {
+                nome: "ALESSANDRO DA CUNHA FERNANDES",
+                cpf: "05893614143",
+                cargo: "ELETRICISTA IV",
+                salario: 1676.8,
+                produtos: [
+                    { nome: "Uniforme", valor: 120.00 }
+                ]
+            },
+            {
+                nome: "ADENILSON GOMES BARBOSA",
+                cpf: "06252592110",
+                cargo: "AGENTE COMERCIAL DE LEITURA",
+                salario: 1518.00,
+                produtos: [
+                    { nome: "Celular", valor: 900.00 }
+                ]
+            },
+            {
+                nome: "ALDEMIR DA SILVA DOS SANTOS",
+                cpf: "06789915109",
+                cargo: "AGENTE COMERCIAL DE LEITURA",
+                salario: 1518.00,
+                produtos: [
+                    { nome: "Tablet", valor: 700.00 }
+                ]
+            },
+            {
+                nome: "ADAO ARAUJO LEITE FILHO",
+                cpf: "37778280841",
+                cargo: "INST ELETRICISTA",
+                salario: 2132.84,
+                produtos: [
+                    { nome: "Bota de Segurança", valor: 250.00 }
+                ]
+            },
+            {
+                nome: "ADMAR OLIVEIRA FEITOSA",
+                cpf: "12345678900",
+                cargo: "INST ELETRICISTA",
+                salario: 2132.84,
+                produtos: [
+                    { nome: "carro", valor: 50000.00 },
+                    { nome: "Bota de Segurança", valor: 250.00 },
+                    { nome: "Tablet", valor: 700.00 },
+                    { nome: "Celular", valor: 900.00 },
+                    { nome: "Uniforme", valor: 120.00 },
+                    { nome: "Ferramenta", valor: 180.00 },
+                    { nome: "Bicicleta", valor: 500.00 },
+                    { nome: "Notebook", valor: 3000.00 },
+                    { nome: "Cadeira de Escritório", valor: 800.00 },
+                    { nome: "Mesa de Escritório", valor: 1200.00 },
+                    { nome: "Monitor", valor: 1500.00 }
+                    
+                ]
+            }
+        ];
+
+        $('#btn-buscar').on('click', () => {
+            const valorInput = $('#codFuncionario').val();
+            const nomeFuncionario = valorInput.split(' - ')[ 1 ] ? valorInput.split(' - ')[ 1 ].trim() : valorInput.trim();
+            if (!nomeFuncionario) {
+                showSweetAlert('Atenção', 'Digite o nome ou código do funcionário.', 'warning');
+                $('#painelFuncionario').hide();
+                return;
+            }
+            const funcionario = funcionarios.find(f => f.nome.toUpperCase() === nomeFuncionario.toUpperCase());
+            if (funcionario) {
+                $('#dadosFuncionario').html(`
+                <h4>Funcionário: ${funcionario.nome}</h4>
+                <h4>CPF: ${funcionario.cpf}</h4>
+            `);
+
+                // Chama o DataTable para exibir os produtos
+                MyWidget.processDataTable(funcionario.produtos, funcionario.salario);
+
+                $('#btn-limpar').show();
+                $('#painelFuncionario').show();
+            } else {
+                showSweetAlert('Atenção', 'Funcionário não encontrado.', 'info');
+                $('#dadosFuncionario').html('');
+                $('#tabelaDescontos').html('');
+                $('#painelFuncionario').hide();
+            }
+        });
+
+        $('#btn-limpar').on('click', function () {
+            $('#codFuncionario').val('');
+            $('#dadosFuncionario').html('');
+            $('#tabelaDescontos').html('');
+            $(this).hide();
+            $('#painelFuncionario').hide();
+        })
     }
 });
 

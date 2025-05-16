@@ -1,10 +1,10 @@
-$(document).ready(function() {
+$(document).ready(function () {
   // Inicializa: mostra apenas o conteúdo da aba Cadastro
   $('.tab-content').hide();
-  $('#tab-cadastro').show();
+  $('#tab-consulta').show();
 
   // Troca de abas
-  $('.nav-tabs li').click(function(e) {
+  $('.nav-tabs li').click(function (e) {
     e.preventDefault();
     $('.nav-tabs li').removeClass('active');
     $(this).addClass('active');
@@ -14,9 +14,22 @@ $(document).ready(function() {
 
     // Mostra o conteúdo da aba clicada
     if ($(this).index() === 0) {
-      $('#tab-cadastro').show();
-    } else {
       $('#tab-consulta').show();
+    } else {
+      $('#tab-cadastro').show();
     }
   });
+
+  $('#btn-buscar').click(function (e) {
+    e.preventDefault();
+    $(this).hide();
+    $('#btn-limpar').show();
+  });
+
+  $('#btn-limpar').click(function (e) {
+    e.preventDefault();
+    $(this).hide();
+    $('#btn-buscar').show();
+  });
+
 });
