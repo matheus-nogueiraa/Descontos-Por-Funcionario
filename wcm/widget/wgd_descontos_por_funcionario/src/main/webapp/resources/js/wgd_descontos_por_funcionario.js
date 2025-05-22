@@ -1,7 +1,5 @@
 var MyWidget = SuperWidget.extend({
-    var: tablesIds = [
-        'tabelaDescontos'
-    ],
+    tablesIds: [ 'tabelaDescontos' ],
 
     init: function () {
         this.setupInputs();
@@ -9,119 +7,115 @@ var MyWidget = SuperWidget.extend({
     },
 
     setupInputs: function () {
-        this.getFuncionarios('codFuncionario')
+        getFuncionarios('codFuncionario');
+        getFilias('codFilial');
     },
 
     setupButtons: function () {
-        this.consultarFuncionario();
+        $('#btn-buscar').on('click', () => this.buscarFuncionario());
+        $('#btn-limpar').on('click', () => this.limparTela());
+    },
+
+    buscarFuncionario: function () {
+        const funcionarios = this.getFuncionariosMock();
+        const codFuncionario = $('#codFuncionario').val();
+        const nomeFuncionario = codFuncionario.split(' - ')[ 1 ] ? codFuncionario.split(' - ')[ 1 ].trim() : codFuncionario.trim();
+
+        if (!nomeFuncionario) {
+            showSweetAlert('Atenção', 'Digite o nome ou código do funcionário.', 'warning');
+            $('#painelFuncionario').hide();
+            return;
+        }
+
+        const funcionario = funcionarios.find(f => f.nome.toUpperCase() === nomeFuncionario.toUpperCase());
+        if (funcionario) {
+            this.preencherDadosFuncionario(funcionario);
+            this.processDataTable(funcionario.produtos, funcionario.salario);
+            $('#btn-limpar').show();
+            $('#painelFuncionario').show();
+        } else {
+            showSweetAlert('Atenção', 'Funcionário não encontrado.', 'info');
+            this.limparTela();
+        }
+    },
+
+    preencherDadosFuncionario: function (funcionario) {
+        $('#dadosFuncionario').html(`
+            <h4>Funcionário: ${funcionario.nome}</h4>
+            <h4>CPF: ${funcionario.cpf}</h4>
+            <h4>Salário: ${funcionario.salario.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</h4>
+        `);
+        $('#salario').val((funcionario.salario * 0.10).toFixed(2));
+    },
+
+    limparTela: function () {
+        $('#codFuncionario').val('');
+        $('#dadosFuncionario').html('');
+        $('#tabelaDescontos').html('');
+        $('#valorTotalResumo').text('');
+        $('#parcelasTotaisResumo').text('');
+        $('#valorParcelaMensalResumo').text('');
+        $('#btn-limpar').hide();
+        $('#painelFuncionario').hide();
     },
 
     processDataTable: function (produtos, salario) {
+        const tetoMensal = salario * 0.10;
+        let filaProdutos = produtos.map(p => ({ ...p, restante: p.valor }));
+
+        
+        while (filaProdutos.some(p => p.restante > 0)) {
+            let valorRestanteNoMes = tetoMensal;
+            filaProdutos.forEach(p => {
+                if (p.restante > 0 && valorRestanteNoMes > 0) {
+                    let valorParcela = Math.min(p.restante, valorRestanteNoMes);
+                    if (!p.valorParcelas) p.valorParcelas = [];
+                    p.valorParcelas.push(valorParcela);
+                    p.restante -= valorParcela;
+                    valorRestanteNoMes -= valorParcela;
+                }
+            });
+        }
+
+        // Monta os dados para a tabela de produtos
+        const produtosComParcelas = filaProdutos.map((p, idx) => ({
+            ordem: idx + 1,
+            produto: p.nome,
+            valor: p.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+            parcelas: p.valorParcelas.length
+        }));
+
         const columns = [
-            { title: 'Produto a ser pago', data: 'produto' },
-            { title: 'Valor do Produto', data: 'valor' },
-            { title: '10% do Salário', data: 'desconto' },
-            { title: 'QTD Parcelas', data: 'parcelas' }
+            { title: '#', data: 'ordem' },
+            { title: 'EPI', data: 'produto' },
+            { title: 'Valor', data: 'valor' }
         ];
 
-        // Monta os dados para o DataTable
-        const data = produtos.map(produto => {
-            const desconto = salario * 0.10;
-            const qtdParcelas = Math.ceil(produto.valor / desconto);
-            return {
-                produto: produto.nome,
-                valor: produto.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
-                desconto: desconto.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
-                parcelas: qtdParcelas
-            };
-        });
-
-        // Limpa e inicializa a tabela
-        $(`#tabelaDescontos`).DataTable({
+        $('#tabelaDescontos').DataTable({
             destroy: true,
-            paging: true,
-            pageLength: 5,
-            lengthChange: false, 
-            lengthMenu: false,
+            paging: false,
             searching: false,
             ordering: false,
             info: false,
             autoWidth: false,
             columns: columns,
-            data: data
+            data: produtosComParcelas
         });
-    },
-    
-    getFuncionarios: async function (inputId) {
-        const novoArrayFuncionarios = [];
-        const requestData = {
-            url: `${WCMAPI.serverURL}/api/public/ecm/dataset/datasets`,
-            method: 'POST',
-        };
-        const data = {
-            name: 'ds_consulta_funcionarios_protheus',
-            fields: [],
-            constraints: [
-                {
-                    _field: 'CDESCRICAO',
-                    _initialValue: 'ALL',
-                    _finalValue: 'ALL',
-                    _type: 0,
-                    _likeSearch: true,
-                },
-                {
-                    _field: 'RETORNADEMITIDOS',
-                    _initialValue: '',
-                    _finalValue: 'false',
-                    _type: 0,
-                    _likeSearch: true,
-                },
-            ],
-            order: [],
-        };
 
-        try {
-            const response = await $.ajax({
-                url: requestData.url,
-                contentType: 'application/json',
-                crossDomain: true,
-                type: requestData.method,
-                data: JSON.stringify(data),
-            });
+        // Cálculo do resumo geral
+        const valorTotal = produtos.reduce((acc, p) => acc + p.valor, 0);
+        const parcelasTotais = Math.ceil(valorTotal / tetoMensal); // Corrigido para calcular o total de parcelas corretamente
+        const todasParcelas = filaProdutos.flatMap(p => p.valorParcelas);
+        const valorParcelaMensal = Math.max(...todasParcelas);
 
-            const jsonParse = JSON.parse(JSON.stringify(response));
-            if (jsonParse.content.values.length > 0) {
-                jsonParse.content.values.forEach((element) => {
-                    novoArrayFuncionarios.push({
-                        CCODIGO: element.CCODIGO,
-                        CDESCRICAO: element.CDESCRICAO,
-                        RA_CIC: element.RA_CIC,
-                        description: `${element.CCODIGO} - ${element.CDESCRICAO}`
-                    });
-                });
-            } else {
-                console.error('Lista de funcionários retornou vazia!');
-            }
-        } catch (error) {
-            console.error('Erro ao obter lista de funcionários:', error);
-        }
-
-        initAutoComplete({
-            name: inputId,
-            source: novoArrayFuncionarios,
-            search: [ 'CCODIGO', 'CDESCRICAO' ],
-            onSelect: async (autocomplete, item) => {
-                const dsFuncionario = item.description;
-                setInputValue(`#${inputId}`, dsFuncionario);
-            },
-            onRemove: (autocomplete, item) => {
-                setInputValue(`#${inputId}`, '');
-            },
-        }, 'tagAutocomplete');
+        // Preenche a tabela de resumo geral
+        $('#valorTotalResumo').text(valorTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
+        $('#parcelasTotaisResumo').text(parcelasTotais);
+        $('#valorParcelaMensalResumo').text(valorParcelaMensal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
     },
 
-    consultarFuncionario: function () {
-        const funcionarios = [
+    getFuncionariosMock: function () {
+        return [
             {
                 nome: "ADAN GUILHERME RODRIGUES",
                 cpf: "70223160156",
@@ -174,166 +168,12 @@ var MyWidget = SuperWidget.extend({
                 cargo: "INST ELETRICISTA",
                 salario: 2132.84,
                 produtos: [
-                    { nome: "carro", valor: 50000.00 },
                     { nome: "Bota de Segurança", valor: 250.00 },
                     { nome: "Tablet", valor: 700.00 },
                     { nome: "Celular", valor: 900.00 },
-                    { nome: "Uniforme", valor: 120.00 },
-                    { nome: "Ferramenta", valor: 180.00 },
-                    { nome: "Bicicleta", valor: 500.00 },
-                    { nome: "Notebook", valor: 3000.00 },
-                    { nome: "Cadeira de Escritório", valor: 800.00 },
-                    { nome: "Mesa de Escritório", valor: 1200.00 },
-                    { nome: "Monitor", valor: 1500.00 }
-                    
+                    { nome: "Uniforme", valor: 120.00 }
                 ]
             }
         ];
-
-        $('#btn-buscar').on('click', () => {
-            const valorInput = $('#codFuncionario').val();
-            const nomeFuncionario = valorInput.split(' - ')[ 1 ] ? valorInput.split(' - ')[ 1 ].trim() : valorInput.trim();
-            if (!nomeFuncionario) {
-                showSweetAlert('Atenção', 'Digite o nome ou código do funcionário.', 'warning');
-                $('#painelFuncionario').hide();
-                return;
-            }
-            const funcionario = funcionarios.find(f => f.nome.toUpperCase() === nomeFuncionario.toUpperCase());
-            if (funcionario) {
-                $('#dadosFuncionario').html(`
-                <h4>Funcionário: ${funcionario.nome}</h4>
-                <h4>CPF: ${funcionario.cpf}</h4>
-            `);
-
-                // Chama o DataTable para exibir os produtos
-                MyWidget.processDataTable(funcionario.produtos, funcionario.salario);
-
-                $('#btn-limpar').show();
-                $('#painelFuncionario').show();
-            } else {
-                showSweetAlert('Atenção', 'Funcionário não encontrado.', 'info');
-                $('#dadosFuncionario').html('');
-                $('#tabelaDescontos').html('');
-                $('#painelFuncionario').hide();
-            }
-        });
-
-        $('#btn-limpar').on('click', function () {
-            $('#codFuncionario').val('');
-            $('#dadosFuncionario').html('');
-            $('#tabelaDescontos').html('');
-            $(this).hide();
-            $('#painelFuncionario').hide();
-        })
     }
 });
-
-const initAutoComplete = (options, autoType) => {
-    console.log(options);
-
-    if (!options.name) {
-        throw Error('Undefined name to autocomplete.')
-    }
-    if (!options.source) {
-        throw Error('Undefined source to autocomplete.')
-    }
-    if (!options.search) {
-        throw Error('Undefined search to autocomplete.')
-    }
-    window[ options.name ] = FLUIGC.autocomplete('#' + options.name, {
-        source: substringMatcher(options.source),
-        displayKey: 'description',
-        type: autoType,
-        tagClass: 'tag-gray',
-        maxTags: 1,
-        onMaxTags: (item, tag) => {
-            FLUIGC.toast({
-                message: 'Apenas um item pode ser selecionado...',
-                type: 'warning',
-                timeout: 2000
-            })
-        }
-    })
-        .on('fluig.autocomplete.itemAdded', event => {
-            onSelectAutoComplete(event.item, false)
-        })
-        .on('fluig.autocomplete.itemUpdated', event => {
-            onSelectAutoComplete(event.item, false)
-        })
-        .on('fluig.autocomplete.itemRemoved', event => {
-            onSelectAutoComplete(event.item, true)
-        })
-    const setSelected = () => {
-        const inputs = document.querySelectorAll('[data-autocomplete="' + options.name + '"]')
-        const data = {}
-        inputs.forEach(input => {
-            if (input.value.trim() != '') {
-                data[ input.getAttribute('id').replace(options.name + '_', '') ] = input.value
-            }
-        })
-        if (window[ options.name ] && Object.keys(data).length > 0) {
-            window[ options.name ].add(data)
-        }
-    }
-    const onSelectAutoComplete = (item, removed) => {
-        const inputs = document.querySelectorAll('[data-autocomplete="' + options.name + '"]')
-        if (!removed) {
-            let inputValue = ''
-            options.search.forEach((searchColumn, index) => {
-                if (options.search.length == (index + 1)) {
-                    inputValue += item[ searchColumn ]
-                }
-                else {
-                    inputValue += item[ searchColumn ] + ' - '
-                }
-            })
-            setInputValue('#' + options.name, inputValue)
-            inputs.forEach(input => {
-                if (item[ input.getAttribute('id').replace(options.name + '_', '') ]) {
-                    setInputValue('#' + input.getAttribute('id'), item[ input.getAttribute('id').replace(options.name + '_', '') ])
-                }
-            })
-            if (options.onSelect) {
-                options.onSelect(window[ options.name ], item)
-            }
-        }
-        else {
-            setInputValue('#' + options.name, '')
-            inputs.forEach(input => {
-                if (item[ input.getAttribute('id').replace(options.name + '_', '') ]) {
-                    setInputValue('#' + input.getAttribute('id'), '')
-                }
-            })
-            if (options.onRemove) {
-                options.onRemove(window[ options.name ], item)
-            }
-        }
-    }
-    setSelected();
-}
-
-const substringMatcher = (array) => {
-    return function findMatches(q, cb) {
-        const matches = [];
-        const substrRegex = new RegExp(q, 'i');
-
-        array.forEach(item => {
-            // Busca no CCODIGO, CDESCRICAO e RA_CIC
-            if (
-                substrRegex.test(item.CCODIGO) ||
-                substrRegex.test(item.CDESCRICAO)
-            ) {
-                matches.push(item);
-            }
-        });
-
-        cb(matches);
-    };
-};
-
-
-const setInputValue = (selector, value) => {
-    if (document.querySelector(selector)) {
-        document.querySelector(selector).value = value
-    }
-}

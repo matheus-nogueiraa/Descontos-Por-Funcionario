@@ -222,8 +222,7 @@ td:last-child {
 }
 
 
-.modal {
-  display: none;
+/* .modal {
   position: fixed;
   z-index: 1000;
   left: 0;
@@ -240,7 +239,7 @@ td:last-child {
   padding: 20px;
   border: 1px solid #888;
   width: 80%;
-}
+} */
 
 #signature-pad {
   border: 1px solid #000;
