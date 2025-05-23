@@ -33,6 +33,10 @@
 
     <!-- Inputs hidden -->
     <input type="hidden" id="salario">
+    <input type="hidden" id="numFluig">
+    <input type="hidden" id="nomeUsuario">
+    <input type="hidden" id="emailUsuario">
+    <input type="hidden" id="matriculaUsuario">
 
     <!-- Header -->
     <div class="card">
@@ -59,8 +63,8 @@
           <div class="row panel-body">
             <div class="col-md-5">
               <label for="">Filial</label>
-              <select id="codFilial" class="form-control">
-                <option value="" disabled selected>Carregando...</option>
+              <select id="codFilial" class="form-control" disabled>
+                <option value="" selected>Carregando...</option>
               </select>
             </div>
             <div class="col-md-5">
@@ -73,10 +77,6 @@
               <button id="btn-buscar" class="btn btn-success form-control">
                 <i class="bi bi-search"></i>
                 Consultar
-              </button>
-              <button id="btn-limpar" class="btn btn-danger form-control" style="display:none;">
-                <i class="fluigicon fluigicon-remove-circle icon-sm"></i>
-                Limpar
               </button>
             </div>
           </div>
@@ -134,17 +134,21 @@
             <div class="form-group d-flex flex-row justify-content-between mb-3" style="gap: 2rem;">
               <div class="form-group mb-3">
                 <div class="row align-items-center" style="gap: 0;">
-                  <div class="col-md-4">
+                  <div class="col-md-3">
                     <div class="destaqueText"><strong>Filial:</strong></div>
                     <div id="codFilialModal"></div>
                   </div>
-                  <div class="col-md-4">
+                  <div class="col-md-3">
                     <div class="destaqueText"><strong>Funcionário:</strong></div>
                     <div id="codFuncionarioModal"></div>
                   </div>
-                  <div class="col-md-4">
-                    <div class="destaqueText"><strong>10% do Salário:</strong></div>
+                  <div class="col-md-3">
+                    <div class="destaqueText"><strong>Salário:</strong></div>
                     <div id="salarioModal"></div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="destaqueText"><strong>10% do Salário:</strong></div>
+                    <div id="10salarioModal"></div>
                   </div>
                 </div>
               </div>
@@ -154,18 +158,15 @@
                 <h3 class="panel-title">Novos EPI'S</h3>
               </div>
               <div class="panel-body">
-                <div id="dataPainelNovosAtivos">
-                  <table class="table table-bordered" tablename="tblNovosAtivos" id="tblNovosAtivos">
-                    <thead>
-                      <tr class="headTable" style="display: none;">
-                      </tr>
-                    </thead>
-                    <tbody></tbody>
-                  </table>
-                </div>
                 <div class="row">
-                  <div class="form-group col-md-12">
-                    <button class="btn btn-default" onclick="addNovoAtivo()">Adicionar EPI a ser paga</button>
+                  <div class="col-md-8">
+                    <label for="descricaoEpi">EPI</label>
+                    <input type="text" class="form-control" id="descricaoEpi"
+                      placeholder="Digite o nome ou o código do EPI">
+                  </div>
+                  <div class="col-md-4">
+                    <label for="valorEpi">Valor</label>
+                    <input type="number" class="form-control" id="valorEpi" placeholder="R$ 0,00" min="0">
                   </div>
                 </div>
               </div>
@@ -176,11 +177,13 @@
               </div>
               <div class="panel-body">
                 <div class="row" id="cameraContainer">
-                  <div class="form-group col-md-12">
-                    <input type="file" accept=".png, .jpg, .jpeg, .bmp, .pdf" capture="user"
-                      id="cameraInputPhotoEPI" class="form-control btn btndanger button_attachments"
-                      onchange="savePhotoFuncionario()">
-                    <img id="previewPhotoFuncionario" style="width: 100%; margin-top: 10px;" src="" />
+                  <div class="form-group col-md-11">
+                    <input type="file" accept=".png, .jpg, .jpeg, .bmp, .pdf" capture="user" id="cameraInputPhotoEPI"
+                      class="form-control btn btndanger button_attachments" onchange="reloadPreview()">
+                    <img id="previewFotoEPI" style="width: 100%; margin-top: 10px;" src="" />
+                  </div>
+                  <div class="form-group col-md-1">
+                    <button id="btnLimparFoto" class="btn btn-danger" onclick="removePhoto()">Limpar Foto</button>
                   </div>
                 </div>
               </div>

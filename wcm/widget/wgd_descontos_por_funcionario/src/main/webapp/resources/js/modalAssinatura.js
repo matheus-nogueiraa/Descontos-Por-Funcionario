@@ -33,23 +33,22 @@ function getAssinaturaBase64() {
 }
 
 function openModalAssinatura() {
-  // Monta a lista de EPIs com descrição e valor
-  let epis = [];
-  $('#tblNovosAtivos tbody tr').each(function () {
-    const descricao = $(this).find('input[type="text"]').val();
-    const valor = $(this).find('input[type="number"]').val(); // Captura o valor diretamente do input
-    if (descricao && valor) {
-      epis.push(`${descricao} - R$ ${parseFloat(valor).toFixed(2).replace('.', ',')}`);
-    }
-  });
+  // Captura os valores dos campos
+  const descricao = $('#descricaoEpi').val().trim();
+  const valor = parseFloat($('#valorEpi').val());
 
-  if (epis.length === 0) {
-    toastMsg('Atenção', 'Adicione pelo menos um EPI antes de prosseguir para a assinatura.', 'warning');
+  // Validação dos campos
+  if (!descricao) {
+    toastMsg('Atenção', 'Preencha o campo EPI antes de prosseguir para a assinatura.', 'warning');
+    return;
+  }
+  if (isNaN(valor) || valor <= 0) {
+    toastMsg('Atenção', 'Preencha o campo Valor com um valor maior que zero.', 'warning');
     return;
   }
 
   const input = document.getElementById('cameraInputPhotoEPI');
-  const file = input?.files?.[ 0 ];
+  const file = input?.files?.[0];
 
   if (!file) {
     toastMsg('Atenção', 'Adicione uma foto do funcionário antes de prosseguir para a assinatura.', 'warning');
@@ -57,7 +56,7 @@ function openModalAssinatura() {
   }
 
   // Exibe a lista de EPIs com descrição e valor
-  $('#revisaoEpis').html('<ul><li>' + epis.join('</li><li>') + '</li></ul>');
+  $('#revisaoEpis').html(`<ul><li>${descricao} - R$ ${valor.toFixed(2).replace('.', ',')}</li></ul>`);
 
   // Inicializa o SignaturePad
   initSignaturePad();
@@ -67,7 +66,6 @@ function openModalAssinatura() {
   setTimeout(() => {
     initSignaturePad();
   }, 300);
-
 }
 
 function fecharModalAssinatura() {

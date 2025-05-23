@@ -28,7 +28,7 @@
     <processDefinitionVersionPK>
       <companyId>1</companyId>
       <processId>wf_cadastrosDescontosAtivosAoColaborador</processId>
-      <version>2</version>
+      <version>1</version>
     </processDefinitionVersionPK>
     <versionDescription></versionDescription>
     <formId>228145</formId>
@@ -323,7 +323,7 @@
         <companyId>1</companyId>
         <processId>wf_cadastrosDescontosAtivosAoColaborador</processId>
         <expressionOrder>1</expressionOrder>
-        <version>2</version>
+        <version>1</version>
         <sequence>12</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -335,7 +335,7 @@
         <companyId>1</companyId>
         <processId>wf_cadastrosDescontosAtivosAoColaborador</processId>
         <expressionOrder>2</expressionOrder>
-        <version>2</version>
+        <version>1</version>
         <sequence>12</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -538,7 +538,7 @@
         <version>1</version>
         <componGrafSequence>7</componGrafSequence>
       </processComponGrafPK>
-      <stateName>Start</stateName>
+      <stateName>Início</stateName>
     </ProcessComponGraf>
   </list>
   <list>
@@ -558,7 +558,7 @@
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>wf_cadastrosDescontosAtivosAoColaborador</processId>
-        <version>2</version>
+        <version>1</version>
         <linkSequence>8</linkSequence>
         <bendSequence>1</bendSequence>
       </processLinkBendPK>
@@ -569,7 +569,7 @@
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>wf_cadastrosDescontosAtivosAoColaborador</processId>
-        <version>2</version>
+        <version>1</version>
         <linkSequence>11</linkSequence>
         <bendSequence>1</bendSequence>
       </processLinkBendPK>
@@ -580,7 +580,7 @@
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>wf_cadastrosDescontosAtivosAoColaborador</processId>
-        <version>2</version>
+        <version>1</version>
         <linkSequence>17</linkSequence>
         <bendSequence>1</bendSequence>
       </processLinkBendPK>
@@ -591,7 +591,7 @@
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>wf_cadastrosDescontosAtivosAoColaborador</processId>
-        <version>2</version>
+        <version>1</version>
         <linkSequence>20</linkSequence>
         <bendSequence>1</bendSequence>
       </processLinkBendPK>
@@ -602,7 +602,7 @@
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>wf_cadastrosDescontosAtivosAoColaborador</processId>
-        <version>2</version>
+        <version>1</version>
         <linkSequence>20</linkSequence>
         <bendSequence>2</bendSequence>
       </processLinkBendPK>
@@ -627,7 +627,58 @@
     </ProcessStateService>
   </list>
   <list/>
-  <list/>
+  <list>
+    <ProcessAppConfiguration>
+      <id>0</id>
+      <tenantId>0</tenantId>
+      <processId>wf_cadastrosDescontosAtivosAoColaborador</processId>
+      <processVersion>1</processVersion>
+      <stateSequence>16</stateSequence>
+      <appKey>approval</appKey>
+      <appField>title</appField>
+      <description></description>
+    </ProcessAppConfiguration>
+    <ProcessAppConfiguration>
+      <id>0</id>
+      <tenantId>0</tenantId>
+      <processId>wf_cadastrosDescontosAtivosAoColaborador</processId>
+      <processVersion>1</processVersion>
+      <stateSequence>16</stateSequence>
+      <appKey>approval</appKey>
+      <appField>description</appField>
+      <description></description>
+    </ProcessAppConfiguration>
+    <ProcessAppConfiguration>
+      <id>0</id>
+      <tenantId>0</tenantId>
+      <processId>wf_cadastrosDescontosAtivosAoColaborador</processId>
+      <processVersion>1</processVersion>
+      <stateSequence>16</stateSequence>
+      <appKey>approval</appKey>
+      <appField>highlight</appField>
+      <description></description>
+    </ProcessAppConfiguration>
+    <ProcessAppConfiguration>
+      <id>0</id>
+      <tenantId>0</tenantId>
+      <processId>wf_cadastrosDescontosAtivosAoColaborador</processId>
+      <processVersion>1</processVersion>
+      <stateSequence>16</stateSequence>
+      <appKey>approval</appKey>
+      <appField>approve</appField>
+      <description></description>
+    </ProcessAppConfiguration>
+    <ProcessAppConfiguration>
+      <id>0</id>
+      <tenantId>0</tenantId>
+      <processId>wf_cadastrosDescontosAtivosAoColaborador</processId>
+      <processVersion>1</processVersion>
+      <stateSequence>16</stateSequence>
+      <appKey>approval</appKey>
+      <appField>reject</appField>
+      <description></description>
+    </ProcessAppConfiguration>
+  </list>
   <list/>
   <list>
     <ConditionProcessAutomaticRules>

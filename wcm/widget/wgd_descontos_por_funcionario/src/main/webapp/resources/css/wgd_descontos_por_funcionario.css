@@ -275,3 +275,10 @@ td:last-child {
   text-decoration: none;
   cursor: pointer;
 }
+
+
+#previewFotoEPI {
+  width: 100%;
+  height: auto;
+  max-width: 300px;
+}
