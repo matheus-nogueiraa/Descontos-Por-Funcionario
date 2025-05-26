@@ -92,8 +92,17 @@ function capturarAssinatura() {
   return signaturePad.toDataURL("image/png");
 }
 
+function parseValorFromElement(elementId) {
+  const el = document.getElementById(elementId);
+  if (!el || !el.innerText) return 0;
+  // Remove tudo que não for número, vírgula, ponto ou sinal de menos
+  let valor = el.innerText.replace(/[^\d,.-]/g, '').replace(',', '.').trim();
+  if (!valor) return 0;
+  const parsed = parseFloat(valor);
+  return isNaN(parsed) ? 0 : parsed;
+}
+
 async function montarConstraints() {
-  const numFluig = document.getElementById("numFluig").value || "";
   const dataSolicitacao = new Date().toLocaleDateString("pt-BR");
   const horaSolicitacao = new Date().toLocaleTimeString("pt-BR");
   const nomeSolicitante = document.getElementById("nomeUsuario").value || "";
@@ -102,10 +111,19 @@ async function montarConstraints() {
   const codFilial = document.getElementById("codFilial").value || "";
   const nomeColaborador = document.getElementById("codFuncionario").value || "";
   const codEpi = document.getElementById("descricaoEpi").value || "";
-  const valorEpi = document.getElementById("valorEpi").value || "";
+  const valorEpi = parseFloat((document.getElementById("valorEpi").value || "0").replace(",", "."));
 
+  const dezPorcentoSalario = parseValorFromElement("10salarioModal");
+  const valorTotalAtual = parseValorFromElement("valorTotalResumo");
+
+  // Soma o valor do novo item ao total já lançado
+  const novoValorTotal = valorTotalAtual + valorEpi;
+
+  let novoTotalParcelas = 1;
+  if (dezPorcentoSalario > 0) {
+    novoTotalParcelas = Math.ceil(novoValorTotal / dezPorcentoSalario);
+  }
   const constraints = [];
-  constraints.push(DatasetFactory.createConstraint("formField", "numFluig", numFluig, ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("formField", "dataSolicitacao", dataSolicitacao, ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("formField", "horaSolicitacao", horaSolicitacao, ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("formField", "nomeSolicitante", nomeSolicitante, ConstraintType.MUST));
