@@ -7,7 +7,6 @@
 	<link rel="stylesheet" href="https://fluigtst.elcop.eng.br:8443//style-guide/css/fluig-style-guide.min.css">
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.5/dist/signature_pad.umd.min.js"></script>
-	<script src="./script.js"></script>
 </head>
 
 <body>
@@ -25,28 +24,29 @@
 					<div class="row">
 						<div class="form-group col-md-4">
 							<label for="">Número do Fluig</label>
-							<input type="text" name="numFluig" class="form-control" value="" readonly />
+							<input type="text" class="form-control" name="solicitacao_fluig" id="solicitacao_fluig"
+								readonly>
 						</div>
-						<div class="col-md-4">
+						<div class="form-group col-md-4">
 							<label for="">Data Solicitação</label>
 							<input type="text" name="dataSolicitacao" class="form-control" value="" readonly />
 						</div>
-						<div class="col-md-4">
+						<div class="form-group col-md-4">
 							<label for="">Hora Solicitação</label>
 							<input type="text" name="horaSolicitacao" class="form-control" value="" readonly />
 						</div>
 					</div>
 
 					<div class="row">
-						<div class="col-md-4">
+						<div class="form-group col-md-4">
 							<label for="">Nome do Solicitante</label>
 							<input type="text" name="nomeSolicitante" class="form-control" value="" readonly />
 						</div>
-						<div class="col-md-4">
+						<div class="form-group col-md-4">
 							<label for="">Matricula do Solicitante</label>
 							<input type="text" name="matriculaSolicitante" class="form-control" value="" readonly />
 						</div>
-						<div class="col-md-4">
+						<div class="form-group col-md-4">
 							<label for="">e-mail do Solicitante</label>
 							<input type="text" name="emailSolicitante" class="form-control" value="" readonly />
 						</div>
@@ -61,23 +61,31 @@
 
 				<div class="panel-body">
 					<div class="row">
-						<div class="form-group col-md-6">
+						<div class="form-group col-md-4">
 							<label for="">Filial</label>
 							<input type="text" name="codFilial" class="form-control" value="" readonly />
 						</div>
-						<div class="form-group col-md-6">
+						<div class="form-group col-md-4">
 							<label for="">Nome do Colaborador</label>
 							<input type="text" name="nomeColaborador" class="form-control" value="" readonly />
 						</div>
+						<div class="form-group col-md-4">
+							<label for="">10% do Salário</label>
+							<input type="text" name="salarioporcento" class="form-control" value="" readonly />
+						</div>
 					</div>
 					<div class="row">
-						<div class="col-md-6">
+						<div class="form-group col-md-4">
 							<label for="">EPI</label>
 							<input type="text" name="codEpi" class="form-control" readonly />
 						</div>
-						<div class="col-md-6">
+						<div class="form-group col-md-4">
 							<label for="">Valor do EPI</label>
 							<input type="number" name="valorEpi" class="form-control" readonly />
+						</div>
+						<div class="form-group col-md-4">
+							<label for="">Total de Parcelas</label>
+							<input type="number" name="totalParcelas" class="form-control" readonly />
 						</div>
 					</div>
 				</div>

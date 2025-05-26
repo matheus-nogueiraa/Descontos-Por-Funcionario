@@ -1,3 +1,3 @@
 function afterProcessCreate(processId) {
-  hAPI.setCardValue('numFluig', processId);
+  hAPI.setCardValue('solicitacao_fluig', processId);
 }

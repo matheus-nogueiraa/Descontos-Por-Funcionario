@@ -8,7 +8,11 @@ async function iniciarProcesso() {
   try {
     obterDadosUsuarioLogado();
 
-    if (!validarCampos()) return;
+    const mensagemErro = validarCampos();
+    if (mensagemErro) {
+      toastMsg("Atenção", mensagemErro, "warning");
+      return;
+    }
 
     const confirmacao = await exibirConfirmacao(CONFIRMATION_MESSAGE);
     if (!confirmacao) return;
@@ -19,7 +23,7 @@ async function iniciarProcesso() {
     const assinaturaData = capturarAssinatura();
     if (!assinaturaData) return;
 
-    const constraints = montarConstraints();
+    const constraints = await montarConstraints();
     const statusIntegracao = await iniciarProcessoFluig(constraints);
 
     if (!statusIntegracao || statusIntegracao.status === "ERROR") {
@@ -27,42 +31,11 @@ async function iniciarProcesso() {
       return;
     }
 
-    const processId = statusIntegracao.idProcess;
-
-    // Upload da foto e da assinatura
-    await anexarDocumento(fotoData.nomeFoto, fotoData.fotoBase64, processId);
-    await anexarDocumento("assinatura.png", assinaturaData, processId);
-
     tratarResultado(statusIntegracao);
   } catch (error) {
     console.error(`Erro ao tentar registrar solicitação. Erro: ${error.message}`);
     alert("Ocorreu um erro inesperado. Por favor, tente novamente.");
   }
-}
-
-// Função para anexar documento ao processo via REST
-function anexarDocumento(nomeArquivo, base64, pastaDestino) {
-  const blob = base64ToBlob(base64, 'image/png'); // ou image/jpeg
-  const formData = new FormData();
-  formData.append("description", nomeArquivo);
-  formData.append("parentId", pastaDestino); // ex: "2"
-  formData.append("uploadedFile", blob, nomeArquivo);
-  formData.append("documentType", "7");
-  formData.append("versionOption", "1");
-
-  $.ajax({
-    url: '/api/public/2.0/documents/createDocument',
-    type: 'POST',
-    data: formData,
-    processData: false,
-    contentType: false,
-    success: function (response) {
-      console.log('Documento anexado com sucesso:', response);
-    },
-    error: function (xhr, status, error) {
-      console.error('Erro ao anexar documento:', error);
-    }
-  });
 }
 
 // Validação dos campos obrigatórios
@@ -73,12 +46,12 @@ function validarCampos() {
     erros.push("- A assinatura do funcionário é obrigatória.");
   }
 
-  if (erros.length) {
-    alert("Verifique os seguintes campos antes de continuar:\n\n" + erros.join("\n"));
-    return false;
-  }
+  // Adicione aqui outras validações de campos obrigatórios, se necessário
 
-  return true;
+  if (erros.length > 0) {
+    return "Verifique os campos obrigatórios antes de continuar:\n\n" + erros.join("\n");
+  }
+  return null;
 }
 
 // Exibição de confirmação ao usuário
@@ -119,8 +92,7 @@ function capturarAssinatura() {
   return signaturePad.toDataURL("image/png");
 }
 
-// Montagem das constraints para o processo
-function montarConstraints() {
+async function montarConstraints() {
   const numFluig = document.getElementById("numFluig").value || "";
   const dataSolicitacao = new Date().toLocaleDateString("pt-BR");
   const horaSolicitacao = new Date().toLocaleTimeString("pt-BR");
@@ -142,9 +114,26 @@ function montarConstraints() {
   constraints.push(DatasetFactory.createConstraint("formField", "codFilial", codFilial, ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("formField", "nomeColaborador", nomeColaborador, ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("formField", "codEpi", codEpi, ConstraintType.MUST));
-  constraints.push(DatasetFactory.createConstraint("formField", "valorEpi", valorEpi, ConstraintType.MUST));
+  constraints.push(DatasetFactory.createConstraint("formField", "valorEpi", valorEpi.toString(), ConstraintType.MUST));
+  constraints.push(DatasetFactory.createConstraint("formField", "salarioporcento", dezPorcentoSalario.toString(), ConstraintType.MUST));
+  constraints.push(DatasetFactory.createConstraint("formField", "totalParcelas", novoTotalParcelas.toString(), ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("choosedState", 10, 10, ConstraintType.MUST));
-  constraints.push(DatasetFactory.createConstraint("processId", PROCESS_ID, PROCESS_ID, ConstraintType.MUST))
+  constraints.push(DatasetFactory.createConstraint("processId", PROCESS_ID, PROCESS_ID, ConstraintType.MUST));
+
+  // --- Pegando a foto em base64 ---
+  const fotoInput = document.getElementById("cameraInputPhotoEPI");
+  const foto = fotoInput.files[0];
+  if (foto) {
+    const fotoBase64 = await readFileAsBase64(foto);
+    constraints.push(DatasetFactory.createConstraint("attachment", fotoBase64, foto.name, ConstraintType.MUST));
+  }
+
+  // --- Pegando a assinatura em base64 ---
+  const signaturePad = document.getElementById("signature-pad");
+  if (signaturePad && !isCanvasBlank(signaturePad)) {
+    const assinaturaBase64 = signaturePad.toDataURL("image/png").split(",")[1];
+    constraints.push(DatasetFactory.createConstraint("attachment", assinaturaBase64, "assinatura.png", ConstraintType.MUST));
+  }
 
   return constraints;
 }
@@ -201,6 +190,13 @@ function fecharModaisELimparInputs() {
   $("#modalAtivos").hide();
   $("#modalAssinatura").hide();
 
+  // Esconde o painel de funcionário
+  $("#painelFuncionario").hide();
+
+  // Limpa as tabelas de descontos e resumo geral
+  $("#tabelaDescontos").empty();
+  $("#tabelaResumoGeral tbody").find("td").empty();
+
   $("#tblNovosAtivos tbody").empty();
   $("#cameraInputPhotoEPI").val("");
   $("#previewFotoEPI").attr("src", "");
@@ -209,10 +205,6 @@ function fecharModaisELimparInputs() {
   if (signaturePad) {
     signaturePad.getContext("2d").clearRect(0, 0, signaturePad.width, signaturePad.height);
   }
-
-  $("#parcelasTotaisResumo").text("");
-  $("#valorParcelaMensalResumo").text("");
-  $("#revisaoEpis").empty();
 }
 
 // Obtém os dados do colaborador
