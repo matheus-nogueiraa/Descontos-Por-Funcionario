@@ -135,6 +135,7 @@ async function montarConstraints() {
   constraints.push(DatasetFactory.createConstraint("formField", "valorEpi", valorEpi.toString(), ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("formField", "salarioporcento", dezPorcentoSalario.toString(), ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("formField", "totalParcelas", novoTotalParcelas.toString(), ConstraintType.MUST));
+  constraints.push(DatasetFactory.createConstraint("comments", "Lançamento de descontos iniciado pela Widget", "Lançamento de descontos iniciado pela Widget", ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("choosedState", 10, 10, ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("processId", PROCESS_ID, PROCESS_ID, ConstraintType.MUST));
 

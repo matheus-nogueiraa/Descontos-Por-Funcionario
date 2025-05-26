@@ -1189,6 +1189,50 @@
    </array>
   </void>
   <void method="put">
+   <string>camposFormulario, documentoId = 228145</string>
+   <array class="java.lang.String" length="13">
+    <void index="0">
+     <string>codEpi</string>
+    </void>
+    <void index="1">
+     <string>codFilial</string>
+    </void>
+    <void index="2">
+     <string>dataSolicitacao</string>
+    </void>
+    <void index="3">
+     <string>emailSolicitante</string>
+    </void>
+    <void index="4">
+     <string>horaSolicitacao</string>
+    </void>
+    <void index="5">
+     <string>matriculaSolicitante</string>
+    </void>
+    <void index="6">
+     <string>nomeColaborador</string>
+    </void>
+    <void index="7">
+     <string>nomeSolicitante</string>
+    </void>
+    <void index="8">
+     <string>salarioporcento</string>
+    </void>
+    <void index="9">
+     <string>solicitacao_fluig</string>
+    </void>
+    <void index="10">
+     <string>statusIntegracao</string>
+    </void>
+    <void index="11">
+     <string>totalParcelas</string>
+    </void>
+    <void index="12">
+     <string>valorEpi</string>
+    </void>
+   </array>
+  </void>
+  <void method="put">
    <string>mecanismoPapel</string>
    <object class="java.util.ArrayList">
     <void method="add">
