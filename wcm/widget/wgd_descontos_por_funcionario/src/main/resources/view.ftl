@@ -25,6 +25,7 @@
   <script type="text/javascript" src="/webdesk/vcXMLRPC-mobile.js"></script>
   <script src="../webapp/resources/js/novosAtivos.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.5/dist/signature_pad.umd.min.js"></script>
+  <script src="/portal/resources/js/wcm/wcm.widgetAPI.js"></script>
 </head>
 
 <body>
@@ -33,7 +34,6 @@
 
     <!-- Inputs hidden -->
     <input type="hidden" id="salario">
-    <input type="hidden" id="numFluig">
     <input type="hidden" id="nomeUsuario">
     <input type="hidden" id="emailUsuario">
     <input type="hidden" id="matriculaUsuario">
@@ -45,7 +45,7 @@
           <div class="form-group col-md-6 css_header_img" style="margin-left: 1rem;">
             <img src="/wdg_inventario_almoxarifado/resources/images/elcop_nossa_energia.png" alt="Logo Elcop"
               width="329px" height="194px">
-            <label class="css_header_text">Descontos Ativos por Funcionário</label>
+            <label class="css_header_text">Lançamentos de Descontos</label>
           </div>
         </div>
       </div>
@@ -173,11 +173,11 @@
             </div>
             <div class="panel panel-default">
               <div class="panel-heading">
-                <h3 class="panel-title">Caputura de Foto</h3>
+                <h3 class="panel-title">Caputura de Foto do EPI danificado</h3>
               </div>
               <div class="panel-body">
                 <div class="row" id="cameraContainer">
-                  <div class="form-group col-md-11">
+                  <div class="form-group col-md-10">
                     <input type="file" accept=".png, .jpg, .jpeg, .bmp, .pdf" capture="user" id="cameraInputPhotoEPI"
                       class="form-control btn btndanger button_attachments" onchange="reloadPreview()">
                     <img id="previewFotoEPI" style="width: 100%; margin-top: 10px;" src="" />

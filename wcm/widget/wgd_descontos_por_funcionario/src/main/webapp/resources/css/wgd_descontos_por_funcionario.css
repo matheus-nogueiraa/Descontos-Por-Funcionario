@@ -282,3 +282,26 @@ td:last-child {
   height: auto;
   max-width: 300px;
 }
+
+@media (max-width: 768px) {
+  .css_header_img {
+    flex-direction: column !important;
+    align-items: center !important;
+    margin-left: 0 !important;
+    text-align: center;
+  }
+  .css_header_img img {
+    width: 80vw !important;
+    height: auto !important;
+    max-width: 250px !important;
+    margin-bottom: 10px;
+  }
+  .css_header_text {
+    margin-left: 0 !important;
+    margin-top: 10px !important;
+    font-size: 1.2rem !important;
+    text-align: center !important;
+    display: block !important;
+    width: 100%;
+  }
+}
