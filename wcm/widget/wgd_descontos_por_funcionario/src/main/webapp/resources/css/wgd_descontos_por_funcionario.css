@@ -277,8 +277,7 @@ td:last-child {
   cursor: pointer;
 }
 
-
-#previewFotoEPI {
+.previewFotoEPI {
   width: 100%;
   height: auto;
   max-width: 300px;

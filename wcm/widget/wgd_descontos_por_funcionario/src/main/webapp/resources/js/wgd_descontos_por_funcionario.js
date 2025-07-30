@@ -45,7 +45,8 @@ var MyWidget = SuperWidget.extend({
             <h4>CPF: ${funcionario.cpf}</h4>
             <h4>Salário: ${funcionario.salario.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</h4>
         `);
-        $('#salario').val((funcionario.salario * 0.10).toFixed(2));
+        $('#salario').val(funcionario.salario.toFixed(2)); // Salário total
+        $('#salario10').val((funcionario.salario * 0.10).toFixed(2)); // 10% do salário
     },
 
     limparTela: function () {
@@ -63,7 +64,7 @@ var MyWidget = SuperWidget.extend({
         const tetoMensal = salario * 0.10;
         let filaProdutos = produtos.map(p => ({ ...p, restante: p.valor }));
 
-        
+
         while (filaProdutos.some(p => p.restante > 0)) {
             let valorRestanteNoMes = tetoMensal;
             filaProdutos.forEach(p => {
@@ -87,7 +88,7 @@ var MyWidget = SuperWidget.extend({
 
         const columns = [
             { title: '#', data: 'ordem' },
-            { title: 'EPI', data: 'produto' },
+            { title: 'Descrição', data: 'produto' },
             { title: 'Valor', data: 'valor' }
         ];
 

@@ -34,12 +34,12 @@ function getAssinaturaBase64() {
 
 function openModalAssinatura() {
   // Captura os valores dos campos
-  const descricao = $('#descricaoEpi').val().trim();
+  const descricao = $('#descricao').val().trim();
   const valor = parseFloat($('#valorEpi').val());
 
   // Validação dos campos
   if (!descricao) {
-    toastMsg('Atenção', 'Preencha o campo EPI antes de prosseguir para a assinatura.', 'warning');
+    toastMsg('Atenção', 'Preencha o campo descrição antes de prosseguir para a assinatura.', 'warning');
     return;
   }
   if (isNaN(valor) || valor <= 0) {

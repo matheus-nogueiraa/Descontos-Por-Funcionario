@@ -2,12 +2,13 @@
 <html lang="en">
 
 <head>
+  <meta charset="utf-8">
   <link rel="stylesheet" href="/style-guide/css/fluig-style-guide.min.css">
   <link rel="stylesheet" href="../webapp/resources/css/wdg_inventario_almoxarifado.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
   <link rel="stylesheet" href="../webapp/resources/css/wgd_descontos_por_funcionario.css">
-  <link rel="stylesheet" href="https://fluigtst.elcop.eng.br:8443//style-guide/css/fluig-style-guide.min.css">
-  <link type="text/css" rel="stylesheet" href="//cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css" />
+  <!-- <link rel="stylesheet" href="https://fluigtst.elcop.eng.br:8443//style-guide/css/fluig-style-guide.min.css"> -->
+  <link type="text/css" rel="stylesheet" href="//cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
   <script src="/portal/resources/js/jquery/jquery.js"></script>
   <script src="/portal/resources/js/jquery/jquery-ui.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -26,14 +27,23 @@
   <script src="../webapp/resources/js/novosAtivos.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.5/dist/signature_pad.umd.min.js"></script>
   <script src="/portal/resources/js/wcm/wcm.widgetAPI.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js" charset="utf-8"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js" charset="utf-8"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 
 <body>
   <div id="MyWidget_${instanceId}" class="super-widget wcm-widget-class fluig-style-guide"
     data-params="MyWidget.instance()">
 
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+      <div class="loading-spinner"></div>
+    </div>
     <!-- Inputs hidden -->
     <input type="hidden" id="salario">
+    <input type="hidden" id="salario10">
     <input type="hidden" id="nomeUsuario">
     <input type="hidden" id="emailUsuario">
     <input type="hidden" id="matriculaUsuario">
@@ -155,32 +165,31 @@
             </div>
             <div class="panel panel-default">
               <div class="panel-heading">
-                <h3 class="panel-title">Novos EPI'S</h3>
+                <h3 class="panel-title">Novos Descontos</h3>
               </div>
               <div class="panel-body">
                 <div class="row">
                   <div class="col-md-8">
-                    <label for="descricaoEpi">EPI</label>
-                    <input type="text" class="form-control" id="descricaoEpi"
-                      placeholder="Digite o nome ou o código do EPI">
+                    <label for="descricao">Descrição do desconto</label>
+                    <input type="text" class="form-control" id="descricao" placeholder="Digite a descrição do desconto">
                   </div>
                   <div class="col-md-4">
                     <label for="valorEpi">Valor</label>
-                    <input type="number" class="form-control" id="valorEpi" placeholder="R$ 0,00" min="0">
+                    <input type="number" class="form-control" id="valorEpi" placeholder="0" min="0">
                   </div>
                 </div>
               </div>
             </div>
             <div class="panel panel-default">
               <div class="panel-heading">
-                <h3 class="panel-title">Caputura de Foto do EPI danificado</h3>
+                <h3 class="panel-title">Caputura de Foto</h3>
               </div>
               <div class="panel-body">
                 <div class="row" id="cameraContainer">
                   <div class="form-group col-md-10">
                     <input type="file" accept=".png, .jpg, .jpeg, .bmp, .pdf" capture="user" id="cameraInputPhotoEPI"
                       class="form-control btn btndanger button_attachments" onchange="reloadPreview()">
-                    <img id="previewFotoEPI" style="width: 100%; margin-top: 10px;" src="" />
+                    <img class="previewFotoEPI" style="width: 100%; margin-top: 10px;" src="" />
                   </div>
                   <div class="form-group col-md-1">
                     <button id="btnLimparFoto" class="btn btn-danger" onclick="removePhoto()">Limpar Foto</button>
@@ -216,13 +225,20 @@
               <div class="panel-body">
                 <div class="row mb-3">
                   <div class="col-md-12">
-                    <div class="destaqueText"><strong>EPIs a serem pagos:</strong></div>
+                    <div class="destaqueText"><strong>Novos descontos lançados</strong></div>
                     <div id="revisaoEpis"></div>
                   </div>
                 </div>
               </div>
             </div>
-            <!-- Fim do bloco de revisão -->
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h3 class="panel-title">Foto Capturada</h3>
+              </div>
+              <div class="panel-body">
+                <img class="previewFotoEPI" style="width: 100%; margin-top: 10px;" src="" />
+              </div>
+            </div>
 
             <div class="panel panel-default">
               <div class="panel-heading">
@@ -231,8 +247,8 @@
               <div class="panel-body">
                 <div class="row">
                   <div class="form-group col-md-12 text-left">
-                    <p class="text-danger">Ao assinar o campo abaixo, o funcionário confirma o recebimento/devolução
-                      de todos os materiais listados acima.</p>
+                    <p class="text-danger">Ao assinar o campo abaixo, o funcionário confirma s lançamentos de novos
+                      descontos que está sendo realizado</p>
                   </div>
                 </div>
                 <div class="row">

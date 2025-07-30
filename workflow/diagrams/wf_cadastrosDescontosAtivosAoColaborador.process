@@ -2109,7 +2109,7 @@
     <fonts name="Arial" size="8"/>
     <fonts name="Arial" size="8" bold="true"/>
   </pi:Diagram>
-  <bpmn2:BpmnProcess id="wf_cadastrosDescontosAtivosAoColaborador" name="wf_cadastrosDescontosAtivosAoColaborador" serverId="Base Teste" version="3" author="" extendedFields="&lt;list/>" cardIndex="228145" formSource="server" category="" volume="Default" expedient="Default" instruction="" keyWord="" complementsLevel="1" notifyResponsibleComplements="true" notifyRequisitionerComplements="true"/>
+  <bpmn2:BpmnProcess id="wf_cadastrosDescontosAtivosAoColaborador" name="wf_cadastrosDescontosAtivosAoColaborador" serverId="Base Teste" version="5" author="" extendedFields="&lt;list/>" cardIndex="228145" formSource="server" category="" volume="Default" expedient="Default" instruction="" keyWord="" complementsLevel="1" notifyResponsibleComplements="true" notifyRequisitionerComplements="true"/>
   <bpmn2:BpmnPool id="pool1" name="Cadastros Descontos Ativos para o Colaborador" cores="FFFFFF"/>
   <bpmn2:BpmnSwimLane id="swimlane2" name="Solicitante" cores="9F9F9F"/>
   <bpmn2:BpmnSwimLane id="swimlane3" name="Integra&#xe7;&#xe3;o" cores="C0C0C0"/>

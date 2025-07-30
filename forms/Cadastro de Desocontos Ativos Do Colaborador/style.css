@@ -279,7 +279,7 @@ td:last-child {
   display: none;
 }
 
-#previewFotoEPI {
+.previewFotoEPI {
   width: 100%;
   height: auto;
   max-width: 300px;
