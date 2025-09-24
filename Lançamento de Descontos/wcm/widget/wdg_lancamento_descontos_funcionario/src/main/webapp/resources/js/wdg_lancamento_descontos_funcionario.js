@@ -112,6 +112,7 @@ var MyWidget = SuperWidget.extend({
             $('#periodoAtual').text(periodoAtual)
             $('#codFilial').val(filial);
             $('#matriculaFunc').val(matricula);
+            $('#nomeColaborador').val(funcionario)
 
             this.preencherDadosFuncionario(dataset, periodoAtual);
             this.processDataTable(filial, matricula, parseFloat(dataset?.values[0]?.RA_SALARIO) || 0, periodoAtual);
@@ -147,6 +148,7 @@ var MyWidget = SuperWidget.extend({
         $('#periodoAtual').text('');
         $('#valDezPorCentroSalario').val('');
         $('#codFilial').val('');
+        $('#nomeColaborador').val('');
     },
 
     processDataTable: function (filial, matricula, salario, periodoAtual) {

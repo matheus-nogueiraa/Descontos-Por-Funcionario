@@ -63,6 +63,7 @@ async function getFuncionarios(inputId) {
     },
     onRemove: (autocomplete, item) => {
       setInputValue(`#${inputId}`, '');
+      window.resetAllLancamento({ keepUser: true }); 
     },
   }, 'tagAutocomplete');
 }

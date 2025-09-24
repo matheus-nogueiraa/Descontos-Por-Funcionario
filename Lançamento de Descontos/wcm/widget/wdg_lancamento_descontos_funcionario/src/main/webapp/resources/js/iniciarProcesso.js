@@ -1,9 +1,55 @@
-const PROCESS_ID = "wf_cadastrosDescontosAtivosAoColaborador";
+const PROCESS_ID = "wf_lancamento_descontos_funcionario";
 const CONFIRMATION_MESSAGE = "Você tem certeza que deseja iniciar o processo?";
 const ERROR_MESSAGE = "Erro ao gerar solicitação de compras. Contate a equipe de TI!";
 const SUCCESS_MESSAGE = "Processo iniciado com sucesso! ID do processo: ";
 
-// Função principal para iniciar o processo
+function dataUrlToParts(dataUrl) {
+  if (!dataUrl || typeof dataUrl !== 'string') return { b64: null, ext: 'bin' };
+  const m = dataUrl.match(/^data:([^;]+);base64,(.*)$/);
+  if (!m) return { b64: null, ext: 'bin' };
+  const mime = m[1] || 'application/octet-stream';
+  const b64 = m[2] || '';
+  let ext = 'bin';
+  if (mime.includes('png')) ext = 'png';
+  else if (mime.includes('jpeg') || mime.includes('jpg')) ext = 'jpg';
+  else if (mime.includes('pdf')) ext = 'pdf';
+  else if (mime.includes('gif')) ext = 'gif';
+  else if (mime.includes('webp')) ext = 'webp';
+  else if (mime.includes('svg')) ext = 'svg';
+  return { b64, ext, mime };
+}
+
+function truncateJsonString(str, max = 3800) {
+  if (!str) return str;
+  if (str.length <= max) return str;
+  const msg = `__TRUNCATED__ len=${str.length}`;
+  return JSON.stringify({ truncated: true, note: msg }).slice(0, max);
+}
+
+// Lê as parcelas renderizadas na tabela (#revisaoParcelas)
+function lerParcelasDoDOM(rootSel = '#revisaoParcelas') {
+  const root = document.querySelector(rootSel);
+  if (!root) return [];
+
+  const parcelas = [];
+  const $inputsPeriodo = root.querySelectorAll('input[name^="parcelas["][name$="[periodo]"]');
+
+  $inputsPeriodo.forEach((inpPeriodo) => {
+    const m = inpPeriodo.name.match(/parcelas\[(\d+)\]\[periodo\]/);
+    const idx = m ? m[1] : null;
+    if (idx == null) return;
+
+    const inpValor = root.querySelector(`input[name="parcelas[${idx}][valor]"]`);
+    const periodo = (inpPeriodo.value || '').trim();
+    const valor = parseMoney(inpValor ? inpValor.value : 0);
+
+    if (periodo) parcelas.push({ periodo, valor });
+  });
+
+  return parcelas;
+}
+
+
 async function iniciarProcesso() {
   try {
     obterDadosUsuarioLogado();
@@ -14,50 +60,75 @@ async function iniciarProcesso() {
       return;
     }
 
-    const confirmacao = await exibirConfirmacao(CONFIRMATION_MESSAGE);
-    if (!confirmacao) return;
+    const confirmDialog = await exibirConfirmacao(CONFIRMATION_MESSAGE);
+    if (!confirmDialog) return;
 
     $("#loadingOverlay").show();
 
-    // Processa foto, assinatura e PDF em paralelo
-    const [ fotoData, assinaturaData, pdfBase64 ] = await Promise.all([
+    const confirmacao = await coletarConfirmacao();
+
+    if (confirmacao.tipoConfirmacao === 'ASSINATURA_FUNC') {
+      if (!confirmacao.assinaturaFuncionarioBase64) {
+        toastMsg('Atenção', 'Assinatura do funcionário é obrigatória.', 'warning');
+        return;
+      }
+    } else {
+      if (!confirmacao.motivoRecusa) {
+        toastMsg('Atenção', 'Informe o motivo da recusa.', 'warning');
+        return;
+      }
+      const faltantes = (confirmacao.testemunhas || []).filter(t => !t?.nome || !t?.cpf || !t?.assinaturaBase64);
+      if (faltantes.length > 0) {
+        toastMsg('Atenção', 'Preencha nome, CPF e assinatura das duas testemunhas.', 'warning');
+        return;
+      }
+    }
+
+    const [fotoData, pdfBase64] = await Promise.all([
       processarFoto(),
-      capturarAssinatura(),
       gerarRelatorioPDFBase64()
     ]);
 
-    if (!fotoData || !assinaturaData) return;
+    if (!fotoData) {
+      toastMsg('Atenção', 'É necessário anexar a foto do funcionário.', 'warning');
+      return;
+    }
 
-    // Passe os dados já processados para montarConstraints
-    const constraints = await montarConstraints({ fotoData, assinaturaData, pdfBase64 });
+    const evidenciasBase64 = [
+      ...(confirmacao.testemunhas || []).map(t => t?.fotoBase64).filter(Boolean),
+      ...((confirmacao.evidenciasExtras || []).filter(Boolean))
+    ];
+
+    const parcelas = lerParcelasDoDOM('#revisaoParcelas');
+
+    const constraints = await montarConstraints({
+      fotoData,
+      assinaturaData: confirmacao.assinaturaFuncionarioBase64 || null,
+      pdfBase64,
+      parcelas,
+      confirmacao,
+      evidenciasBase64
+    });
+
     const statusIntegracao = await iniciarProcessoFluig(constraints);
-
     tratarResultado(statusIntegracao);
+
   } catch (error) {
-    console.error(`Erro ao tentar registrar solicitação. Erro: ${error.message}`);
+    console.error(`Erro ao tentar registrar solicitação. Erro: ${error?.message || error}`);
     alert("Ocorreu um erro inesperado. Por favor, tente novamente.");
   } finally {
     $("#loadingOverlay").hide();
   }
 }
 
-// Validação dos campos obrigatórios
 function validarCampos() {
   const erros = [];
-
-  if (isCanvasBlank(document.getElementById('signature-pad'))) {
-    erros.push("- A assinatura do funcionário é obrigatória.");
-  }
-
-  // Adicione aqui outras validações de campos obrigatórios, se necessário
-
   if (erros.length > 0) {
     return "Verifique os campos obrigatórios antes de continuar:\n\n" + erros.join("\n");
   }
   return null;
 }
 
-// Exibição de confirmação ao usuário
 async function exibirConfirmacao(mensagem) {
   const result = await Swal.fire({
     icon: "question",
@@ -67,70 +138,79 @@ async function exibirConfirmacao(mensagem) {
     confirmButtonText: "Sim",
     denyButtonText: "Não",
   });
-
   return result.isConfirmed;
 }
 
-// Processamento da foto do funcionário
 async function processarFoto() {
   const fotoInput = document.getElementById("cameraInputPhotoEPI");
-  const foto = fotoInput.files[ 0 ];
-
+  const foto = fotoInput.files[0];
   if (!foto) {
     alert("Nenhuma foto foi selecionada.");
     return null;
   }
-
   const fotoBase64 = await readFileAsBase64(foto);
   return { fotoBase64, nomeFoto: foto.name };
 }
 
-// Captura da assinatura do funcionário
 async function capturarAssinatura() {
-  const signaturePad = document.getElementById("signature-pad");
-  if (isCanvasBlank(signaturePad)) {
+  const dataUrl = getPadBase64('signature-pad-func');
+  if (!dataUrl) {
     alert("A assinatura está vazia!");
     return null;
   }
-
-  // Retorna uma Promise para manter padrão com Promise.all
-  return new Promise((resolve) => {
-    const dataUrl = signaturePad.toDataURL("image/png");
-    resolve(dataUrl);
-  });
+  return dataUrl;
 }
 
 function parseValorFromElement(elementId) {
   const el = document.getElementById(elementId);
   if (!el || !el.innerText) return 0;
-  // Remove tudo que não for número, vírgula, ponto ou sinal de menos
   let valor = el.innerText.replace(/[^\d,.-]/g, '').replace(',', '.').trim();
   if (!valor) return 0;
   const parsed = parseFloat(valor);
   return isNaN(parsed) ? 0 : parsed;
 }
 
-async function montarConstraints({ fotoData, assinaturaData, pdfBase64 }) {
+const parseBR = (v) => {
+  if (v == null) return 0;
+  if (typeof v === 'number') return isFinite(v) ? v : 0;
+  const s = String(v).trim().replace(/\./g, '').replace(',', '.');
+  const n = Number(s);
+  return isFinite(n) ? n : 0;
+};
+
+async function montarConstraints({ fotoData, assinaturaData, pdfBase64, parcelas = [], confirmacao = {}, evidenciasBase64 = [] }) {
   const dataSolicitacao = new Date().toLocaleDateString("pt-BR");
-  const horaSolicitacao = new Date().toLocaleTimeString("pt-BR");
+  var data = new Date(),
+    hora = data.getHours(),
+    minuto = data.getMinutes(),
+    segundos = data.getSeconds() <= 9 ? "0" + data.getSeconds() : data.getSeconds();
+  const horaSolicitacao = `${hora}:${minuto}:${segundos}`;
   const nomeSolicitante = document.getElementById("nomeUsuario").value || "";
   const matriculaSolicitante = document.getElementById("matriculaUsuario").value || "";
   const emailSolicitante = document.getElementById("emailUsuario").value || "";
   const codFilial = document.getElementById("codFilial").value || "";
-  const nomeColaborador = document.getElementById("funcionarioFiltro").value || "";
+  const nomeColaborador = (document.getElementById("nomeColaborador")?.value || document.getElementById("funcionarioFiltro")?.value || "");
+  const matriculaColaborador = document.getElementById("matriculaFunc").value || "";
   const descricao = document.getElementById("descricao").value || "";
-  const valorEpi = parseFloat((document.getElementById("valorEpi").value || "0").replace(",", "."));
+  const valorEpi = parseMoney(document.getElementById("valorEpi").value || "0");
+  const codVerba = $('#verbaNovoDesconto').val() || "";
+  const tipoDesconto = ($('input[name="rdTipoDesconto"]:checked')?.val())?.toUpperCase() || ($('#revisaoTipoDesconto').text())?.toUpperCase() || "";
 
-  const dezPorcentoSalario = parseValorFromElement("10salarioModal");
-  const valorTotalAtual = parseValorFromElement("valorTotalResumo");
+  const dezSalarioTxt =
+    (document.getElementById("salario")?.value) ||
+    (document.getElementById("salarioModal")?.innerText) ||
+    "";
 
-  // Soma o valor do novo item ao total já lançado
-  const novoValorTotal = valorTotalAtual + valorEpi;
+  const valSalarioTxt =
+    (document.getElementById("valDezPorCentroSalario")?.value) ||
+    (document.getElementById("dezPorCentroSalario")?.innerText) ||
+    "";
 
-  let novoTotalParcelas = 1;
-  if (dezPorcentoSalario > 0) {
-    novoTotalParcelas = Math.ceil(novoValorTotal / dezPorcentoSalario);
-  }
+  const valSalario = parseMoney(valSalarioTxt);
+  const dezPorcentoSalario = parseMoney(dezSalarioTxt);
+
+  const totalParcelas = Array.isArray(parcelas) ? parcelas.length : 0;
+
   const constraints = [];
   constraints.push(DatasetFactory.createConstraint("formField", "dataSolicitacao", dataSolicitacao, ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("formField", "horaSolicitacao", horaSolicitacao, ConstraintType.MUST));
@@ -139,102 +219,121 @@ async function montarConstraints({ fotoData, assinaturaData, pdfBase64 }) {
   constraints.push(DatasetFactory.createConstraint("formField", "emailSolicitante", emailSolicitante, ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("formField", "codFilial", codFilial, ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("formField", "nomeColaborador", nomeColaborador, ConstraintType.MUST));
+  constraints.push(DatasetFactory.createConstraint("formField", "matriculaColaborador", matriculaColaborador, ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("formField", "descricao", descricao, ConstraintType.MUST));
-  constraints.push(DatasetFactory.createConstraint("formField", "valorEpi", valorEpi.toString(), ConstraintType.MUST));
-  constraints.push(DatasetFactory.createConstraint("formField", "salarioporcento", dezPorcentoSalario.toString(), ConstraintType.MUST));
-  constraints.push(DatasetFactory.createConstraint("formField", "totalParcelas", novoTotalParcelas.toString(), ConstraintType.MUST));
+  constraints.push(DatasetFactory.createConstraint("formField", "valorEpi", formatMoney2(valorEpi), ConstraintType.MUST));
+  constraints.push(DatasetFactory.createConstraint("formField", "valSalario", formatMoney2(valSalario), ConstraintType.MUST));
+  constraints.push(DatasetFactory.createConstraint("formField", "salarioporcento", formatMoney2(dezPorcentoSalario), ConstraintType.MUST));
+  constraints.push(DatasetFactory.createConstraint("formField", "totalParcelas", String(totalParcelas), ConstraintType.MUST));
+  constraints.push(DatasetFactory.createConstraint("formField", "tipoDesconto", String(tipoDesconto), ConstraintType.MUST));
+  constraints.push(DatasetFactory.createConstraint("formField", "codVerba", String(codVerba), ConstraintType.MUST));
+
+  constraints.push(DatasetFactory.createConstraint("formField", "parcelas_json", JSON.stringify(parcelas || []), ConstraintType.MUST));
+  constraints.push(DatasetFactory.createConstraint("formField", "confirmacao_tipo", confirmacao?.tipoConfirmacao || "", ConstraintType.MUST));
+  constraints.push(DatasetFactory.createConstraint("formField", "confirmacao_motivoRecusa", confirmacao?.motivoRecusa || "", ConstraintType.MUST));
+  constraints.push(DatasetFactory.createConstraint("formField", "assinaturaFuncionario_base64", (assinaturaData ? (assinaturaData.split(",")[1] || "") : ""), ConstraintType.MUST));
+
+  const t1 = confirmacao?.testemunhas?.[0] || {};
+  const t2 = confirmacao?.testemunhas?.[1] || {};
+  constraints.push(DatasetFactory.createConstraint("formField", "test1_nome", t1.nome || "", ConstraintType.MUST));
+  constraints.push(DatasetFactory.createConstraint("formField", "test1_cpf", t1.cpf || "", ConstraintType.MUST));
+  constraints.push(DatasetFactory.createConstraint("formField", "test1_cargo", t1.cargo || "", ConstraintType.MUST));
+  constraints.push(DatasetFactory.createConstraint("formField", "assinaturaTestemunha1_base64", (t1.assinaturaBase64 ? (t1.assinaturaBase64.split(",")[1] || "") : ""), ConstraintType.MUST));
+  constraints.push(DatasetFactory.createConstraint("formField", "test2_nome", t2.nome || "", ConstraintType.MUST));
+  constraints.push(DatasetFactory.createConstraint("formField", "test2_cpf", t2.cpf || "", ConstraintType.MUST));
+  constraints.push(DatasetFactory.createConstraint("formField", "test2_cargo", t2.cargo || "", ConstraintType.MUST));
+  constraints.push(DatasetFactory.createConstraint("formField", "assinaturaTestemunha2_base64", (t2.assinaturaBase64 ? (t2.assinaturaBase64.split(",")[1] || "") : ""), ConstraintType.MUST));
+  constraints.push(DatasetFactory.createConstraint("formField", "confirmacao_tipo_view", confirmacao?.tipoConfirmacao || "", ConstraintType.MUST));
+  constraints.push(DatasetFactory.createConstraint("formField", "confirmacao_motivoRecusa_view", confirmacao?.motivoRecusa || "", ConstraintType.MUST));
+
+  const evidNames = [];
+  if (fotoData?.fotoBase64) {
+    constraints.push(DatasetFactory.createConstraint("attachment", fotoData.fotoBase64, fotoData.nomeFoto || "foto_funcionario.png", ConstraintType.MUST));
+    constraints.push(DatasetFactory.createConstraint("formField", "anexo_foto_nome", fotoData.nomeFoto || "foto_funcionario.png", ConstraintType.MUST));
+  }
+  if (assinaturaData) {
+    constraints.push(DatasetFactory.createConstraint("attachment", (assinaturaData.split(",")[1] || ""), "assinatura.png", ConstraintType.MUST));
+  }
+  if (pdfBase64) {
+    constraints.push(DatasetFactory.createConstraint("attachment", pdfBase64, "relatorio_desconto_lancado.pdf", ConstraintType.MUST));
+    constraints.push(DatasetFactory.createConstraint("formField", "anexo_pdf_nome", "relatorio_desconto_lancado.pdf", ConstraintType.MUST));
+  }
+
+  (evidenciasBase64 || []).forEach((dataUrl, idx) => {
+    const { b64, ext } = dataUrlToParts(dataUrl);
+    if (!b64) return;
+    const fname = `evidencia_${String(idx + 1).padStart(2, '0')}.${ext}`;
+    constraints.push(DatasetFactory.createConstraint("attachment", b64, fname, ConstraintType.MUST));
+    evidNames.push(fname);
+  });
+
+  const evidManifest = JSON.stringify({ total: evidNames.length, arquivos: evidNames });
+  constraints.push(DatasetFactory.createConstraint("formField", "evidencias_json", truncateJsonString(evidManifest, 3800), ConstraintType.MUST));
+
   constraints.push(DatasetFactory.createConstraint("comments", "Lançamento de descontos iniciado pela Widget", "Lançamento de descontos iniciado pela Widget", ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("choosedState", 10, 10, ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("processId", PROCESS_ID, PROCESS_ID, ConstraintType.MUST));
 
-  // --- Pegando a foto em base64 ---
-  if (fotoData) {
-    constraints.push(DatasetFactory.createConstraint("attachment", fotoData.fotoBase64, fotoData.nomeFoto, ConstraintType.MUST));
-  }
-  if (assinaturaData) {
-    constraints.push(DatasetFactory.createConstraint("attachment", assinaturaData.split(",")[ 1 ], "assinatura.png", ConstraintType.MUST));
-  }
-  if (pdfBase64) {
-    constraints.push(DatasetFactory.createConstraint("attachment", pdfBase64, "relatorio_desconto_lançado.pdf", ConstraintType.MUST));
-  }
-
   return constraints;
 }
 
-// Início do processo no Fluig
 async function iniciarProcessoFluig(constraints) {
   const dataset = DatasetFactory.getDataset("ds_start_process", null, constraints, null);
-  return dataset?.values[ 0 ];
+  return dataset?.values[0];
 }
 
-// Tratamento do resultado do processo
 function tratarResultado(statusIntegracao) {
   if (!statusIntegracao || statusIntegracao.status === "ERROR") {
     showSweetTimerAlert(ERROR_MESSAGE, "warning");
     console.error(`Erro ao gerar solicitação de compras: ${statusIntegracao?.status}`);
     return;
   }
-
   const processId = statusIntegracao.idProcess || "desconhecido";
   fecharModaisELimparInputs();
   showSweetTimerAlert(SUCCESS_MESSAGE + processId, "success");
 }
 
-// Verifica se o canvas está vazio
 function isCanvasBlank(canvas) {
   const context = canvas.getContext("2d");
   const pixelBuffer = new Uint32Array(context.getImageData(0, 0, canvas.width, canvas.height).data.buffer);
   return !pixelBuffer.some((color) => color !== 0);
 }
 
-// Converte arquivo para Base64
 function readFileAsBase64(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = () => resolve(reader.result.split(",")[ 1 ]);
+    reader.onload = () => resolve(reader.result.split(",")[1]);
     reader.onerror = reject;
     reader.readAsDataURL(file);
   });
 }
 
-// Converte base64 para Blob
 function base64ToBlob(base64, mimeType) {
   const byteChars = atob(base64);
   const byteNumbers = new Array(byteChars.length);
   for (let i = 0; i < byteChars.length; i++) {
-    byteNumbers[ i ] = byteChars.charCodeAt(i);
+    byteNumbers[i] = byteChars.charCodeAt(i);
   }
   const byteArray = new Uint8Array(byteNumbers);
-  return new Blob([ byteArray ], { type: mimeType });
+  return new Blob([byteArray], { type: mimeType });
 }
 
-// Fecha modais e limpa os inputs
 function fecharModaisELimparInputs() {
   $("#modalAtivos").hide();
   $("#modalAssinatura").hide();
-
-  // Esconde o painel de funcionário
   $("#painelFuncionario").hide();
-
-  // Limpa as tabelas de descontos e resumo geral
   $("#tabelaDescontos").empty();
   $("#tabelaResumoGeral tbody").find("td").empty();
-
   $("#tblNovosAtivos tbody").empty();
   $("#cameraInputPhotoEPI").val("");
   $(".previewFotoEPI").attr("src", "");
-
   $("#descricao").val("");
   $("#valorEpi").val("");
-
-  const signaturePad = document.getElementById("signature-pad");
-  if (signaturePad) {
-    signaturePad.getContext("2d").clearRect(0, 0, signaturePad.width, signaturePad.height);
-  }
+  clearPad('signature-pad-func');
+  clearPad('signature-pad-test1');
+  clearPad('signature-pad-test2');
 }
 
-
-// Obtém os dados do usuário logado
 function obterDadosUsuarioLogado() {
   if (WCMAPI.userIsLogged) {
     $.ajax({
@@ -244,7 +343,6 @@ function obterDadosUsuarioLogado() {
       const nomeUsuario = data?.content?.fullName || "";
       const emailUsuario = data?.content?.email || "";
       const matriculaUsuario = data?.content?.code || "";
-
       $('#nomeUsuario').val(nomeUsuario);
       $('#emailUsuario').val(emailUsuario);
       $('#matriculaUsuario').val(matriculaUsuario);
@@ -252,155 +350,197 @@ function obterDadosUsuarioLogado() {
   }
 }
 
-// Exemplo de função para gerar PDF com jsPDF, html2canvas e autotable
 async function gerarRelatorioPDFBase64() {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
   const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
   const margin = 15;
   let y = margin;
 
-  const primaryColor = [ 125, 30, 10 ];
+  const primaryColor = [125, 30, 10];
   const lineSpacing = 7;
 
-  // Dados
-  const filial = document.getElementById("codFilial")?.value || "";
-  const funcionario = document.getElementById("funcionarioFiltro")?.value || "";
-  const descricaoDesconto = document.getElementById("descricao")?.value || "";
-  const valorDesconto = document.getElementById("valorEpi")?.value || "";
-  const valorTotal = document.getElementById("valorTotalResumo")?.innerText || "";
-  const dezPorCentroSalario = document.getElementById("dezPorCentroSalario")?.innerText || "";
-  const valorParcelaMensal = document.getElementById("valorParcelaMensalResumo")?.innerText || "";
+  const clamp = (n) => (Number.isFinite(n) ? n : 0);
 
-  // Título principal
-  doc.setFont("helvetica", "bold").setFontSize(16).setTextColor(...primaryColor);
-  doc.text("RELATÓRIO DE DESCONTOS", pageWidth / 2, y, { align: "center" });
-  y += 10;
+  const pm = (typeof parseMoney === "function")
+    ? parseMoney
+    : (v) => {
+      if (v == null) return 0;
+      if (typeof v === "number") return isFinite(v) ? v : 0;
+      const s = String(v).trim().replace(/\./g, "").replace(",", ".");
+      const n = Number(s);
+      return isFinite(n) ? n : 0;
+    };
 
-  // Dados do Funcionário
-  doc.setFont("helvetica", "normal").setFontSize(11).setTextColor(0, 0, 0);
-  doc.text(`Filial: ${filial}`, margin, y);
-  y += lineSpacing;
-  doc.text(`Funcionário: ${funcionario}`, margin, y);
-  y += lineSpacing + 3;
-
-  // Seção: Desconto Cadastrado
-  doc.setFont("helvetica", "bold").setFontSize(13).setTextColor(...primaryColor);
-  doc.text("Novo Desconto", margin, y);
-  y += lineSpacing;
-
-  doc.setFont("helvetica", "normal").setFontSize(11).setTextColor(0, 0, 0);
-  doc.text(`Descrição: ${descricaoDesconto}`, margin, y);
-  y += lineSpacing;
-  doc.text(`Valor: R$ ${valorDesconto}`, margin, y);
-  y += lineSpacing + 3;
-
-  // Seção: Resumo Geral
-  doc.setFont("helvetica", "bold").setFontSize(13).setTextColor(...primaryColor);
-  doc.text("Total de todos os descontos", margin, y);
-  y += lineSpacing;
-
-  doc.setFont("helvetica", "normal").setFontSize(11).setTextColor(0, 0, 0);
-  doc.text(`Valor Total: ${valorTotal}`, margin, y);
-  y += lineSpacing;
-  doc.text(`10% do Salário: ${dezPorCentroSalario}`, margin, y);
-  y += lineSpacing;
-  doc.text(`Valor da Parcela Mensal: ${valorParcelaMensal}`, margin, y);
-  y += lineSpacing + 5;
-
-  // Seção: Tabela de Descontos Detalhados
-  const tabela = document.getElementById("tabelaDescontos");
-  if (tabela) {
-    const headers = Array.from(tabela.querySelectorAll("thead tr th")).map(th => th.textContent.trim());
-    const rows = Array.from(tabela.querySelectorAll("tbody tr")).map(tr =>
-      Array.from(tr.querySelectorAll("td")).map(td => td.textContent.trim())
-    );
-
+  function addTitle(text) {
+    doc.setFont("helvetica", "bold").setFontSize(16).setTextColor(...primaryColor);
+    doc.text(text, pageWidth / 2, y, { align: "center" });
+    y += 10;
+  }
+  function addH2(text) {
     doc.setFont("helvetica", "bold").setFontSize(13).setTextColor(...primaryColor);
-    doc.text("Detalhe dos descontos ativos", margin, y);
-    y += 3;
-
-    doc.autoTable({
-      head: [ headers ],
-      body: rows,
-      startY: y,
-      theme: 'striped',
-      headStyles: {
-        fillColor: primaryColor,
-        textColor: [ 255, 255, 255 ],
-        fontSize: 10,
-        halign: 'left',
-      },
-      bodyStyles: {
-        fontSize: 9,
-        valign: 'middle',
-      },
-      styles: {
-        overflow: 'linebreak',
-        cellWidth: 'wrap',
-      },
-      margin: { left: margin, right: margin },
-      didDrawPage: data => {
-        y = data.cursor.y + 10;
+    doc.text(text, margin, y);
+    y += lineSpacing;
+  }
+  function addP(text) {
+    doc.setFont("helvetica", "normal").setFontSize(11).setTextColor(0, 0, 0);
+    doc.text(text, margin, y);
+    y += lineSpacing;
+  }
+  function ensureRoom(blockHeight) {
+    if (y + blockHeight + 10 > pageHeight) {
+      doc.addPage();
+      y = margin;
+    }
+  }
+  function addImageSafe(imgData, targetHmm = 20) {
+    if (!imgData) return { usedH: 0 };
+    const h = targetHmm;
+    const maxW = pageWidth - 2 * margin;
+    const w = Math.min(maxW, h * 5);
+    const x = (pageWidth - w) / 2;
+    if (![h, w, x, y].every(Number.isFinite)) return { usedH: 0 };
+    ensureRoom(h + 12);
+    doc.addImage(imgData, "PNG", x, y, w, h);
+    y += h + 10;
+    return { usedH: h };
+  }
+  function addUnderline(usedH) {
+    if (!usedH) return;
+    const w = Math.min(pageWidth - 2 * margin, 120);
+    const x = (pageWidth - w) / 2;
+    const lineY = y - 10 + usedH + 3 - usedH;
+    doc.setDrawColor(180, 180, 180);
+    doc.line(x, lineY, x + w, lineY);
+  }
+  function addSignatureBlock(title, { hiddenInputId, canvasId }) {
+    doc.setFont("helvetica", "bold").setFontSize(13).setTextColor(...primaryColor);
+    doc.text(title, margin, y);
+    y += 5;
+    let imgData = "";
+    const hidden = document.getElementById(hiddenInputId)?.value?.trim();
+    if (hidden) {
+      imgData = `data:image/png;base64,${hidden}`;
+    } else {
+      const canvas = document.getElementById(canvasId);
+      const w = clamp(canvas?.width), h = clamp(canvas?.height);
+      if (canvas && w > 0 && h > 0) {
+        try { imgData = canvas.toDataURL("image/png"); } catch (_) { imgData = ""; }
       }
+    }
+    if (!imgData) { addP("Não informado."); y -= lineSpacing - 10; return; }
+    const { usedH } = addImageSafe(imgData, 20);
+    addUnderline(usedH);
+  }
+
+  const filial = (document.getElementById("codFilial")?.value || "").trim();
+  const funcionario = (document.getElementById("nomeColaborador")?.value
+    || document.getElementById("funcionarioFiltro")?.value || "").trim();
+  const descricaoDesc = (document.getElementById("descricao")?.value || "").trim();
+  const valorEpi = pm((document.getElementById("valorEpi")?.value || "0").trim());
+
+  const dezTxt = (document.getElementById("valDezPorCentroSalario")?.value
+    || document.getElementById("dezPorCentroSalario")?.innerText || "0");
+  const dezPorCentoSalario = pm(dezTxt);
+
+  const parcelas = (typeof lerParcelasDoDOM === "function") ? lerParcelasDoDOM('#revisaoParcelas') : [];
+  const totalParcelas = parcelas.length;
+  const somaParcelas = (parcelas || []).reduce((a, p) => a + (Number(p?.valor) || 0), 0);
+
+  const codVerba = $('#verbaNovoDesconto').val() || "";
+  const tipoDesconto = ($('input[name="rdTipoDesconto"]:checked')?.val())?.toUpperCase()
+    || ($('#revisaoTipoDesconto').text())?.toUpperCase() || "";
+
+  const verbaDesc = (typeof getVerbaDesc === "function")
+    ? (getVerbaDesc(tipoDesconto, codVerba) || "")
+    : "";
+
+  addTitle("RELATÓRIO DO NOVO DESCONTO");
+  doc.setFont("helvetica", "normal").setFontSize(11).setTextColor(0, 0, 0);
+  addP(`Filial: ${filial}`);
+  addP(`Funcionário: ${funcionario}`);
+  y += 3;
+
+  addH2("Novo Desconto");
+  addP(`Descrição: ${descricaoDesc}`);
+  addP(`Valor do Desconto: R$ ${valorEpi.toFixed(2)}`);
+  y += 3;
+
+  addH2("Resumo do novo desconto");
+  addP(`10% do Salário (teto por período): R$ ${dezPorCentoSalario.toFixed(2)}`);
+  addP(`Total de Parcelas: ${totalParcelas}`);
+  addP(`Soma das Parcelas: R$ ${somaParcelas.toFixed(2)}`);
+  addP(`Tipo Desconto: ${tipoDesconto}`);
+  addP(`Verba: ${codVerba}${verbaDesc ? ` - ${verbaDesc}` : ""}`);
+  y += 5;
+
+  addH2("Parcelas do novo desconto");
+  const tableBody = (parcelas || []).map(p => [
+    String(p?.periodo || ""),
+    `R$ ${(Number(p?.valor) || 0).toFixed(2)}`
+  ]);
+  doc.autoTable({
+    head: [["Período (YYYYMM)", "Valor da Parcela (R$)"]],
+    body: tableBody.length ? tableBody : [["-", "-"]],
+    startY: y,
+    theme: "striped",
+    headStyles: { fillColor: primaryColor, textColor: [255, 255, 255], fontSize: 10, halign: "left" },
+    bodyStyles: { fontSize: 9, valign: "middle" },
+    styles: { overflow: "linebreak", cellWidth: "wrap" },
+    margin: { left: margin, right: margin },
+    didDrawPage: (data) => { y = data.cursor.y + 10; }
+  });
+
+  const preview = document.querySelector(".previewFotoEPI");
+  if (preview && preview.src) {
+    try {
+      const canvasPhoto = await html2canvas(preview);
+      const imgData = canvasPhoto.toDataURL("image/png");
+      doc.setFont("helvetica", "bold").setFontSize(13).setTextColor(...primaryColor);
+      doc.text("Foto Capturada", margin, y);
+      y += 5;
+      addImageSafe(imgData, 90);
+    } catch (e) {
+      console.warn("Falha ao incluir foto no PDF:", e);
+    }
+  }
+
+  addSignatureBlock("Assinatura do Funcionário", {
+    hiddenInputId: "assinaturaFuncionario_base64",
+    canvasId: "signature-pad-func"
+  });
+
+  const recusa = document.querySelector('input[name="recusaAssinatura"]:checked')?.value === "sim";
+  if (recusa) {
+    addSignatureBlock("Assinatura da Testemunha 1", {
+      hiddenInputId: "assinaturaTestemunha1_base64",
+      canvasId: "signature-pad-test1"
+    });
+    addSignatureBlock("Assinatura da Testemunha 2", {
+      hiddenInputId: "assinaturaTestemunha2_base64",
+      canvasId: "signature-pad-test2"
     });
   }
 
-  // Foto do EPI (caso tenha)
-  const preview = document.querySelector(".previewFotoEPI");
-  if (preview && preview.src) {
-    const canvasPhoto = await html2canvas(preview);
-    const imgDataPhoto = canvasPhoto.toDataURL("image/png");
-    const imgHeight = 90;
-    const imgWidth = (canvasPhoto.width * imgHeight) / canvasPhoto.height;
-    const xImg = (pageWidth - imgWidth) / 2;
-
-    if (y + imgHeight + 30 > doc.internal.pageSize.getHeight()) {
-      doc.addPage();
-      y = margin;
-    }
-
-    doc.setFont("helvetica", "bold").setFontSize(13).setTextColor(...primaryColor);
-    doc.text("Foto do Capturada", margin, y);
-    y += 5;
-
-    doc.addImage(imgDataPhoto, "PNG", xImg, y, imgWidth, imgHeight);
-    y += imgHeight + 10;
-  }
-
-  // Assinatura
-  const signatureCanvas = document.getElementById("signature-pad");
-  if (signatureCanvas) {
-    const imgDataSignature = signatureCanvas.toDataURL("image/png");
-    const imgHeight = 20;
-    const imgWidth = (signatureCanvas.width * imgHeight) / signatureCanvas.height;
-    const xSignature = (pageWidth - imgWidth) / 2;
-
-    if (y + imgHeight + 30 > doc.internal.pageSize.getHeight()) {
-      doc.addPage();
-      y = margin;
-    }
-
-    doc.setFont("helvetica", "bold").setFontSize(13).setTextColor(...primaryColor);
-    doc.text("Assinatura", margin, y);
-    y += 5;
-
-    doc.addImage(imgDataSignature, "PNG", xSignature, y, imgWidth, imgHeight);
-    const lineY = y + imgHeight + 3;
-    doc.setDrawColor(180, 180, 180);
-    doc.line(xSignature, lineY, xSignature + imgWidth, lineY);
-    doc.setFontSize(10).setTextColor(0, 0, 0);
-    doc.text(`Assinatura do Funcionário: ${funcionario}`, pageWidth / 2, lineY + 6, { align: "center" });
-
-    y = lineY + 15;
-  }
-
-  // Rodapé com data/hora
   const now = new Date();
   doc.setFontSize(8).setTextColor(120, 120, 120);
-  doc.text(`Gerado em: ${now.toLocaleDateString()} ${now.toLocaleTimeString().slice(0, 5)}`, pageWidth / 2, doc.internal.pageSize.getHeight() - 10, { align: "center" });
+  doc.text(
+    `Gerado em: ${now.toLocaleDateString()} ${now.toLocaleTimeString().slice(0, 5)}`,
+    pageWidth / 2,
+    pageHeight - 10,
+    { align: "center" }
+  );
 
-  // Retorno em base64
-  return doc.output("datauristring").split(',')[ 1 ];
+  return doc.output("datauristring").split(",")[1];
 }
 
+function getVerbaDesc(nomeVerbaUpper, idProcurado) {
+  if (!nomeVerbaUpper || !idProcurado) return null;
+  const chave = Object.keys(VERBAS).find(
+    k => k.toUpperCase() === String(nomeVerbaUpper).trim().toUpperCase()
+  );
+  if (!chave) return null;
+  const item = VERBAS[chave].find(v => String(v.id) === String(idProcurado));
+  return item ? item.desc : null;
+}

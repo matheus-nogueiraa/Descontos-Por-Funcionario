@@ -55,7 +55,7 @@
                     <div class="form-group col-md-6 css_header_img" style="margin-left: 1rem;">
                         <img src="/wdg_lancamento_descontos_funcionario/resources/images/elcop_nossa_energia.png"
                             alt="Logo Elcop" width="329px" height="194px">
-                        <label class="css_header_text">Lançamentos de Descontos</label>
+                        <label class="css_header_text">Lançamentos de Descontos por Funcionário</label>
                     </div>
                 </div>
             </div>
@@ -98,6 +98,7 @@
                         <div id="dadosFuncionario" style="margin-bottom: 1rem;"></div>
                         <input type="hidden" name="codFilial" id="codFilial" value="">
                         <input type="hidden" name="matriculaFunc" id="matriculaFunc" value="">
+                        <input type="hidden" name="nomeColaborador" id="nomeColaborador" value="">
                         <div class="row">
                             <div class="col-md-8">
                                 <h4>Produtos</h4>
@@ -277,6 +278,7 @@
                         <h3 class="panel-title">Revisão</h3>
                     </div>
                     <div class="panel-body">
+
                         <!-- Bloco de revisão dos dados -->
                         <div class="panel panel-default">
                             <div class="panel-heading">
@@ -305,6 +307,8 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Foto Capturada -->
                         <div class="panel panel-default">
                             <div class="panel-heading">
                                 <h3 class="panel-title">Foto Capturada</h3>
@@ -314,44 +318,150 @@
                             </div>
                         </div>
 
+                        <!-- Confirmação -->
                         <div class="panel panel-default">
                             <div class="panel-heading">
-                                <h3 class="panel-title">Assinatura do Funcionário</h3>
+                                <h3 class="panel-title">Confirmação</h3>
                             </div>
                             <div class="panel-body">
-                                <div class="row">
-                                    <div class="form-group col-md-12 text-left">
-                                        <p class="text-danger">Ao assinar o campo abaixo, o funcionário confirma s
-                                            lançamentos de novos
-                                            descontos que está sendo realizado</p>
+
+                                <!-- Alternância -->
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label>O funcionário recusou assinar?</label>
+                                        <div>
+                                            <label class="mr-3"><input type="radio" name="recusaAssinatura" value="nao"
+                                                    checked onchange="onToggleRecusa()"> Não</label>
+                                            <label class="ml-3"><input type="radio" name="recusaAssinatura" value="sim"
+                                                    onchange="onToggleRecusa()"> Sim</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6" id="blocoMotivoRecusa" style="display:none;">
+                                        <label for="motivoRecusa">Motivo da recusa</label>
+                                        <textarea id="motivoRecusa" class="form-control" rows="2"
+                                            placeholder="Descreva brevemente o motivo..."></textarea>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="form-group col-md-12 text-center">
-                                        <canvas id="signature-pad"
-                                            style="border:1px solid #ccc; width:100%; height:150px;"></canvas>
+
+                                <!-- Assinatura do funcionário -->
+                                <div id="blocoAssinaturaFuncionario">
+                                    <div class="row">
+                                        <div class="form-group col-md-12 text-left">
+                                            <p class="text-danger">Ao assinar abaixo, o funcionário confirma os
+                                                lançamentos de novos descontos.</p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col-md-12 text-center">
+                                            <canvas id="signature-pad-func"
+                                                style="border:1px solid #ccc; width:100%; height:150px;"></canvas>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col-md-12">
+                                            <button class="btn btn-danger"
+                                                onclick="clearPad('signature-pad-func')">Limpar Assinatura</button>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="form-group col-md-12">
-                                        <button id="clearSignature" class="btn btn-danger"
-                                            onclick="clearModalAssinatura()">Limpar
-                                            Assinatura</button>
+
+                                <!-- Testemunhas (só aparece em recusa) -->
+                                <div id="blocoTestemunhas" style="display:none;">
+
+                                    <p class="text-muted">Em caso de recusa do funcionário, colete assinaturas de
+                                        <strong>duas testemunhas</strong> e evidências.</p>
+
+                                    <!-- Testemunha 1 -->
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">Testemunha 1</h4>
+                                        </div>
+                                        <div class="panel-body">
+                                            <div class="row">
+                                                <div class="col-md-4"><label>Nome</label><input type="text"
+                                                        id="test1_nome" class="form-control"></div>
+                                                <div class="col-md-4"><label>CPF</label><input type="text"
+                                                        id="test1_cpf" class="form-control"
+                                                        placeholder="000.000.000-00"></div>
+                                                <div class="col-md-4"><label>Cargo/Setor</label><input type="text"
+                                                        id="test1_cargo" class="form-control"></div>
+                                            </div>
+                                            <div class="row mt-2">
+                                                <div class="col-md-8">
+                                                    <label>Assinatura</label>
+                                                    <canvas id="signature-pad-test1"
+                                                        style="border:1px solid #ccc; width:100%; height:120px;"></canvas>
+                                                    <button class="btn btn-danger"
+                                                        onclick="clearPad('signature-pad-test1')">Limpar</button>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label>Foto/Evidência (opcional)</label>
+                                                    <input type="file" id="test1_foto" class="form-control"
+                                                        accept=".png,.jpg,.jpeg,.bmp,.pdf">
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
+
+                                    <!-- Testemunha 2 -->
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">Testemunha 2</h4>
+                                        </div>
+                                        <div class="panel-body">
+                                            <div class="row">
+                                                <div class="col-md-4"><label>Nome</label><input type="text"
+                                                        id="test2_nome" class="form-control"></div>
+                                                <div class="col-md-4"><label>CPF</label><input type="text"
+                                                        id="test2_cpf" class="form-control"
+                                                        placeholder="000.000.000-00"></div>
+                                                <div class="col-md-4"><label>Cargo/Setor</label><input type="text"
+                                                        id="test2_cargo" class="form-control"></div>
+                                            </div>
+                                            <div class="row mt-2">
+                                                <div class="col-md-8">
+                                                    <label>Assinatura</label>
+                                                    <canvas id="signature-pad-test2"
+                                                        style="border:1px solid #ccc; width:100%; height:120px;"></canvas>
+                                                    <button class="btn btn-danger"
+                                                        onclick="clearPad('signature-pad-test2')">Limpar</button>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label>Foto/Evidência (opcional)</label>
+                                                    <input type="file" id="test2_foto" class="form-control"
+                                                        accept=".png,.jpg,.jpeg,.bmp,.pdf">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Evidências gerais -->
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">Evidências Complementares</h4>
+                                        </div>
+                                        <div class="panel-body">
+                                            <input type="file" id="evidenciasExtras" class="form-control" multiple
+                                                accept=".png,.jpg,.jpeg,.bmp,.pdf">
+                                            <small class="text-muted">Fotos do ativo, conversas, documentos etc.</small>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Botão final -->
                         <div class="row">
                             <div class="form-group col-md-12">
-                                <button class="btn btn-success widthFull" id="btnVincularEpiXFuncionario"
-                                    onclick="iniciarProcesso()">Confirmar e Assinar</button>
+                                <button class="btn btn-success widthFull" onclick="iniciarProcesso()">Confirmar</button>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
         </div>
-
     </div>
 </body>
 
