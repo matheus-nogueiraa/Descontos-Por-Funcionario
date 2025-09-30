@@ -54,14 +54,14 @@ function resetCamposNovosDesconto() {
   $("#revisaoEpis").empty();
   $("#revisaoTipoDesconto").empty();
 
-  // teto/10% se for preenchido em algum lugar “de revisão”
-  $("#dezPorCentroSalario").text("");
+  // teto/15% se for preenchido em algum lugar “de revisão”
+  $("#quinzePorCentroSalario").text("");
   $("#valorParcelaMensalResumo").text("");
   $("#valorTotalResumo").text("");
 
   // esconda/limpe campos auxiliares se tiver
   $("#salarioModal").text("");
-  $("#valDezPorCentroSalario").val("");
+  $("#valQuinzePorCentroSalario").val("");
    $(`#verbaNovoDesconto`).find('option').remove();
 }
 

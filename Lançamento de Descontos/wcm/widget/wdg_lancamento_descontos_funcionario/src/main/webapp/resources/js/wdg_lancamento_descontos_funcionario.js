@@ -21,7 +21,7 @@ const VERBAS = {
             desc: 'Avarias em Veículos'
         },
         {
-            id: '520',
+            id: '525',
             desc: 'Outros Descontos (Usado para Descontos de IBUTTON, Cartão)'
         }
     ],
@@ -60,6 +60,10 @@ const VERBAS = {
         }
     ]
 }
+
+const DP_CODES = new Set(
+    (VERBAS.dp || []).map(v => String(v.id))
+);
 
 var MyWidget = SuperWidget.extend({
     tablesIds: ['tabelaDescontos'],
@@ -132,7 +136,7 @@ var MyWidget = SuperWidget.extend({
             <h4>Período Atual: ${periodoAtual}</h4>
         `);
         $('#salario').val(parseFloat(dataset?.values[0]?.RA_SALARIO).toFixed(2)); // Salário total
-        $('#salario10').val((parseFloat(dataset?.values[0]?.RA_SALARIO) * 0.10).toFixed(2)); // 10% do salário
+        $('#salario15').val((parseFloat(dataset?.values[0]?.RA_SALARIO) * 0.15).toFixed(2)); // 15% do salário
     },
 
     limparTela: function () {
@@ -140,13 +144,13 @@ var MyWidget = SuperWidget.extend({
         $('#dadosFuncionario').html('');
         $('#tabelaDescontos').html('');
         $('#valorTotalResumo').text('');
-        $('#dezPorCentroSalario').text('');
+        $('#quinzePorCentroSalario').text('');
         $('#valorParcelaMensalResumo').text('');
         $('#btn-limpar').hide();
         $('#painelFuncionario').hide();
 
         $('#periodoAtual').text('');
-        $('#valDezPorCentroSalario').val('');
+        $('#valQuinzePorCentroSalario').val('');
         $('#codFilial').val('');
         $('#nomeColaborador').val('');
     },
@@ -161,7 +165,7 @@ var MyWidget = SuperWidget.extend({
 
         const produtosComParcelas = [];
         let valorTotal = 0;
-        let valorPeriodo = 0;
+        //let valorPeriodo = 0;
 
         datasetIncidencias?.values?.forEach(element => {
             produtosComParcelas.push({
@@ -180,11 +184,27 @@ var MyWidget = SuperWidget.extend({
             });
 
             valorTotal += parseFloat(element.valor)
-
+            /*
             if (element?.codPeriodo?.trim() == periodoAtual) {
                 valorPeriodo += parseFloat(element.valor)
             }
+            */
         });
+
+        const valorPeriodo = produtosComParcelas.reduce((acc, el) => {
+            if (el && Array.isArray(el.parcelas)) {
+                el.parcelas.forEach(element => {
+                    // IGNORA verbas de DP na soma do consumo
+                    const isDP = DP_CODES.has(String(el.element.codVerba));
+                    if (element.codPeriodo == periodoAtual && !isDP) {
+                        acc += element.valor;
+                    }
+                });
+            }
+            return acc;
+        }, 0);
+
+
 
         const columns = [
             { title: 'Filial', data: 'codFilial' },
@@ -212,12 +232,12 @@ var MyWidget = SuperWidget.extend({
             data: produtosComParcelas
         });
 
-        const dezPorCentroSalario = salario * 0.1
-        $('#valDezPorCentroSalario').val(dezPorCentroSalario);
+        const quinzePorCentroSalario = salario * 0.15
+        $('#valQuinzePorCentroSalario').val(quinzePorCentroSalario);
 
         // Preenche a tabela de resumo geral
         $('#valorTotalResumo').text(valorTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
         $('#valorParcelaMensalResumo').text(valorPeriodo.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
-        $('#dezPorCentroSalario').text(dezPorCentroSalario.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
+        $('#quinzePorCentroSalario').text(quinzePorCentroSalario.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
     },
 });

@@ -7,12 +7,12 @@ function abrirModalAtivos() {
   const funcionario = $('#matriculaFunc').val();
 
   const salario = $('#salario').val();
-  const salario10 = $('#salario10').val();
+  const salario15 = $('#salario15').val();
 
   $('#codFilialModal').text(codFilial);
   $('#codFuncionarioModal').text(funcionario);
   $('#salarioModal').text(salario);
-  $('#10salarioModal').text(salario10);
+  $('#15salarioModal').text(salario15);
 }
 
 function fecharModalAtivos() {
@@ -21,7 +21,7 @@ function fecharModalAtivos() {
   // Limpar campos do modal
   $('#codFilialModal').text('');
   $('#codFuncionarioModal').text('');
-  $('#10salarioModal').text('');
+  $('#15salarioModal').text('');
   $('#tblNovosAtivos tbody').empty();
   $('#cameraInputPhotoEPI').val('');
   $('.previewFotoEPI').attr('src', '');

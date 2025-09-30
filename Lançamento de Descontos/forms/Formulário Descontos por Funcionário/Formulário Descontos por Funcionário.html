@@ -37,6 +37,19 @@
 			<input type="hidden" name="anexo_foto_nome" id="anexo_foto_nome" value="">
 			<input type="hidden" name="anexo_pdf_nome" id="anexo_pdf_nome" value="">
 
+			<!-- Integração Protheus - status detalhado -->
+			<input type="hidden" name="integ_aberto_status" id="integ_aberto_status" value="">
+			<input type="hidden" name="integ_aberto_msg" id="integ_aberto_msg" value="">
+			<input type="hidden" name="integ_aberto_payload" id="integ_aberto_payload" value="">
+
+			<input type="hidden" name="integ_futuro_status" id="integ_futuro_status" value="">
+			<input type="hidden" name="integ_futuro_msg" id="integ_futuro_msg" value="">
+			<input type="hidden" name="integ_futuro_payload" id="integ_futuro_payload" value="">
+
+			<!-- Opcional: resumo único -->
+			<input type="hidden" name="integ_resumo" id="integ_resumo" value="">
+
+
 			<!-- Dados do Solicitante -->
 			<div class="panel panel-primary">
 				<div class="panel-heading">
@@ -82,48 +95,54 @@
 				</div>
 				<div class="panel-body">
 					<div class="row">
-						<div class="form-group col-md-2">
-							<label>Filial</label>
-							<input type="text" name="codFilial" class="form-control" readonly>
-						</div>
-						<div class="form-group col-md-2">
+						<div class="form-group col-md-3">
 							<label>Matrícula do Colaborador</label>
 							<input type="text" name="matriculaColaborador" class="form-control" readonly>
 						</div>
-						<div class="form-group col-md-2">
+						<div class="form-group col-md-3">
 							<label>Nome do Colaborador</label>
 							<input type="text" name="nomeColaborador" class="form-control" readonly>
 						</div>
-						<div class="form-group col-md-2">
+						<div class="form-group col-md-3">
 							<label>Salário</label>
 							<input type="text" name="valSalario" class="form-control" readonly>
 						</div>
-						<div class="form-group col-md-2">
-							<label>10% do Salário</label>
+						<div class="form-group col-md-3">
+							<label>15% do Salário</label>
 							<input type="text" name="salarioporcento" class="form-control" readonly>
 						</div>
 					</div>
 
 					<div class="row">
-						<div class="form-group col-md-2">
+						<div class="form-group col-md-3">
+							<label>Filial</label>
+							<input type="text" name="codFilial" class="form-control" readonly>
+						</div>
+						<div class="form-group col-md-3">
 							<label>Descrição</label>
 							<input type="text" name="descricao" class="form-control" readonly>
 						</div>
-						<div class="form-group col-md-2">
+						<div class="form-group col-md-3">
 							<label>Valor (R$)</label>
 							<input type="text" name="valorEpi" class="form-control" readonly>
 						</div>
-						<div class="form-group col-md-2">
+						<div class="form-group col-md-3">
 							<label>Total de Parcelas</label>
 							<input type="text" name="totalParcelas" class="form-control" readonly>
 						</div>
-						<div class="form-group col-md-2">
+					</div>
+					<div class="row">
+						<div class="form-group col-md-3">
 							<label>Tipo</label>
 							<input type="text" name="tipoDesconto" class="form-control" readonly>
 						</div>
-						<div class="form-group col-md-2">
+						<div class="form-group col-md-3">
 							<label>Verba</label>
 							<input type="text" name="codVerba" class="form-control" readonly>
+						</div>
+						<div class="form-group col-md-3">
+							<label>Período Atual</label>
+							<input type="text" name="periodoAtual" class="form-control" readonly>
 						</div>
 					</div>
 				</div>

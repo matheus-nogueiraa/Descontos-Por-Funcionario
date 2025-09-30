@@ -28,7 +28,7 @@
     <processDefinitionVersionPK>
       <companyId>1</companyId>
       <processId>Lançamento de Descontos por Funcionário</processId>
-      <version>1</version>
+      <version>12</version>
     </processDefinitionVersionPK>
     <versionDescription></versionDescription>
     <formId>340891</formId>
@@ -160,6 +160,8 @@
       <deadlineFieldName></deadlineFieldName>
       <joint>false</joint>
       <agreementPercentage>0</agreementPercentage>
+      <engineAllocationId>Pool Papel</engineAllocationId>
+      <engineAllocationConfiguration>&lt;AssignmentController&gt;&lt;Role&gt;DESCONTOS_FUNCIONARIO_ERRO_INTEGRACAO&lt;/Role&gt;&lt;/AssignmentController&gt;</engineAllocationConfiguration>
       <selectColleague>1</selectColleague>
       <initialState>false</initialState>
       <notifyAuthorityDelay>true</notifyAuthorityDelay>
@@ -322,7 +324,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>1</expressionOrder>
-        <version>1</version>
+        <version>12</version>
         <sequence>18</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -334,7 +336,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>2</expressionOrder>
-        <version>1</version>
+        <version>12</version>
         <sequence>18</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -467,7 +469,262 @@
         <version>1</version>
       </workflowProcessEventPK>
       <eventDescription>function servicetask9(attempt, message) {
-}</eventDescription>
+    try {
+        log.info(&apos;INTEGRAÇÃO PROTHEUS - Lançamento de Descontos - servicetask9&apos;);
+
+        // ---------- Coleta de campos ----------
+        var codFilial = (hAPI.getCardValue(&apos;codFilial&apos;) + &apos;&apos;).trim();
+        var empresa = obterEmpresa(codFilial);
+        var matricula = (hAPI.getCardValue(&apos;matriculaColaborador&apos;) + &apos;&apos;).trim();
+        var roteiro = valorOuPadrao(hAPI.getCardValue(&apos;roteiro&apos;), &apos;FOL&apos;);
+        var numpagto = valorOuPadrao(hAPI.getCardValue(&apos;numpagto&apos;), &apos;01&apos;);
+        var codVerba = (hAPI.getCardValue(&apos;codVerba&apos;) + &apos;&apos;).trim();
+        var tipo1 = &apos;D&apos;; // desconto
+        var periodoForm = (hAPI.getCardValue(&apos;periodoAtual&apos;) + &apos;&apos;).trim(); // espelho do período atual exibido
+        var parcelas = parseParcelas((hAPI.getCardValue(&apos;parcelas_json&apos;) + &apos;&apos;).trim());
+
+        if (!parcelas || parcelas.length === 0) {
+            throw new Error(&apos;Não há parcelas a enviar.&apos;);
+        }
+
+        // ---------- Divide em &quot;aberto&quot; (primeira parcela) e &quot;futuras&quot; (demais) ----------
+        var primeiraParcela = parcelas[0];
+        // periodoRef do aberto = período da primeira parcela; se vazio, tenta do form
+        var periodoRefAberto = (primeiraParcela &amp;&amp; primeiraParcela.periodo) ? (primeiraParcela.periodo + &apos;&apos;).trim() : (periodoForm || &apos;&apos;);
+        if (!periodoRefAberto) {
+            throw new Error(&apos;Período da primeira parcela não informado.&apos;);
+        }
+
+        var payloadAberto = {
+            empresa: empresa,
+            filial: codFilial,
+            matricula: matricula,
+            roteiro: roteiro,
+            numpagto: numpagto,
+            periodoRef: periodoRefAberto,
+            verba: codVerba,
+            tipo1: tipo1,
+            parcelas: [primeiraParcela] // apenas 1
+        };
+
+        // Futuras = todas as parcelas cujo período seja diferente do aberto (e valor &gt; 0)
+        var restantes = [];
+        for (var i = 1; i &lt; parcelas.length; i++) {
+            var p = parcelas[i] || {};
+            var per = (p.periodo + &apos;&apos;).trim();
+            var val = parseMoney(p.valor);
+            if (per &amp;&amp; isFinite(val) &amp;&amp; val &gt; 0 &amp;&amp; per !== periodoRefAberto) {
+                restantes.push({ periodo: per, valor: Number(val.toFixed(2)) });
+            }
+        }
+
+        var payloadFuturo = null;
+        if (restantes.length &gt; 0) {
+            payloadFuturo = {
+                empresa: empresa,
+                filial: codFilial,
+                matricula: matricula,
+                periodoRef: periodoRefAberto, // usado pelo serviço para filtrar e excluir o período aberto
+                verba: codVerba,
+                // documento é opcional; se quiser, pode usar o número do processo:
+                documento: (getValue(&apos;WKNumProces&apos;) + &apos;&apos;),
+                parcelas: restantes
+            };
+        }
+
+        // ---------- Idempotência: checa se já integrou com sucesso ----------
+        // Campos de status e payload salvos no formulário
+        var stAberto = (hAPI.getCardValue(&apos;integ_aberto_status&apos;) + &apos;&apos;).trim();   // &quot;OK&quot; | &quot;NOK&quot; | &quot;&quot;
+        var stFuturo = (hAPI.getCardValue(&apos;integ_futuro_status&apos;) + &apos;&apos;).trim();   // &quot;OK&quot; | &quot;NOK&quot; | &quot;&quot;
+        var plAbertoS = (hAPI.getCardValue(&apos;integ_aberto_payload&apos;) + &apos;&apos;);         // json string
+        var plFuturoS = (hAPI.getCardValue(&apos;integ_futuro_payload&apos;) + &apos;&apos;);         // json string
+
+        var plAbertoNow = safeJSONStringify(payloadAberto);
+        var plFuturoNow = payloadFuturo ? safeJSONStringify(payloadFuturo) : &apos;&apos;;
+
+        // Não reenvia se já deu OK anteriormente com qualquer payload.
+        // Se quiser reprocessar quando payload mudou, troque a lógica conforme sua política.
+        var deveEnviarAberto = (stAberto !== &apos;OK&apos;);
+        var deveEnviarFuturo = (!!payloadFuturo &amp;&amp; stFuturo !== &apos;OK&apos;);
+
+        // ---------- Envia abertas ----------
+        var okAberto = false;
+        var msgAberto = &apos;&apos;;
+        if (deveEnviarAberto) {
+            var r1 = integracaoProtheusInvoke(&apos;/rest/RESTRH/postDescontos&apos;, payloadAberto);
+            okAberto = r1.ok;
+            msgAberto = r1.msg;
+            hAPI.setCardValue(&apos;integ_aberto_status&apos;, okAberto ? &apos;OK&apos; : &apos;NOK&apos;);
+            hAPI.setCardValue(&apos;integ_aberto_msg&apos;, msgAberto);
+            hAPI.setCardValue(&apos;integ_aberto_payload&apos;, plAbertoNow);
+
+            if (okAberto) {
+                hAPI.setTaskComments(getValue(&apos;WKUser&apos;), getValue(&apos;WKNumProces&apos;), 0, &apos;Aberto (GPEA580): OK. &apos; + (msgAberto || &apos;&apos;));
+            } else {
+                hAPI.setTaskComments(getValue(&apos;WKUser&apos;), getValue(&apos;WKNumProces&apos;), 0, &apos;Aberto (GPEA580): FALHA. &apos; + (msgAberto || &apos;&apos;));
+            }
+        } else {
+            log.info(&apos;servicetask9: Aberto já OK anteriormente. Não reenviado.&apos;);
+        }
+
+        // ---------- Envia futuras ----------
+        var okFuturo = false;
+        var msgFuturo = &apos;&apos;;
+        if (deveEnviarFuturo) {
+            var r2 = integracaoProtheusInvoke(&apos;/rest/RESTRH/descontosFuturos&apos;, payloadFuturo);
+            okFuturo = r2.ok;
+            msgFuturo = r2.msg;
+            hAPI.setCardValue(&apos;integ_futuro_status&apos;, okFuturo ? &apos;OK&apos; : &apos;NOK&apos;);
+            hAPI.setCardValue(&apos;integ_futuro_msg&apos;, msgFuturo);
+            hAPI.setCardValue(&apos;integ_futuro_payload&apos;, plFuturoNow);
+
+            if (okFuturo) {
+                hAPI.setTaskComments(getValue(&apos;WKUser&apos;), getValue(&apos;WKNumProces&apos;), 0, &apos;Futuro (GPEA110): OK. &apos; + (msgFuturo || &apos;&apos;));
+            } else {
+                hAPI.setTaskComments(getValue(&apos;WKUser&apos;), getValue(&apos;WKNumProces&apos;), 0, &apos;Futuro (GPEA110): FALHA. &apos; + (msgFuturo || &apos;&apos;));
+            }
+        } else if (payloadFuturo) {
+            log.info(&apos;servicetask9: Futuro já OK anteriormente. Não reenviado.&apos;);
+        } else {
+            log.info(&apos;servicetask9: Não há parcelas futuras para enviar.&apos;);
+        }
+
+        // ---------- Status geral ----------
+        // Se existir parcelas futuras, considera OK somente se ambos OK.
+        // Se não existir, considera OK apenas se aberto OK.
+        var statusGeralOK = false;
+        if (payloadFuturo) {
+            statusGeralOK = ((stAberto === &apos;OK&apos; || okAberto) &amp;&amp; (stFuturo === &apos;OK&apos; || okFuturo));
+        } else {
+            statusGeralOK = (stAberto === &apos;OK&apos; || okAberto);
+        }
+        hAPI.setCardValue(&apos;statusIntegracao&apos;, statusGeralOK ? &apos;OK&apos; : &apos;NOK&apos;);
+
+    } catch (error) {
+        hAPI.setCardValue(&apos;statusIntegracao&apos;, &apos;NOK&apos;);
+        log.warn(&apos;servicetask9 error: &apos; + error);
+        log.warn(&apos;servicetask9 error.message: &apos; + error.message);
+        log.warn(&apos;servicetask9 error.lineNumber: &apos; + error.lineNumber);
+        hAPI.setTaskComments(getValue(&apos;WKUser&apos;), getValue(&apos;WKNumProces&apos;), 0, &apos;Erro na integração: &apos; + error.message);
+    }
+}
+
+/* =========================================================
+ * Chamada REST centralizada (idempotência controlada por campos)
+ * ========================================================= */
+function integracaoProtheusInvoke(endpointPath, jsonData) {
+    var result = { ok: false, msg: &apos;&apos; };
+    try {
+        log.info(&apos;servicetask9 → POST &apos; + endpointPath);
+        log.dir(jsonData);
+
+        var clientService = fluigAPI.getAuthorizeClientService();
+        var envName = (fluigAPI.getTenantService().getTenantData([&apos;envName&apos;]).get(&apos;envName&apos;) + &apos;&apos;).trim();
+        var serviceCodeName = resolveServiceCode(envName);
+
+        var data = {
+            companyId: String(fluigAPI.getSecurityService().getCurrentTenantId()),
+            serviceCode: serviceCodeName,
+            endpoint: endpointPath,
+            method: &apos;POST&apos;,
+            timeoutService: &apos;1000&apos;,
+            params: jsonData,
+            options: {
+                encoding: &apos;UTF-8&apos;,
+                mediaType: &apos;application/json&apos;,
+                useSSL: true
+            }
+        };
+
+        var response = clientService.invoke(JSON.stringify(data));
+        log.info(&apos;servicetask9 response raw: &apos; + response);
+
+        var resultStr = response &amp;&amp; response.getResult ? response.getResult() : &apos;&apos;;
+        log.info(&apos;servicetask9 response.getResult(): &apos; + resultStr);
+
+        var parsed = {};
+        if (resultStr) {
+            try { parsed = JSON.parse(resultStr); } catch (e) { parsed = {}; }
+        }
+
+        var ok = parsed &amp;&amp; parsed.status === &apos;success&apos;;
+        result.ok = ok;
+        result.msg = parsed &amp;&amp; parsed.msg ? parsed.msg : (ok ? &apos;OK&apos; : &apos;Falha ao integrar.&apos;);
+
+        return result;
+    } catch (e) {
+        log.warn(&apos;integracaoProtheusInvoke error: &apos; + e.message);
+        result.ok = false;
+        result.msg = e.message || &apos;Erro inesperado.&apos;;
+        return result;
+    }
+}
+
+/* =========================================================
+ * Helpers ES5
+ * ========================================================= */
+
+function resolveServiceCode(envName) {
+    if (envName === &apos;PRODUCAO&apos;) return &apos;API_RESTRH&apos;;
+    if (envName === &apos;TESTE&apos;) return &apos;REST_PROTHEUS_TST&apos;;
+    return &apos;API_RESTRH&apos;;
+}
+
+function valorOuPadrao(v, def) {
+    v = (v === null || v === undefined) ? &apos;&apos; : (v + &apos;&apos;);
+    v = v.trim();
+    return v ? v : def;
+}
+
+function obterEmpresa(cFilial) {
+    cFilial = (cFilial || &apos;&apos;) + &apos;&apos;;
+    if (cFilial.length &gt;= 2) return cFilial.substring(0, 2);
+    return &apos;01&apos;;
+}
+
+// Converte dinheiro/strings PT-BR &quot;1.234,56&quot; para Number 1234.56
+function parseMoney(v) {
+    if (v === null || v === undefined) return 0;
+    if (typeof v === &apos;number&apos;) return isFinite(v) ? v : 0;
+    var s = (v + &apos;&apos;).trim();
+    if (!s) return 0;
+    s = s.replace(/[^\d.,-]/g, &apos;&apos;); // mantém dígito, ponto, vírgula e sinal
+    var hasComma = s.indexOf(&apos;,&apos;) !== -1;
+    var hasDot = s.indexOf(&apos;.&apos;) !== -1;
+    if (hasComma &amp;&amp; hasDot) {
+        s = s.replace(/\./g, &apos;&apos;).replace(&apos;,&apos;, &apos;.&apos;);
+    } else if (hasComma &amp;&amp; !hasDot) {
+        s = s.replace(&apos;,&apos;, &apos;.&apos;);
+    }
+    var n = Number(s);
+    return isFinite(n) ? n : 0;
+}
+
+function parseParcelas(jsonStr) {
+    var arr = [];
+    if (!jsonStr) return arr;
+    try {
+        var tmp = JSON.parse(jsonStr);
+        if (Object.prototype.toString.call(tmp) === &apos;[object Array]&apos;) {
+            for (var i = 0; i &lt; tmp.length; i++) {
+                var p = tmp[i] || {};
+                var periodo = (((p.periodo === null || p.periodo === undefined) ? &apos;&apos; : p.periodo) + &apos;&apos;).trim();
+                var v = parseMoney(p.valor);
+                if (periodo &amp;&amp; isFinite(v) &amp;&amp; v &gt; 0) {
+                    arr.push({ periodo: periodo, valor: Number(v.toFixed(2)) });
+                }
+            }
+        }
+    } catch (e) {
+        log.warn(&apos;parseParcelas: JSON inválido. value=&apos; + jsonStr);
+    }
+    return arr;
+}
+
+function safeJSONStringify(obj) {
+    try { return JSON.stringify(obj); } catch (e) { return &apos;&apos;; }
+}
+</eventDescription>
     </WorkflowProcessEvent>
   </list>
   <list/>
@@ -516,7 +773,7 @@
         <version>1</version>
         <componGrafSequence>7</componGrafSequence>
       </processComponGrafPK>
-      <stateName>Start</stateName>
+      <stateName>Início Processo</stateName>
     </ProcessComponGraf>
   </list>
   <list>

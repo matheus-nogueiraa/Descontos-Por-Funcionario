@@ -47,7 +47,7 @@ function createDataset(fields, constraints, sortFields) {
     myQuery += " AND SRV.RV_FILIAL = LEFT(RGB.RGB_FILIAL, 2) "
     myQuery += " AND SRV.RV_COD = RGB.RGB_PD "
     myQuery += " WHERE RGB.D_E_L_E_T_ = ' ' "
-    myQuery += " AND RGB.RGB_PD IN ('516','373','522','523','520','440','445','518','521','570','571','450') "
+    myQuery += " AND RGB.RGB_PD IN ('516','373','522','523','525','520','440','445','518','521','570','571','450') "
     myQuery += " AND RGB.RGB_FILIAL = '" + filial + "' "
     myQuery += " AND RGB.RGB_MAT = '" + matricula + "' "
     myQuery += " ORDER BY RGB_PERIOD DESC "

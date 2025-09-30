@@ -11,7 +11,7 @@ function parseMoney(v) {
   s = s.replace(/[^\d.,-]/g, '');
 
   const hasComma = s.indexOf(',') !== -1;
-  const hasDot   = s.indexOf('.') !== -1;
+  const hasDot = s.indexOf('.') !== -1;
 
   if (hasComma && hasDot) {
     // padrão pt-BR: ponto milhar, vírgula decimal
@@ -37,19 +37,32 @@ function addMonth(periodoYYYYMM) {
   d.setMonth(d.getMonth() + 1);
   return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}`;
 }
-function somaPorPeriodo(datasetValues, campoPeriodo = 'codPeriodo', campoValor = 'valor') {
+
+function somaPorPeriodo(datasetValues, campoPeriodo = 'codPeriodo', campoValor = 'valor', ignoreCodesSet, campoVerba = 'codVerba') {
   const mapa = {};
-  (datasetValues || []).forEach(row => {
+  (datasetValues || []).forEach(function (row) {
+    // quando houver um set de códigos a ignorar (ex.: DP), pula essas verbas
+    if (ignoreCodesSet && ignoreCodesSet.size) {
+      const codV = String(
+        row[campoVerba] != null
+          ? row[campoVerba]
+          : (row.verba != null ? row.verba : '')
+      ).trim();
+      if (ignoreCodesSet.has(codV)) return; // ignora DP
+    }
+
     const per = String(row[campoPeriodo] || '').trim();
     if (!per) return;
+
     const v = parseMoney(row[campoValor]);
     mapa[per] = (mapa[per] || 0) + v;
   });
   return mapa;
 }
-function gerarParcelasSemUltrapassarTeto(valorNovoDesconto, teto10PorCento, periodoInicial, mapaComprometido) {
+
+function gerarParcelasSemUltrapassarTeto(valorNovoDesconto, teto15PorCento, periodoInicial, mapaComprometido) {
   let restante = Math.max(0, parseMoney(valorNovoDesconto));
-  const teto = Math.max(0, parseMoney(teto10PorCento));
+  const teto = Math.max(0, parseMoney(teto15PorCento));
   const parcelas = [];
   if (restante === 0 || teto === 0) {
     return { totalPeriodoAtual: Number((mapaComprometido[periodoInicial] || 0).toFixed(2)), parcelas, mapaComprometido };
@@ -91,6 +104,25 @@ function getAssinaturaBase64() {
   alert("A assinatura está vazia!"); return null;
 }
 
+// --- utils de tipo ---
+function _normTipo(v) {
+  return String(v || "").trim().toUpperCase();
+}
+function _aplicaRegra15(tipo) {
+  const t = _normTipo(tipo);
+  return t === "ALMOXARIFADO" || t === "FROTAS" || t === "FROTA" || t === "TI";
+}
+
+// --- utils de tipo ---
+function _normTipo(v) {
+  return String(v || "").trim().toUpperCase();
+}
+function _aplicaRegra15(tipo) {
+  const t = _normTipo(tipo);
+  return t === "ALMOXARIFADO" || t === "FROTAS" || t === "FROTA" || t === "TI";
+}
+
+// ====== assinatura ======
 function openModalAssinatura() {
   const descricao = $('#descricao').val().trim();
   const valor = parseMoney($('#valorEpi').val());
@@ -139,7 +171,7 @@ function openModalAssinatura() {
     <div class="row">
         <div class="form-group col-md-6">
             <label for="tipoNovoDesconto">Tipo Desconto</label>
-            <input type="text" name="tipoNovoDesconto" id="tipoNovoDesconto" value="${(rdTipoDesconto || "").toUpperCase()}" readonly class="form-control">
+            <input type="text" name="tipoNovoDesconto" id="tipoNovoDesconto" value="${(_normTipo(rdTipoDesconto) || "")}" readonly class="form-control">
         </div>
         <div class="form-group col-md-6">
             <label for="verbaNovoDesconto">Verba Desconto</label>
@@ -148,31 +180,35 @@ function openModalAssinatura() {
     </div>
     `);
 
-  const dezPorCentroSalario = document.getElementById("dezPorCentroSalario")?.innerText || "";
-  const periodoAtual = '202506';
+  const quinzePorCentroSalario = document.getElementById("quinzePorCentroSalario")?.innerText || "";
+  const periodoAtual = '202506'; // mantenha sua lógica atual para definir o período
 
   const constraintsIncidencias = [];
   constraintsIncidencias.push(DatasetFactory.createConstraint("filial", codFilial, codFilial, ConstraintType.MUST));
   constraintsIncidencias.push(DatasetFactory.createConstraint("matricula", matriculaFunc, matriculaFunc, ConstraintType.MUST));
   const datasetIncidencias = DatasetFactory.getDataset("ds_consultaIncidenciasFuncionario", null, constraintsIncidencias, null);
 
-  console.log('datasetIncidencias:', datasetIncidencias);
+  // aplica regra: DP => ignora 15% e manda 1 parcela; Almox/Frotas/TI => respeita 15%
+  const aplica15 = _aplicaRegra15(rdTipoDesconto);
 
-  const mapaComprometido = somaPorPeriodo(datasetIncidencias?.values, 'codPeriodo', 'valor');
+  const mapaComprometido = aplica15
+  ? somaPorPeriodo(datasetIncidencias && datasetIncidencias.values, 'codPeriodo', 'valor', DP_CODES, 'codVerba')
+  : somaPorPeriodo(datasetIncidencias && datasetIncidencias.values, 'codPeriodo', 'valor');
 
-  console.log('mapaComprometido:', mapaComprometido);
-
-  const { totalPeriodoAtual, parcelas } = gerarParcelasSemUltrapassarTeto(
-    valor,
-    parseMoney(dezPorCentroSalario),
-    periodoAtual,
-    mapaComprometido
-  );
-
-  console.log('Valor novo desconto:', valor);
-  console.log('Teto 10% (parseado):', parseMoney(dezPorCentroSalario));
-  console.log(`Total do período atual (${periodoAtual}): R$ ${totalPeriodoAtual.toFixed(2)}`);
-  console.table(parcelas);
+  let totalPeriodoAtual, parcelas;
+  if (aplica15) {
+    const r = gerarParcelasSemUltrapassarTeto(
+      valor,
+      parseMoney(quinzePorCentroSalario),
+      periodoAtual,
+      mapaComprometido
+    );
+    totalPeriodoAtual = r.totalPeriodoAtual;
+    parcelas = r.parcelas;
+  } else {
+    parcelas = [{ periodo: periodoAtual, valor: Number(parseMoney(valor).toFixed(2)) }];
+    totalPeriodoAtual = Number(((mapaComprometido[periodoAtual] || 0) + parseMoney(valor)).toFixed(2));
+  }
 
   const tabelaParcelasHtml = (() => {
     let total = 0;
@@ -218,20 +254,15 @@ function openModalAssinatura() {
 
   $('#revisaoParcelas').html(tabelaParcelasHtml);
 
-  // MOSTRA O MODAL ANTES de inicializar os pads
   $('#modalAssinatura').show();
 
-  // após o modal estar visível, inicializa e faz o resize dos canvases
   setTimeout(() => {
-    // funcionário (sempre visível)
     if (!pads['signature-pad-func']) initPad('signature-pad-func');
     resizePadNow('signature-pad-func');
-
-    // alternância recusa -> testemunhas (inicializa e resiza se necessário)
     onToggleRecusa();
   }, 0);
-
 }
+
 
 function fecharModalAssinatura() { $('#modalAssinatura').hide(); }
 function clearModalAssinatura() { if (signaturePad) signaturePad.clear(); }

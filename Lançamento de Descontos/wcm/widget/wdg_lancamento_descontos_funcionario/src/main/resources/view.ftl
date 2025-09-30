@@ -43,10 +43,11 @@
         </div>
         <!-- Inputs hidden -->
         <input type="hidden" id="salario">
-        <input type="hidden" id="salario10">
+        <input type="hidden" id="salario15">
         <input type="hidden" id="nomeUsuario">
         <input type="hidden" id="emailUsuario">
         <input type="hidden" id="matriculaUsuario">
+        <input type="hidden" id="futuros_json" value="">
 
         <!-- Header -->
         <div class="card">
@@ -101,7 +102,7 @@
                         <input type="hidden" name="nomeColaborador" id="nomeColaborador" value="">
                         <div class="row">
                             <div class="col-md-8">
-                                <h4>Produtos</h4>
+                                <h4>Lançamentos Ativos</h4>
                                 <table id="tabelaDescontos" class="table table-responsive table-bordered"></table>
                             </div>
                             <div class="col-md-4">
@@ -117,15 +118,56 @@
                                             <td id="valorParcelaMensalResumo"></td>
                                         </tr>
                                         <tr>
-                                            <th>10% do Salário</th>
-                                            <td id="dezPorCentroSalario"></td>
-                                            <input type="hidden" name="valDezPorCentroSalario"
-                                                id="valDezPorCentroSalario" value="0">
+                                            <th>15% do Salário</th>
+                                            <td id="quinzePorCentroSalario"></td>
+                                            <input type="hidden" name="valQuinzePorCentroSalario"
+                                                id="valQuinzePorCentroSalario" value="0">
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
                         </div>
+                        <hr style="margin: 24px 0;">
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h4>Lançamentos Futuros</h4>
+
+                                <!-- totalizador simples (opcional) -->
+                                <div class="mb-2">
+                                    <strong>Total de Futuros:</strong>
+                                    <span id="totalFuturosValor">R$ 0,00</span>
+                                </div>
+
+                                <table id="tabelaFuturos" class="table table-responsive table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:120px;">Período</th>
+                                            <th style="width:100px;">Verba</th>
+                                            <th style="width:160px;">Documento</th>
+                                            <th style="width:140px;">Valor (R$)</th>
+                                            <th style="width:110px;">Parcelas</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- preenchido via JS -->
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th colspan="3" class="text-right">Total</th>
+                                            <th id="tabelaFuturos_total">R$ 0,00</th>
+                                            <th></th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+
+                                <!-- mensagem "sem registros" (aparece quando a lista vier vazia) -->
+                                <div id="futurosVazio" class="text-muted" style="display:none;">
+                                    Nenhum lançamento futuro para exibir.
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -156,8 +198,8 @@
                                         <div id="salarioModal"></div>
                                     </div>
                                     <div class="col-md-3">
-                                        <div class="destaqueText"><strong>10% do Salário:</strong></div>
-                                        <div id="10salarioModal"></div>
+                                        <div class="destaqueText"><strong>15% do Salário:</strong></div>
+                                        <div id="15salarioModal"></div>
                                     </div>
                                 </div>
                             </div>
@@ -369,7 +411,8 @@
                                 <div id="blocoTestemunhas" style="display:none;">
 
                                     <p class="text-muted">Em caso de recusa do funcionário, colete assinaturas de
-                                        <strong>duas testemunhas</strong> e evidências.</p>
+                                        <strong>duas testemunhas</strong> e evidências.
+                                    </p>
 
                                     <!-- Testemunha 1 -->
                                     <div class="panel panel-default">

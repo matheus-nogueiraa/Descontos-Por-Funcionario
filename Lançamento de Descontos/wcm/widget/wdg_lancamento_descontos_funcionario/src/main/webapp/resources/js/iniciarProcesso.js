@@ -195,19 +195,23 @@ async function montarConstraints({ fotoData, assinaturaData, pdfBase64, parcelas
   const valorEpi = parseMoney(document.getElementById("valorEpi").value || "0");
   const codVerba = $('#verbaNovoDesconto').val() || "";
   const tipoDesconto = ($('input[name="rdTipoDesconto"]:checked')?.val())?.toUpperCase() || ($('#revisaoTipoDesconto').text())?.toUpperCase() || "";
+  const dataAtual = new Date();
+  const anoAtual = String(dataAtual.getFullYear());
+  const mesAtual = String(dataAtual.getMonth() + 1).padStart(2, '0');
+  const periodoAtual = $('#periodoAtual').text() || `${anoAtual?.trim()}${mesAtual?.trim()}`
 
-  const dezSalarioTxt =
+  const quinzeSalarioTxt =
     (document.getElementById("salario")?.value) ||
     (document.getElementById("salarioModal")?.innerText) ||
     "";
 
   const valSalarioTxt =
-    (document.getElementById("valDezPorCentroSalario")?.value) ||
-    (document.getElementById("dezPorCentroSalario")?.innerText) ||
+    (document.getElementById("valQuinzePorCentroSalario")?.value) ||
+    (document.getElementById("quinzePorCentroSalario")?.innerText) ||
     "";
 
   const valSalario = parseMoney(valSalarioTxt);
-  const dezPorcentoSalario = parseMoney(dezSalarioTxt);
+  const quinzePorcentoSalario = parseMoney(quinzeSalarioTxt);
 
   const totalParcelas = Array.isArray(parcelas) ? parcelas.length : 0;
 
@@ -223,10 +227,11 @@ async function montarConstraints({ fotoData, assinaturaData, pdfBase64, parcelas
   constraints.push(DatasetFactory.createConstraint("formField", "descricao", descricao, ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("formField", "valorEpi", formatMoney2(valorEpi), ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("formField", "valSalario", formatMoney2(valSalario), ConstraintType.MUST));
-  constraints.push(DatasetFactory.createConstraint("formField", "salarioporcento", formatMoney2(dezPorcentoSalario), ConstraintType.MUST));
+  constraints.push(DatasetFactory.createConstraint("formField", "salarioporcento", formatMoney2(quinzePorcentoSalario), ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("formField", "totalParcelas", String(totalParcelas), ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("formField", "tipoDesconto", String(tipoDesconto), ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("formField", "codVerba", String(codVerba), ConstraintType.MUST));
+  constraints.push(DatasetFactory.createConstraint("formField", "periodoAtual", String(periodoAtual), ConstraintType.MUST));
 
   constraints.push(DatasetFactory.createConstraint("formField", "parcelas_json", JSON.stringify(parcelas || []), ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("formField", "confirmacao_tipo", confirmacao?.tipoConfirmacao || "", ConstraintType.MUST));
@@ -271,7 +276,7 @@ async function montarConstraints({ fotoData, assinaturaData, pdfBase64, parcelas
   constraints.push(DatasetFactory.createConstraint("formField", "evidencias_json", truncateJsonString(evidManifest, 3800), ConstraintType.MUST));
 
   constraints.push(DatasetFactory.createConstraint("comments", "Lançamento de descontos iniciado pela Widget", "Lançamento de descontos iniciado pela Widget", ConstraintType.MUST));
-  constraints.push(DatasetFactory.createConstraint("choosedState", 10, 10, ConstraintType.MUST));
+  constraints.push(DatasetFactory.createConstraint("choosedState", 9, 9, ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("processId", PROCESS_ID, PROCESS_ID, ConstraintType.MUST));
 
   return constraints;
@@ -440,9 +445,9 @@ async function gerarRelatorioPDFBase64() {
   const descricaoDesc = (document.getElementById("descricao")?.value || "").trim();
   const valorEpi = pm((document.getElementById("valorEpi")?.value || "0").trim());
 
-  const dezTxt = (document.getElementById("valDezPorCentroSalario")?.value
-    || document.getElementById("dezPorCentroSalario")?.innerText || "0");
-  const dezPorCentoSalario = pm(dezTxt);
+  const quinzeTxt = (document.getElementById("valQuinzePorCentroSalario")?.value
+    || document.getElementById("quinzePorCentroSalario")?.innerText || "0");
+  const quinzePorCentoSalario = pm(quinzeTxt);
 
   const parcelas = (typeof lerParcelasDoDOM === "function") ? lerParcelasDoDOM('#revisaoParcelas') : [];
   const totalParcelas = parcelas.length;
@@ -468,7 +473,7 @@ async function gerarRelatorioPDFBase64() {
   y += 3;
 
   addH2("Resumo do novo desconto");
-  addP(`10% do Salário (teto por período): R$ ${dezPorCentoSalario.toFixed(2)}`);
+  addP(`15% do Salário (teto por período): R$ ${quinzePorCentoSalario.toFixed(2)}`);
   addP(`Total de Parcelas: ${totalParcelas}`);
   addP(`Soma das Parcelas: R$ ${somaParcelas.toFixed(2)}`);
   addP(`Tipo Desconto: ${tipoDesconto}`);
