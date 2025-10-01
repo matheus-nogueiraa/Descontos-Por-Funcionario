@@ -290,12 +290,14 @@ td:last-child {
     margin-left: 0 !important;
     text-align: center;
   }
+
   .css_header_img img {
     width: 80vw !important;
     height: auto !important;
     max-width: 250px !important;
     margin-bottom: 10px;
   }
+
   .css_header_text {
     margin-left: 0 !important;
     margin-top: 10px !important;
@@ -303,5 +305,38 @@ td:last-child {
     text-align: center !important;
     display: block !important;
     width: 100%;
+  }
+}
+
+/* Responsividade leve, sem alterar ids/campos já existentes */
+@media (max-width: 991.98px) {
+
+  /* tablets e down */
+  #painelFuncionario h4 {
+    margin-top: 12px;
+  }
+
+  /* garante rolagem horizontal suave nas tabelas */
+  .table-responsive {
+    overflow-x: auto;
+  }
+
+  /* células numéricas alinhadas à direita continuam legíveis */
+  #tabelaDescontos td.text-right,
+  #tabelaFuturos td.text-right {
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 575.98px) {
+
+  /* celulares */
+  /* reduz um pouco a densidade para caber melhor */
+  #tabelaDescontos td,
+  #tabelaDescontos th,
+  #tabelaFuturos td,
+  #tabelaFuturos th {
+    padding: 6px 8px;
+    font-size: 13px;
   }
 }

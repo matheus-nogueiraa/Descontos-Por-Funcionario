@@ -3,6 +3,11 @@
 
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="//cdn.datatables.net/responsive/2.2.9/css/responsive.dataTables.min.css">
+    <script src="//cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
+
     <link rel="stylesheet" href="/style-guide/css/fluig-style-guide.min.css">
     <link rel="stylesheet" href="../webapp/resources/css/wdg_lancamento_descontos_funcionario.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
@@ -103,7 +108,9 @@
                         <div class="row">
                             <div class="col-md-8">
                                 <h4>Lançamentos Ativos</h4>
-                                <table id="tabelaDescontos" class="table table-responsive table-bordered"></table>
+                                <div class="table-responsive">
+                                    <table id="tabelaDescontos" class="table table-bordered"></table>
+                                </div>
                             </div>
                             <div class="col-md-4">
                                 <h4>Resumo Geral</h4>
@@ -127,47 +134,35 @@
                                 </table>
                             </div>
                         </div>
+
                         <hr style="margin: 24px 0;">
 
+                        <!-- Lançamentos Futuros -->
                         <div class="row">
                             <div class="col-md-12">
-                                <h4>Lançamentos Futuros</h4>
+                                <h4 class="mb-3">Lançamentos Futuros</h4>
 
-                                <!-- totalizador simples (opcional) -->
                                 <div class="mb-2">
                                     <strong>Total de Futuros:</strong>
                                     <span id="totalFuturosValor">R$ 0,00</span>
                                 </div>
 
-                                <table id="tabelaFuturos" class="table table-responsive table-bordered">
-                                    <thead>
-                                        <tr>
-                                            <th style="width:120px;">Período</th>
-                                            <th style="width:100px;">Verba</th>
-                                            <th style="width:160px;">Documento</th>
-                                            <th style="width:140px;">Valor (R$)</th>
-                                            <th style="width:110px;">Parcelas</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <!-- preenchido via JS -->
-                                    </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <th colspan="3" class="text-right">Total</th>
-                                            <th id="tabelaFuturos_total">R$ 0,00</th>
-                                            <th></th>
-                                        </tr>
-                                    </tfoot>
-                                </table>
+                                <div class="table-responsive">
+                                    <table id="tabelaFuturos" class="table table-bordered"></table>
+                                </div>
 
-                                <!-- mensagem "sem registros" (aparece quando a lista vier vazia) -->
-                                <div id="futurosVazio" class="text-muted" style="display:none;">
-                                    Nenhum lançamento futuro para exibir.
+                                <div class="row" style="margin-top: 8px;">
+                                    <div class="col-sm-12 col-md-6">
+                                        <small class="text-muted" id="futurosVazio" style="display:none;">
+                                            Nenhum lançamento futuro para exibir.
+                                        </small>
+                                    </div>
+                                    <div class="col-sm-12 col-md-6 text-md-right text-left" style="margin-top: 6px;">
+                                        <strong>Total:</strong> <span id="tabelaFuturos_total">R$ 0,00</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>

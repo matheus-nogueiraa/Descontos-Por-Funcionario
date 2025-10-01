@@ -110,14 +110,25 @@ async function iniciarProcesso() {
       evidenciasBase64
     });
 
-    const statusIntegracao = await iniciarProcessoFluig(constraints);
-    tratarResultado(statusIntegracao);
+    DatasetFactory.getDataset('ds_start_process', null, constraints, null, { // Consulta Dataset de Maneira Assíncrona
+      success: function (dataset) {
+
+        tratarResultado(dataset?.values[0]);
+        $("#loadingOverlay").hide();
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+        $("#loadingOverlay").hide();
+        console.error('Erro ao tentar registrar solicitação. Erro:')
+        console.log(jqXHR, textStatus, errorThrown);
+        alert("Ocorreu um erro inesperado. Por favor, tente novamente.");
+        return;
+      }
+    });
 
   } catch (error) {
+    $("#loadingOverlay").hide();
     console.error(`Erro ao tentar registrar solicitação. Erro: ${error?.message || error}`);
     alert("Ocorreu um erro inesperado. Por favor, tente novamente.");
-  } finally {
-    $("#loadingOverlay").hide();
   }
 }
 
@@ -283,7 +294,7 @@ async function montarConstraints({ fotoData, assinaturaData, pdfBase64, parcelas
 }
 
 async function iniciarProcessoFluig(constraints) {
-  const dataset = DatasetFactory.getDataset("ds_start_process", null, constraints, null);
+  const dataset = await DatasetFactory.getDataset("ds_start_process", null, constraints, null);
   return dataset?.values[0];
 }
 

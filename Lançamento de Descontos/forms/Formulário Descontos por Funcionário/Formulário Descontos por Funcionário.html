@@ -355,6 +355,7 @@
 						total += Number(p.valor || 0);
 					});
 				}
+				document.getElementById('parcelas_total').value = total;
 				const totEl = document.getElementById('parcelas_total');
 				if (totEl) totEl.value = total.toFixed(2).replace('.', ',');
 			} catch (e) { /* silencioso */ }

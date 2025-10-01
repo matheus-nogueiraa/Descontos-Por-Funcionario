@@ -66,7 +66,7 @@ const DP_CODES = new Set(
 );
 
 var MyWidget = SuperWidget.extend({
-    tablesIds: ['tabelaDescontos'],
+    tablesIds: ['tabelaDescontos', 'tabelaFuturos'],
 
     init: function () {
         this.setupInputs();
@@ -119,7 +119,8 @@ var MyWidget = SuperWidget.extend({
             $('#nomeColaborador').val(funcionario)
 
             this.preencherDadosFuncionario(dataset, periodoAtual);
-            this.processDataTable(filial, matricula, parseFloat(dataset?.values[0]?.RA_SALARIO) || 0, periodoAtual);
+            this.processDataTableActive(filial, matricula, parseFloat(dataset?.values[0]?.RA_SALARIO) || 0, periodoAtual);
+            this.processDataTableFuture(filial, matricula, periodoAtual);
             $('#btn-limpar').show();
             $('#painelFuncionario').show();
         } else {
@@ -155,17 +156,18 @@ var MyWidget = SuperWidget.extend({
         $('#nomeColaborador').val('');
     },
 
-    processDataTable: function (filial, matricula, salario, periodoAtual) {
+    processDataTableActive: function (filial, matricula, salario, periodoAtual) {
         const constraintsIncidencias = [];
 
         constraintsIncidencias.push(DatasetFactory.createConstraint("filial", filial, filial, ConstraintType.MUST));
         constraintsIncidencias.push(DatasetFactory.createConstraint("matricula", matricula, matricula, ConstraintType.MUST));
+        constraintsIncidencias.push(DatasetFactory.createConstraint("periodoAtual", periodoAtual, periodoAtual, ConstraintType.MUST));
 
         const datasetIncidencias = DatasetFactory.getDataset("ds_consultaIncidenciasFuncionario", null, constraintsIncidencias, null);
 
         const produtosComParcelas = [];
         let valorTotal = 0;
-        //let valorPeriodo = 0;
+        let valorPeriodo = 0;
 
         datasetIncidencias?.values?.forEach(element => {
             produtosComParcelas.push({
@@ -184,27 +186,12 @@ var MyWidget = SuperWidget.extend({
             });
 
             valorTotal += parseFloat(element.valor)
-            /*
-            if (element?.codPeriodo?.trim() == periodoAtual) {
+            const isDP = DP_CODES.has(String(element.codVerba));
+
+            if (element?.codPeriodo?.trim() == periodoAtual && !isDP) {
                 valorPeriodo += parseFloat(element.valor)
             }
-            */
         });
-
-        const valorPeriodo = produtosComParcelas.reduce((acc, el) => {
-            if (el && Array.isArray(el.parcelas)) {
-                el.parcelas.forEach(element => {
-                    // IGNORA verbas de DP na soma do consumo
-                    const isDP = DP_CODES.has(String(el.element.codVerba));
-                    if (element.codPeriodo == periodoAtual && !isDP) {
-                        acc += element.valor;
-                    }
-                });
-            }
-            return acc;
-        }, 0);
-
-
 
         const columns = [
             { title: 'Filial', data: 'codFilial' },
@@ -240,4 +227,85 @@ var MyWidget = SuperWidget.extend({
         $('#valorParcelaMensalResumo').text(valorPeriodo.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
         $('#quinzePorCentroSalario').text(quinzePorCentroSalario.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
     },
+
+    processDataTableFuture: function (filial, matricula, periodoAtual) {
+        var constraintsLancFuturo = [];
+
+        constraintsLancFuturo.push(DatasetFactory.createConstraint("filial", filial, filial, ConstraintType.MUST));
+        constraintsLancFuturo.push(DatasetFactory.createConstraint("matricula", matricula, matricula, ConstraintType.MUST));
+        constraintsLancFuturo.push(DatasetFactory.createConstraint("periodoAtual", periodoAtual, periodoAtual, ConstraintType.MUST));
+
+        var datasetLancFuturos = DatasetFactory.getDataset("ds_consultaLancFuturosFuncionario", null, constraintsLancFuturo, null);
+
+        var rows = (datasetLancFuturos && datasetLancFuturos.values) ? datasetLancFuturos.values : [];
+        var dados = [];
+        var total = 0;
+
+        // helper p/ formatar MMYYYY -> MM/YYYY
+        function fmtMesDissidio(m) {
+            m = (m || '') + '';
+            if (m.length === 6 && /^\d+$/.test(m)) {
+                return m.substr(0, 2) + '/' + m.substr(2, 4);
+            }
+            // se já vier YYYYMM, tenta inverter
+            if (m.length === 6 && m.substr(0, 4).match(/^\d{4}$/)) {
+                return m.substr(4, 2) + '/' + m.substr(0, 4);
+            }
+            return m;
+        }
+
+        // monta linhas normalizadas para a tabela
+        for (var i = 0; i < rows.length; i++) {
+            var el = rows[i] || {};
+
+            var verbaStr = ((el.codVerba || '') + '').trim();
+            var descStr = ((el.descVerba || '') + '').trim();
+            var verbaFmt = verbaStr ? (verbaStr + (descStr ? (' - ' + descStr) : '')) : descStr;
+
+            var bruto = parseFloat(el.valor || el.RK_VALORTO || 0) || 0;
+            total += bruto;
+
+            dados.push({
+                codFilial: (el.codFilial || '') + '',
+                codProcesso: (el.codProcesso || '') + '',
+                verba: verbaFmt,
+                mesDissidio: fmtMesDissidio(el.mesDissidio || el.RK_MESDISS),
+                valorNum: bruto,
+                valor: bruto.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+            });
+        }
+
+        // atualiza totalizadores e campos auxiliares
+        $('#tabelaFuturos_total').text('R$ ' + total.toFixed(2).replace('.', ','));
+        $('#totalFuturosValor').text('R$ ' + total.toFixed(2).replace('.', ','));
+        $('#futuros_json').val(JSON.stringify(rows || []));
+        $('#futurosVazio').toggle(dados.length === 0);
+
+        // (re)inicializa DataTable no mesmo padrão visual dos ativos
+        if ($.fn.DataTable && $.fn.DataTable.isDataTable('#tabelaFuturos')) {
+            $('#tabelaFuturos').DataTable().clear().destroy();
+            $('#tabelaFuturos').empty(); // remove thead/tbody antigos
+        }
+
+        var columns = [
+            { title: 'Filial', data: 'codFilial' },
+            { title: 'Processo', data: 'codProcesso' },
+            { title: 'Verba', data: 'verba' },
+            { title: 'Mês Dissídio', data: 'mesDissidio' },
+            { title: 'Valor', data: 'valor', className: 'text-right' }
+        ];
+
+        $('#tabelaFuturos').DataTable({
+            destroy: true,
+            paging: false,
+            searching: false,
+            ordering: false,
+            info: false,
+            autoWidth: false,
+            columns: columns,
+            data: dados,
+            language: { url: '//cdn.datatables.net/plug-ins/1.11.3/i18n/pt_br.json' }
+        });
+    },
+
 });

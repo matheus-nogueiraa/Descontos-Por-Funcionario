@@ -186,6 +186,7 @@ function openModalAssinatura() {
   const constraintsIncidencias = [];
   constraintsIncidencias.push(DatasetFactory.createConstraint("filial", codFilial, codFilial, ConstraintType.MUST));
   constraintsIncidencias.push(DatasetFactory.createConstraint("matricula", matriculaFunc, matriculaFunc, ConstraintType.MUST));
+  constraintsIncidencias.push(DatasetFactory.createConstraint("periodoAtual", periodoAtual, periodoAtual, ConstraintType.MUST));
   const datasetIncidencias = DatasetFactory.getDataset("ds_consultaIncidenciasFuncionario", null, constraintsIncidencias, null);
 
   // aplica regra: DP => ignora 15% e manda 1 parcela; Almox/Frotas/TI => respeita 15%
