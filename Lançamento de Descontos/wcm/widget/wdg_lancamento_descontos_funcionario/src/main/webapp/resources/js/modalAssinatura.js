@@ -127,9 +127,11 @@ function openModalAssinatura() {
   const descricao = $('#descricao').val().trim();
   const valor = parseMoney($('#valorEpi').val());
   const rdTipoDesconto = $('input[name="rdTipoDesconto"]:checked').val();
+  const centroCustoDesconto = $('#centroCustoDesconto').val();
   const verbaNovoDesconto = $('#verbaNovoDesconto').val();
 
   if (!rdTipoDesconto) { toastMsg('Atenção', 'Preencha o campo Tipo de Desconto antes de prosseguir para a assinatura.', 'warning'); return; }
+  if (!centroCustoDesconto) { toastMsg('Atenção', 'Preencha o campo Centro de Custo antes de prosseguir para a assinatura.', 'warning'); return; }
   if (!verbaNovoDesconto) { toastMsg('Atenção', 'Preencha o campo Verba antes de prosseguir para a assinatura.', 'warning'); return; }
   if (!descricao) { toastMsg('Atenção', 'Preencha o campo descrição antes de prosseguir para a assinatura.', 'warning'); return; }
   if (!valor || valor <= 0) { toastMsg('Atenção', 'Preencha o campo Valor total do desconto com um valor maior que zero.', 'warning'); return; }
@@ -181,7 +183,7 @@ function openModalAssinatura() {
     `);
 
   const quinzePorCentroSalario = document.getElementById("quinzePorCentroSalario")?.innerText || "";
-  const periodoAtual = '202506'; // mantenha sua lógica atual para definir o período
+  const periodoAtual = $('#periodoAtual').text()?.trim();
 
   const constraintsIncidencias = [];
   constraintsIncidencias.push(DatasetFactory.createConstraint("filial", codFilial, codFilial, ConstraintType.MUST));

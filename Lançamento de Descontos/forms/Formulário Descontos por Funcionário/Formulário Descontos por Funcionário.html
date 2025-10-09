@@ -4,6 +4,7 @@
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fluig-style-guide/css/fluig-style-guide.min.css">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
 	<link rel="stylesheet" href="./style.css">
+	<script src="./script.js"></script>
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
@@ -49,6 +50,12 @@
 			<!-- Opcional: resumo único -->
 			<input type="hidden" name="integ_resumo" id="integ_resumo" value="">
 
+			<input type="hidden" name="timeAtividadeAtual" id="timeAtividadeAtual" readonly>
+			<input type="hidden" name="atividadeAtual" id="atividadeAtual" readonly>
+			<input type="hidden" name="timeInicioProcesso" id="timeInicioProcesso" readonly>
+			<input type="hidden" name="timeFimProcesso" id="timeFimProcesso" readonly>
+
+			<input type="hidden" name="grupoAprovadorCC" id="grupoAprovadorCC" readonly>
 
 			<!-- Dados do Solicitante -->
 			<div class="panel panel-primary">
@@ -104,11 +111,11 @@
 							<input type="text" name="nomeColaborador" class="form-control" readonly>
 						</div>
 						<div class="form-group col-md-3">
-							<label>Salário</label>
+							<label>Salário Bruto</label>
 							<input type="text" name="valSalario" class="form-control" readonly>
 						</div>
 						<div class="form-group col-md-3">
-							<label>15% do Salário</label>
+							<label>15% do Salário Bruto</label>
 							<input type="text" name="salarioporcento" class="form-control" readonly>
 						</div>
 					</div>
@@ -308,6 +315,45 @@
 								rows="3" readonly></textarea>
 							<small class="text-muted">Campo técnico: <code>evidencias_json</code> com base64/links das
 								evidências extras.</small>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="css_nav_margin" id="aba_aprovacao_gerente">
+				<br />
+				<div class="panel panel-default">
+					<div class="panel-body">
+						<br>
+						<div class="row">
+							<div class="form-group col-md-6">
+								<h4 class="card-title">Aprovar Desconto?<span
+										class="required text-danger"><strong>
+											*</strong></span></h4>
+								<div class="input-group">
+									<div class="custom-radio custom-radio-inline custom-radio-success">
+										<input type="radio" name="rdAprovaDescGerente"
+											id="rdAprovaDescGerente_descontar" value="descontar">
+										<label for="rdAprovaDescGerente_descontar"><strong>Sim</strong>,
+											aprovar desconto</label>
+									</div>
+									<div class="custom-radio custom-radio-inline custom-radio-danger">
+										<input type="radio" name="rdAprovaDescGerente"
+											id="rdAprovaDescGerente_abonar" value="abonar">
+										<label for="rdAprovaDescGerente_abonar"><strong>Não</strong>,
+											abonar desconto</label>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="form-group col-md-12">
+								<label for="obsAnaliseAprovadorGerente">Observação do Aprovador
+									<span class="required text-danger"><strong>
+											*</strong></span></label>
+								<textarea rows="4" class="form-control" name="obsAnaliseAprovadorGerente"
+									id="obsAnaliseAprovadorGerente" maxlength="300"></textarea>
+							</div>
 						</div>
 					</div>
 				</div>

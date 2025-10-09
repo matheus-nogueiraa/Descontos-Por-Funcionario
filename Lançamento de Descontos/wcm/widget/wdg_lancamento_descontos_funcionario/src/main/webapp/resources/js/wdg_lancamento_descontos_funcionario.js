@@ -108,18 +108,33 @@ var MyWidget = SuperWidget.extend({
         const dataset = DatasetFactory.getDataset("ds_consultaFuncionarioCompleto", null, constraints, null);
 
         if (dataset?.values?.length) {
+            const constraintsPeriodoAtual = new Array();
+            constraintsPeriodoAtual.push(DatasetFactory.createConstraint("filial", filial, filial, ConstraintType.MUST));
+            constraintsPeriodoAtual.push(DatasetFactory.createConstraint("matricula", matricula, matricula, ConstraintType.MUST));
+
+            const datasetPeriodoAtual = DatasetFactory.getDataset('ds_consultaPeriodoAbertoFuncionarioProtheus', null, constraintsPeriodoAtual, null);
+
             const dataAtual = new Date();
             const anoAtual = String(dataAtual.getFullYear());
             const mesAtual = String(dataAtual.getMonth() + 1).padStart(2, '0');
-            const periodoAtual = '202506' // `${anoAtual?.trim()}${mesAtual?.trim()}`
 
-            $('#periodoAtual').text(periodoAtual)
+            const periodoAtual = datasetPeriodoAtual?.values[0]?.RFQ_PERIOD || `${anoAtual?.trim()}${mesAtual?.trim()}`
+
+            consultaProcessosDescontosAtivos(funcionario); // FAZER VALIDAR SE TEM DESCONTO ATIVO NO FLUIG PRA BLOQUEAR
+
+            preencheListaCentroCusto(dataset?.values[0]?.RA_CC?.trim() || '');
+
+            $('#periodoAtual').text(periodoAtual);
             $('#codFilial').val(filial);
             $('#matriculaFunc').val(matricula);
             $('#nomeColaborador').val(funcionario)
 
-            this.preencherDadosFuncionario(dataset, periodoAtual);
-            this.processDataTableActive(filial, matricula, parseFloat(dataset?.values[0]?.RA_SALARIO) || 0, periodoAtual);
+            const possuiPericulosidade = (dataset?.values[0]?.RA_ADCPERI || '').trim();
+            const salarioBase = parseFloat(dataset?.values[0]?.RA_SALARIO) || 0;
+            const salarioBruto = possuiPericulosidade == '2' ? (salarioBase + (salarioBase * 0.30)) : salarioBase
+
+            this.preencherDadosFuncionario(dataset, periodoAtual, salarioBruto);
+            this.processDataTableActive(filial, matricula, salarioBruto, periodoAtual);
             this.processDataTableFuture(filial, matricula, periodoAtual);
             $('#btn-limpar').show();
             $('#painelFuncionario').show();
@@ -129,15 +144,15 @@ var MyWidget = SuperWidget.extend({
         }
     },
 
-    preencherDadosFuncionario: function (dataset, periodoAtual) {
+    preencherDadosFuncionario: function (dataset, periodoAtual, salarioBruto) {
         $('#dadosFuncionario').html(`
             <h4>Funcionário: ${dataset?.values[0]?.RA_NOME}</h4>
             <h4>CPF: ${dataset?.values[0]?.RA_CIC}</h4>
-            <h4>Salário: ${parseFloat(dataset?.values[0]?.RA_SALARIO).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</h4>
+            <h4>Salário Bruto: ${salarioBruto.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</h4>
             <h4>Período Atual: ${periodoAtual}</h4>
         `);
-        $('#salario').val(parseFloat(dataset?.values[0]?.RA_SALARIO).toFixed(2)); // Salário total
-        $('#salario15').val((parseFloat(dataset?.values[0]?.RA_SALARIO) * 0.15).toFixed(2)); // 15% do salário
+        $('#salario').val(salarioBruto.toFixed(2)); // Salário total
+        $('#salario15').val((salarioBruto * 0.15).toFixed(2)); // 15% do salário
     },
 
     limparTela: function () {
@@ -309,3 +324,17 @@ var MyWidget = SuperWidget.extend({
     },
 
 });
+
+function preencheListaCentroCusto(centroCustoFuncionario) {
+
+    $(`#centroCustoDesconto`).find('option').remove();
+
+    var dsCentroCusto = DatasetFactory.getDataset("ds_consulta_cadastroAprovador", null, null, null);
+    for (var i = 0; i < dsCentroCusto.values.length; i++) {
+        const centroCusto = dsCentroCusto.values[i].centroCusto;
+
+        if (centroCustoFuncionario && centroCusto.includes(centroCustoFuncionario)) {
+            $(`#verbaNovoDesconto`).append(`<option value="${dsCentroCusto.values[i].grupoAprovador}">${centroCusto} - ${dsCentroCusto.values[i].grupoAprovador}</option>`);
+        }
+    }
+}

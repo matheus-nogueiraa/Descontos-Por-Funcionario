@@ -1,0 +1,821 @@
+<html>
+
+<head>
+	<meta charset="utf-8">
+
+	<link type="text/css" rel="stylesheet" href="/style-guide/css/fluig-style-guide.min.css" />
+	<link type="text/css" rel="stylesheet"
+		href="https://fonts.googleapis.com/css?family=Dosis:400,500|Poppins:400,700&amp;display=swap" />
+	<link type="text/css" rel="stylesheet"
+		href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+	<link type="text/css" rel="stylesheet" href="css/icofont/icofont.min.css">
+	<link type="text/css" rel='stylesheet' href='css/style.css' />
+
+	<script type="text/javascript" src="/portal/resources/js/jquery/jquery.js"></script>
+	<script type="text/javascript" src="/portal/resources/js/jquery/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="/portal/resources/js/mustache/mustache-min.js"></script>
+	<script type="text/javascript" src="/style-guide/js/fluig-style-guide.min.js" charset="utf-8"></script>
+	<script type="text/javascript" src="/webdesk/vcXMLRPC.js"></script>
+	<script type="text/javascript" src="js/custom.js"></script>
+	<script type="text/javascript" src="js/fields_required.js"></script>
+	<script type="text/javascript" src="js/functions.js"></script>
+	<script type="text/javascript" src="js/main.js"></script>
+	<script type="text/javascript" src="js/modals.js"></script>
+	<script type="text/javascript"
+		src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.28/dist/sweetalert2.all.min.js"></script>
+</head>
+
+<body>
+	<div class="fluig-style-guide">
+		<div class="panel panel-default">
+			<div class="panel-body">
+				<div class="row">
+					<div class="form-group col-xs-12 col-sm-12 col-md-12 panel-titulo">
+						<a href="https://www.elcop.eng.br/" target="_blank">
+							<img src="img/elcop_nossa_energia.png" width="263px" height="155px" />
+						</a>
+						<label class="css_titulo_cabecalho">SOLICITAÇÃO DE COMPRA</label>
+						<br>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<form name="form" role="form">
+
+			<!-- inputs type hidden -->
+			<input type="hidden" name="hidden_soli_matricula" id="hidden_soli_matricula">
+			<input type="hidden" name="array_itens" id="array_itens">
+			<input type="hidden" name="grupo_aprovador" id="grupo_aprovador">
+			<input type="hidden" name="soli_celular" id="soli_celular">
+
+			<!-- solicitante -->
+			<div class="panel panel-default">
+				<div class="panel-body css_margin_body">
+					<div class="row">
+						<div class="form-group col-md-2">
+							<label>Nº Fluig</label>
+							<input type="text" class="form-control" name="solicitacao_fluig" id="solicitacao_fluig"
+								readonly>
+						</div>
+						<div class="form-group col-md-2">
+							<label>Data da abertura</label>
+							<input type="text" class="form-control" name="data_abertura" id="data_abertura" readonly>
+						</div>
+						<div class="form-group col-md-2"></div>
+						<div class="form-group col-md-6">
+							<label>Departamento</label>
+							<input type="text" class="form-control" name="depto_solicitante" id="depto_solicitante"
+								readonly>
+						</div>
+						<div class="form-group col-md-6">
+							<label>Solicitante</label>
+							<input type="text" class="form-control" name="responsavel_abertura"
+								id="responsavel_abertura" readonly>
+						</div>
+						<div class="form-group col-md-6">
+							<label>Superior</label>
+							<input type="text" class="form-control" name="superior_solicitante"
+								id="superior_solicitante" readonly>
+						</div>
+						<div class="form-group col-md-6">
+							<label>Email</label>
+							<input type="text" class="form-control" name="email_responsavel" id="email_responsavel"
+								readonly>
+						</div>
+						<div class="form-group col-md-3">
+							<label>Cód ccusto</label>
+							<input type="text" class="form-control" name="ccusto_solicitante" id="ccusto_solicitante"
+								readonly>
+						</div>
+						<div class="form-group col-md-3">
+							<label>Filial</label>
+							<input type="text" class="form-control" name="filial_solicitante" id="filial_solicitante"
+								readonly>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+
+			<!-- início tipo de solicitação -->
+			<div class="panel-group" id="accordion_panel_selecao">
+				<div class="panel panel-default" id="panel_selecao">
+					<div class="panel-heading">
+						<h3 class="panel-title">
+							<a class="collapse-icon up" data-toggle="collapse" data-parent="#accordion_panel_selecao"
+								href="#collapse_panel_selecao">
+								Informações da solicitação
+							</a>
+						</h3>
+					</div>
+					<div id="collapse_panel_selecao" class="panel-collapse collapse in">
+						<div class="panel-body css_margin_body">
+
+							<div class="row">
+								<div class="form-group col-md-3">
+									<label>Tipo de solicitação</label><span class="required text-danger"><strong>
+											*</strong></span>
+									<div class="input-group">
+										<div class="custom-radio custom-radio-success">
+											<input type="radio" name="tipo_solicitacao" id="tipo_solicitacao_compra"
+												value="COMPRA">
+											<label for="tipo_solicitacao_compra">Compra</label>
+										</div>
+										<div class="custom-radio custom-radio-success">
+											<input type="radio" name="tipo_solicitacao" id="tipo_solicitacao_frota"
+												value="FROTA">
+											<label for="tipo_solicitacao_frota">Ordem de serviço</label>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div id="panel_compra">
+								<div class="row">
+									<div class="form-group col-md-6">
+										<label for="zoom_area_responsavel">Responsável pela aprovação da
+											compra</label><span class="required text-danger"><strong> *</strong><br>
+											<input type="zoom" id="zoom_area_responsavel" name="zoom_area_responsavel"
+												data-zoom="{
+												'displayKey':'centroCusto',
+												'datasetId':'ds_consulta_cadastroAprovador',
+												'maximumSelectionLength':'1',
+												'resultLimit':'30',
+												'placeholder':'Pesquise pelo centro de custo',
+												'fields':[
+													{
+														'field':'centroCusto', 
+														'label':'Centro de Custo',
+														'standard':'true'
+													},
+													{
+														'field':'grupoAprovador', 
+														'label':'Grupo Aprovador'
+													}
+												]
+											}" />
+											<input type="hidden" name="codigo_grupo" id="codigo_grupo">
+									</div>
+									<div class="form-group col-md-6">
+										<label>Prioridade da Solicitação</label><span
+											class="required text-danger"><strong> *</strong></span>
+										<select class="form-control" name="prioridade_solicitacao"
+											id="prioridade_solicitacao">
+											<option value="">Selecione uma opção</option>
+											<option value="1">Reposição</option>
+											<option value="2">Mobilização</option>
+											<option value="3">Emergência</option>
+										</select>
+									</div>
+									<br>
+									<div class="row">
+										<div class="form-group col-md-12">
+											<div class="form-field table-responsive" data-type="tabledetail"
+												data-show-properties="" data-field-name="tabledetail"
+												style="margin-bottom: 0px !important;">
+												<table class="table" cellspacing="0" tablename="tabela_itens_compras"
+													id="tabela_itens_compras" customFnDelete="DeleteItemCompras(this)"
+													noaddbutton="true" nodeletebutton="true">
+													<thead>
+														<tr class="tableHeadRow"
+															style="padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px; ">
+															<div class="panel panel-default alertaCompraTableNull">
+																<div class="panel-body">
+																	<br>
+																	<div class="row">
+																		<div class="alert alert-warning alert-dismissible"
+																			role="alert">
+																			<button type="button" class="close"
+																				data-dismiss="alert"><span
+																					aria-hidden="true">×</span><span
+																					class="sr-only">Close</span></button>
+																			<strong>Atenção!</strong> Nenhum item foi
+																			adicionado
+																		</div>
+																	</div>
+																</div>
+															</div>
+														</tr>
+													</thead>
+
+													<tbody>
+														<tr id="lineProducts">
+															<td
+																style="padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;">
+
+																<div class="panel panel-default">
+																	<div class="panel-body">
+
+																		<div class="row">
+																			<div class="form-group col-md-2">
+																				<input type="hidden"
+																					name="hidden_tabela_compras"
+																					id="hidden_tabela_compras">
+																			</div>
+																			<div class="form-group col-md-10"></div>
+																		</div>
+
+																		<div class="row">
+																			<div class="form-group col-md-1"
+																				style="padding-top: 17px">
+																				<input type="text" class="form-control"
+																					name="numero_linha"
+																					id="numero_linha" readonly
+																					style="color: rgb(33 31 123); font-weight: bold !important; ">
+																			</div>
+																			<div class="form-group col-md-1">
+																				<button style="margin-top: 13px;"
+																					class="btn btn-danger"
+																					id="btnDeleteItemCompras"
+																					name="btnDeleteItemCompras"
+																					onclick="DeleteItemCompras(this)"><i
+																						class="bi bi-trash icon-md"></i>
+																				</button>
+																			</div>
+																		</div>
+
+																		<div class="row">
+																			<div class="form-group col-md-2">
+																				<label>Cód. material</label>
+																				<input type="text" class="form-control"
+																					name="codigo_material_compras"
+																					id="codigo_material_compras"
+																					readonly>
+																			</div>
+																			<div class="form-field">
+																				<div class="form-input">
+																					<div class="form-group col-md-7">
+																						<label>Material</label><span
+																							class="required text-danger"><strong>
+																								*</strong><br>
+																							<input type="zoom"
+																								id="descricao_material_compras"
+																								name="descricao_material_compras"
+																								data-zoom="{
+																							'displayKey':'CDESCRICAO',
+																							'datasetId':'dsConsultaProduto',
+																							'maximumSelectionLength':'1',
+																							'resultLimit':'30',
+																							'placeholder':'Selecione o material',
+																							'fields':[
+																								{
+																									'field':'CCODIGO', 
+																									'label':'Código'
+																								},
+																								{
+																									'field':'CTIPO', 
+																									'label':'Tipo Produto'
+																								},
+																								{
+																									'field':'CDESCRICAO', 
+																									'label':'Descrição',
+																									'standard':'true'
+																								},
+																								{
+																									'field':'CUNIDADE', 
+																									'label':'Unidade Medida',
+																									'standard':'true'
+																								}
+																							]
+																						}" />
+																					</div>
+																				</div>
+																				<input type="hidden" name="tipoProduto"
+																					id="tipoProduto" readonly>
+																			</div>
+
+																			<div class="form-group col-md-1">
+																				<label>Unidade</label>
+																				<input type="text" class="form-control"
+																					name="unidade_material_compras"
+																					id="unidade_material_compras"
+																					readonly>
+																			</div>
+
+																			<div class="form-group col-md-2">
+																				<label>Qtd.</label><span
+																					class="required text-danger"><strong>
+																						*</strong>
+																					<input type="number" min="1"
+																						class="form-control"
+																						name="quantidade_material_compras"
+																						id="quantidade_material_compras">
+																			</div>
+																		</div>
+
+																		<div class="row">
+																			<div class="form-group col-md-2">
+																				<label>Cód ccusto</label>
+																				<input type="text" class="form-control"
+																					name="codigo_ccusto_compras"
+																					id="codigo_ccusto_compras" readonly>
+																			</div>
+																			<div class="form-field">
+																				<div class="form-input">
+																					<div class="form-group col-md-7">
+																						<label>Centro de
+																							custo</label><span
+																							class="required text-danger"><strong>
+																								*</strong></span><br>
+																						<input type="zoom"
+																							id="descricao_ccusto_compras"
+																							name="descricao_ccusto_compras"
+																							data-zoom="{
+																							'displayKey':'CCODIGO',
+																							'datasetId':'dsConsultaCentroCustoProtheus',
+																							'maximumSelectionLength':'1',
+																							'resultLimit':'100',
+																							'placeholder':'Pesquise pelo código',
+																							'fields':[
+																								{
+																									'field':'CCODIGO', 
+																									'label':'Código'
+																								},
+																								{
+																									'field':'CDESCRICAO', 
+																									'label':'Descrição',
+																									'standard':'true'
+																								}
+																							]
+																						}" />
+																					</div>
+																				</div>
+																			</div>
+																			<div class="form-group col-md-3">
+																				<label>Data necessidade</label><span
+																					class="required text-danger"><strong>
+																						*</strong></span>
+																				<input type="text" class="form-control"
+																					name="data_necessidade_compras"
+																					id="data_necessidade_compras"
+																					placeholder="____/____/____"
+																					data-toggle="tooltip"
+																					data-placement="top"
+																					title="Bloqueio de 9 dias à partir da data atual">
+																			</div>
+																		</div>
+																		<div class="row">
+																			<div class="form-group col-md-12">
+																				<label>Detalhes do item</label>
+																				<textarea rows="3" class="form-control"
+																					name="info_adicionais_item_compras"
+																					id="info_adicionais_item_compras"
+																					placeholder="Para informações adicionais do item"
+																					maxlength="220"></textarea>
+																			</div>
+																		</div>
+																		<br>
+																		<div class="row buttonHistoricoCompra">
+																			<div class="form-group col-md-3"
+																				style="padding-top: 10px;">
+																				<button
+																					style="border-radius:5px 5px 5px 5px;"
+																					class="btn btn-success"
+																					name="btnModalCompra"
+																					id="btnModalCompra" data-your-modal
+																					data-toggle="tooltip"
+																					data-placement="top"
+																					title="consultar o histórico de compra desse item"><span
+																						class="icofont-search icon-sm"></span>
+																					CONSULTAR HISTÓRICO DE COMPRA
+																				</button>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+
+															</td>
+														</tr>
+													</tbody>
+												</table>
+											</div>
+
+										</div>
+									</div>
+
+
+									<div class="row">
+										<div class="form-group col-md-3">
+											<label>Total de itens</label>
+											<input type="text" class="form-control" name="qtd_itens_compras"
+												id="qtd_itens_compras" readonly>
+										</div>
+										<div class="form-group col-md-4" id="id_btnAddItem_compra"
+											style="padding-top: 24px;">
+											<button style="border-radius:5px 5px 5px 5px;" class="btn btn-success"
+												name="btnAddItem_compra" id="btnAddItem_compra"
+												onclick="addItemCompras();">
+												<span class="icofont-plus-circle icon-sm"></span> ITEM
+											</button>
+											<button style="border-radius:5px 5px 5px 5px;" class="btn btn-warning"
+												name="btnAnexarCotacao" id="btnAnexarCotacao"
+												onclick="top.$('#ecm-navigation-inputFile-clone').click()">
+												<span class="icofont-clip icon-sm"></span> COTAÇÃO
+											</button>
+										</div>
+
+									</div>
+								</div>
+
+
+								<div id="panel_frota">
+									<div class="row">
+										<div class="form-group col-md-12">
+											<div class="form-field table-responsive" data-type="tabledetail"
+												data-show-properties="" data-field-name="tabledetail"
+												style="margin-bottom: 0px !important;">
+												<table class="table" cellspacing="0" tablename="tabela_itens_frota"
+													id="tabela_itens_frota" customFnDelete="DeleteItemFrotas(this)"
+													noaddbutton="true" nodeletebutton="true">
+													<thead>
+														<tr class="tableHeadRow"
+															style="padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px; ">
+															<div class="panel panel-default alertaFrotaTableNull">
+																<div class="panel-body">
+																	<br>
+																	<div class="row">
+																		<div class="alert alert-warning alert-dismissible"
+																			role="alert">
+																			<button type="button" class="close"
+																				data-dismiss="alert"><span
+																					aria-hidden="true">×</span><span
+																					class="sr-only">Close</span></button>
+																			<strong>Atenção!</strong> Nenhuma ordem de
+																			serviço foi adicionada
+																		</div>
+																	</div>
+																</div>
+															</div>
+														</tr>
+													</thead>
+
+													<tbody>
+														<tr>
+															<td
+																style="padding-left: 0px;padding-right: 0px;padding-top: 0px;padding-bottom: 0px;">
+
+																<div class="panel panel-default">
+																	<div class="panel-body">
+
+
+																		<div class="row">
+																			<div class="form-group col-md-1"
+																				style="padding-top: 17px">
+																				<input type="text" class="form-control"
+																					name="numero_linha_frota"
+																					id="numero_linha_frota" readonly
+																					style="color: rgb(33 31 123); font-weight: bold !important; ">
+																			</div>
+																			<div class="form-group col-md-1">
+																				<button style="margin-top: 15px;"
+																					class="btn btn-danger lixeira_sem_cotacao"
+																					id="btnDeleteItemFrotas"
+																					name="btnDeleteItemFrotas"
+																					onclick="DeleteItemFrotas(this)"><i
+																						class="bi bi-trash icon-md"></i>
+																				</button>
+																			</div>
+																		</div>
+
+
+																		<div class="row">
+
+																			<!--
+																		<div class="form-group col-md-1">
+																			<button style="margin-top: 20px;" class="btn btn-default lixeira_sem_cotacao" id="btnDeleteItemFrotas" name="btnDeleteItemFrotas" 
+																				onclick="DeleteItemFrotas(this)"><i style="color: rgb(33 31 123);" class="icofont-ui-delete icofont-2x"></i>
+																			</button>
+																		</div>
+																		-->
+
+																			<div class="form-group col-md-6">
+																				<label>Ordem de serviço</label><span
+																					class="required text-danger"><strong>
+																						*</strong>
+																					<input type="zoom"
+																						id="ordem_servico"
+																						name="ordem_servico" data-zoom="{
+																					'displayKey':'CNUMOS',
+																					'datasetId':'dsConsultaOrdemServico',
+																					'maximumSelectionLength':'1',
+																					'resultLimit':'100',
+																					'placeholder':'Pesquise pela ordem de serviço no protheus',
+																					'fields':[
+																						{
+																							'field':'CNUMOS', 
+																							'label':'Ordem Serviço',
+																							'standard':'true'
+																						},
+																						{
+																							'field':'CPLACA', 
+																							'label':'Placa'
+																						}
+																					]
+																				}" />
+																			</div>
+
+																			<div class="form-group col-md-2">
+																				<label>Placa do veículo</label>
+																				<input type="text" class="form-control"
+																					name="placa_ordem_servico"
+																					id="placa_ordem_servico" readonly>
+																			</div>
+																			<div class="form-group col-md-2">
+																				<label>CCusto OS</label>
+																				<input type="text" class="form-control"
+																					name="ccusto_ordem_servico"
+																					id="ccusto_ordem_servico">
+																			</div>
+																			<div class="form-group col-md-2">
+																				<label>Veículo</label>
+																				<input type="text" class="form-control"
+																					name="veiculo_ordem_servico"
+																					id="veiculo_ordem_servico" readonly>
+																			</div>
+																		</div>
+																		<div class="row">
+																			<div class="form-group col-md-6">
+																				<label>Material</label><span
+																					class="required text-danger"><strong>
+																						*</strong>
+																					<input type="zoom"
+																						id="descricao_material_frota"
+																						name="descricao_material_frota"
+																						data-zoom="{
+																					'displayKey':'CDESCRICAO',
+																					'datasetId':'dsConsultaPecaVeiculos',
+																					'maximumSelectionLength':'1',
+																					'resultLimit':'30',
+																					'placeholder':'Digite ou selecione o material',
+																					'fields':[
+																						{
+																							'field':'CCODIGO', 
+																							'label':'Código'
+																						},
+																						{
+																							'field':'CDESCRICAO', 
+																							'label':'Descrição',
+																							'standard':'true'
+																						}
+																					]
+																				}" />
+																			</div>
+
+																			<div class="form-group col-md-2">
+																				<label>Cód. material</label>
+																				<input type="text" class="form-control"
+																					name="codigo_material_frota"
+																					id="codigo_material_frota" readonly>
+																			</div>
+																			<div class="form-group col-md-2">
+																				<label>Qtd.</label><span
+																					class="required text-danger"><strong>
+																						*</strong>
+																					<input type="number" min="1"
+																						class="form-control"
+																						name="quantidade_material_frota"
+																						id="quantidade_material_frota">
+																			</div>
+																			<div class="form-group col-md-2">
+																				<label>Data necessidade</label><span
+																					class="required text-danger"><strong>
+																						*</strong></span>
+																				<input type="text" class="form-control"
+																					name="data_necessidade_frota"
+																					id="data_necessidade_frota"
+																					placeholder="____/____/____"
+																					data-toggle="tooltip"
+																					data-placement="bottom"
+																					title="Bloqueio de 9 dias à partir da data atual">
+																			</div>
+																		</div>
+																		<div class="row">
+																			<div class="form-group col-md-12">
+																				<label>Detalhes do item</label>
+																				<textarea rows="4" class="form-control"
+																					name="info_adicionais_material_frota"
+																					id="info_adicionais_material_frota"
+																					placeholder="Para informações adicionais do item"></textarea>
+																			</div>
+																		</div>
+																		<br>
+																		<div class="row buttonHistoricoFrota">
+																			<div class="form-group col-md-2">
+																				<button
+																					style="padding-top: 10px;padding-bottom: 10px;border-radius:5px 5px 5px 5px;"
+																					class="btn btn-success"
+																					name="btnModalFrota"
+																					id="btnModalFrota" data-your-modal
+																					data-toggle="tooltip"
+																					data-placement="top"
+																					title="consultar o histórico de compra desse item"><span
+																						class="icofont-search-2 icon-sm"></span>
+																					HISTÓRICO DE COMPRA
+																				</button>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</td>
+														</tr>
+													</tbody>
+												</table>
+											</div>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="form-group col-md-3">
+											<label>Total de ordens</label>
+											<input type="text" class="form-control" name="qtd_itens_frota"
+												id="qtd_itens_frota" readonly>
+										</div>
+										<div class="form-group col-md-2" id="id_btnAddItem_frota"
+											style="padding-top: 24px;">
+											<button style="border-radius:5px 5px 5px 5px;" class="btn btn-success"
+												name="btnAddItem_frota" id="btnAddItem_frota" onclick="AddItemFrotas();"
+												data-toggle="tooltip" data-placement="bottom" title="item"><span
+													class="icofont-plus-circle icon-sm"></span> ORDEM DE SERVIÇO
+											</button>
+										</div>
+									</div>
+								</div>
+
+								<div class="row" id="linha_obs_gerais">
+									<div class="form-group col-md-12">
+										<label>Observações adicionais</label>
+										<textarea rows="4" class="form-control" name="obs_gerais"
+											id="obs_gerais"></textarea>
+									</div>
+								</div>
+
+
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- análise do gestor -->
+				<div class="panel-group" id="panel_gerenteAlmoxarifado">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h3 class="panel-title">
+								<a class="collapse-icon up" data-toggle="collapse"
+									data-parent="#panel_gerenteAlmoxarifado" href="#collapse_gerenteAlmoxarifado">
+									<span class="icofont-check icon-md"></span> Análise do gerente de almoxarifado
+								</a>
+							</h3>
+						</div>
+						<div id="collapse_gerenteAlmoxarifado" class="panel-collapse collapse in">
+							<div class="panel-body css_margin_body">
+								<div class="row">
+									<div class="form-group col-md-3">
+										<label>Responsável</label>
+										<input type="text" class="form-control" name="responsavelGerenteAlmoxarifado"
+											id="responsavelGerenteAlmoxarifado" readonly>
+									</div>
+									<div class="form-group col-md-3">
+										<label>Data da análise</label>
+										<input type="text" class="form-control" name="data_gerenteAlmoxarifado"
+											id="data_gerenteAlmoxarifado" readonly>
+									</div>
+									<div class="form-group col-md-3">
+										<label>Status da análise Gerente Almoxarifado</label><span
+											class="required text-danger"><strong> *</strong></span>
+										<div class="input-group">
+											<span class="input-group-addon"><span id="statusIcon"
+													class="fluigicon fluigicon-question-sign"></span></span>
+											<select class="form-control" name="resultado_gerenteAlmoxarifado"
+												id="resultado_gerenteAlmoxarifado" onchange="statusAnalise(this);">
+												<option value="">Selecione uma opção</option>
+												<option value="Aprovado">Aprovado</option>
+												<option value="Reprovado">Reprovado</option>
+												<option value="Corrigir">Corrigir solicitação</option>
+											</select>
+										</div>
+									</div>
+								</div>
+
+								<div class="row">
+									<div class="form-group col-md-12">
+										<label>Observação do Gerente de Almoxarifado</label>
+										<textarea rows="4" class="form-control" name="gerenteAlmoxarifado_obs"
+											id="gerenteAlmoxarifado_obs"
+											placeholder="Para informações adicionais caso necessário"></textarea>
+									</div>
+								</div>
+
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- análise do gestor -->
+				<div class="panel-group" id="panel_gestor">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h3 class="panel-title">
+								<a class="collapse-icon up" data-toggle="collapse" data-parent="#panel_gestor"
+									href="#collapse_gestor">
+									<span class="icofont-check icon-md"></span> Análise do gestor
+								</a>
+							</h3>
+						</div>
+						<div id="collapse_gestor" class="panel-collapse collapse in">
+							<div class="panel-body css_margin_body">
+
+								<div class="row" id="ajudaGestor">
+									<div class="form-group col-md-3">
+										<img src="/style-guide/images/illustrations/search.svg"
+											title="Análise da Solicitação pelo Gestor" width="100" height="100">
+									</div>
+									<div class="form-group col-md-6" align="center">
+										<div class="input-group">
+											<span class="fluigicon fluigicon-info-sign icon-xl"></span>
+											<p>Na análise do gestor é possivel excluir item, alterar a quantidade e
+												consultar o hitórico de compra de determinado produto.</p>
+											<p>Ao concluir a análise, informe se aprova ou reprova a solicitação.</p>
+										</div>
+									</div>
+								</div>
+
+								<div class="row">
+									<div class="form-group col-md-3">
+										<label>Responsável</label>
+										<input type="text" class="form-control" name="responsavel_analise"
+											id="responsavel_analise" readonly>
+									</div>
+									<div class="form-group col-md-3">
+										<label>Data da análise</label>
+										<input type="text" class="form-control" name="data_analise_gestor"
+											id="data_analise_gestor" readonly>
+									</div>
+									<div class="form-group col-md-3">
+										<label>Status da análise</label><span class="required text-danger"><strong>
+												*</strong></span>
+										<div class="input-group">
+											<span class="input-group-addon"><span id="statusIcon"
+													class="fluigicon fluigicon-question-sign"></span></span>
+											<select class="form-control" name="resultado_analise_gestor"
+												id="resultado_analise_gestor" onchange="statusAnalise(this);">
+												<option value="">Selecione uma opção</option>
+												<option value="Aprovado">Aprovado</option>
+												<option value="Reprovado">Reprovado</option>
+												<option value="Corrigir">Corrigir solicitação</option>
+											</select>
+										</div>
+									</div>
+								</div>
+
+								<div class="row">
+									<div class="form-group col-md-12">
+										<label>Observação do gestor</label>
+										<textarea rows="4" class="form-control" name="gestor_obs" id="gestor_obs"
+											placeholder="Para informações adicionais caso necessário"></textarea>
+									</div>
+								</div>
+
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+				<div class="panel-group" id="panel_integracao">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h6 class="panel-title">
+								<a class="collapse-icon up" data-toggle="collapse" data-parent="#panel_integracao"
+									href="#collapse_integracao">
+									<span class="icofont-exchange icon-md"></span> Integração
+								</a>
+							</h6>
+						</div>
+						<div id="collapse_integracao" class="panel-collapse collapse in">
+							<div class="panel-body css_margin_body">
+								<div class="row">
+									<div class="form-group col-md-3">
+										<label>Status</label>
+										<input type="text" class="form-control" name="integracao_status"
+											id="integracao_status" readonly>
+									</div>
+									<div class="form-group col-md-9">
+										<label>Mensagem</label>
+										<input type="text" class="form-control" name="integracao_msg"
+											id="integracao_msg" readonly>
+										<input type="hidden" name="numProtheus" id="numProtheus" readonly>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+		</form>
+	</div>
+</body>
+
+</html>

@@ -287,7 +287,7 @@ async function montarConstraints({ fotoData, assinaturaData, pdfBase64, parcelas
   constraints.push(DatasetFactory.createConstraint("formField", "evidencias_json", truncateJsonString(evidManifest, 3800), ConstraintType.MUST));
 
   constraints.push(DatasetFactory.createConstraint("comments", "Lançamento de descontos iniciado pela Widget", "Lançamento de descontos iniciado pela Widget", ConstraintType.MUST));
-  constraints.push(DatasetFactory.createConstraint("choosedState", 9, 9, ConstraintType.MUST));
+  constraints.push(DatasetFactory.createConstraint("choosedState", 22, 22, ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("processId", PROCESS_ID, PROCESS_ID, ConstraintType.MUST));
 
   return constraints;

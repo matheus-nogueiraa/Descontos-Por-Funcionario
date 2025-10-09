@@ -62,7 +62,7 @@ function resetCamposNovosDesconto() {
   // esconda/limpe campos auxiliares se tiver
   $("#salarioModal").text("");
   $("#valQuinzePorCentroSalario").val("");
-   $(`#verbaNovoDesconto`).find('option').remove();
+  $(`#verbaNovoDesconto`).find('option').remove();
 }
 
 function resetFilesAndImages() {

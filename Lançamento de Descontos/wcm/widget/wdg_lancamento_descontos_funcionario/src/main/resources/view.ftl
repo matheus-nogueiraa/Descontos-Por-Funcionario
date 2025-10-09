@@ -54,6 +54,8 @@
         <input type="hidden" id="matriculaUsuario">
         <input type="hidden" id="futuros_json" value="">
 
+        <input type="hidden" name="grupo_aprovador" id="grupo_aprovador">
+
         <!-- Header -->
         <div class="card">
             <div class="card-body">
@@ -125,7 +127,7 @@
                                             <td id="valorParcelaMensalResumo"></td>
                                         </tr>
                                         <tr>
-                                            <th>15% do Salário</th>
+                                            <th>15% do Salário Bruto</th>
                                             <td id="quinzePorCentroSalario"></td>
                                             <input type="hidden" name="valQuinzePorCentroSalario"
                                                 id="valQuinzePorCentroSalario" value="0">
@@ -189,11 +191,11 @@
                                         <div id="codFuncionarioModal"></div>
                                     </div>
                                     <div class="col-md-3">
-                                        <div class="destaqueText"><strong>Salário:</strong></div>
+                                        <div class="destaqueText"><strong>Salário Bruto:</strong></div>
                                         <div id="salarioModal"></div>
                                     </div>
                                     <div class="col-md-3">
-                                        <div class="destaqueText"><strong>15% do Salário:</strong></div>
+                                        <div class="destaqueText"><strong>15% do Salário Bruto:</strong></div>
                                         <div id="15salarioModal"></div>
                                     </div>
                                 </div>
@@ -248,7 +250,12 @@
                                             </label>
                                         </div>
                                     </div>
-                                    <div class="col-md-9">
+                                    <div class="col-md-3">
+                                        <select name="centroCustoDesconto" id="centroCustoDesconto" class="form-control">
+
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
                                         <select name="verbaNovoDesconto" id="verbaNovoDesconto" class="form-control">
 
                                         </select>
