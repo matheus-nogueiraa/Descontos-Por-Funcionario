@@ -120,24 +120,26 @@ var MyWidget = SuperWidget.extend({
 
             const periodoAtual = datasetPeriodoAtual?.values[0]?.RFQ_PERIOD || `${anoAtual?.trim()}${mesAtual?.trim()}`
 
-            consultaProcessosDescontosAtivos(funcionario); // FAZER VALIDAR SE TEM DESCONTO ATIVO NO FLUIG PRA BLOQUEAR
+            const nenhumProcessoAtivo = consultaProcessosDescontosAtivos(funcionario);
 
-            preencheListaCentroCusto(dataset?.values[0]?.RA_CC?.trim() || '');
+            if (nenhumProcessoAtivo) {
+                preencheListaCentroCusto(dataset?.values[0]?.RA_CC?.trim() || '');
 
-            $('#periodoAtual').text(periodoAtual);
-            $('#codFilial').val(filial);
-            $('#matriculaFunc').val(matricula);
-            $('#nomeColaborador').val(funcionario)
+                $('#periodoAtual').text(periodoAtual);
+                $('#codFilial').val(filial);
+                $('#matriculaFunc').val(matricula);
+                $('#nomeColaborador').val(funcionario)
 
-            const possuiPericulosidade = (dataset?.values[0]?.RA_ADCPERI || '').trim();
-            const salarioBase = parseFloat(dataset?.values[0]?.RA_SALARIO) || 0;
-            const salarioBruto = possuiPericulosidade == '2' ? (salarioBase + (salarioBase * 0.30)) : salarioBase
+                const possuiPericulosidade = (dataset?.values[0]?.RA_ADCPERI || '').trim();
+                const salarioBase = parseFloat(dataset?.values[0]?.RA_SALARIO) || 0;
+                const salarioBruto = possuiPericulosidade == '2' ? (salarioBase + (salarioBase * 0.30)) : salarioBase
 
-            this.preencherDadosFuncionario(dataset, periodoAtual, salarioBruto);
-            this.processDataTableActive(filial, matricula, salarioBruto, periodoAtual);
-            this.processDataTableFuture(filial, matricula, periodoAtual);
-            $('#btn-limpar').show();
-            $('#painelFuncionario').show();
+                this.preencherDadosFuncionario(dataset, periodoAtual, salarioBruto);
+                this.processDataTableActive(filial, matricula, salarioBruto, periodoAtual);
+                this.processDataTableFuture(filial, matricula, periodoAtual);
+                $('#btn-limpar').show();
+                $('#painelFuncionario').show();
+            }
         } else {
             showSweetAlert('Atenção', 'Funcionário não encontrado.', 'info');
             this.limparTela();
@@ -329,12 +331,40 @@ function preencheListaCentroCusto(centroCustoFuncionario) {
 
     $(`#centroCustoDesconto`).find('option').remove();
 
+    $(`#centroCustoDesconto`).append(`<option selected disabled value="">Selecione o centro de custo...</option>`);
+
     var dsCentroCusto = DatasetFactory.getDataset("ds_consulta_cadastroAprovador", null, null, null);
     for (var i = 0; i < dsCentroCusto.values.length; i++) {
         const centroCusto = dsCentroCusto.values[i].centroCusto;
 
         if (centroCustoFuncionario && centroCusto.includes(centroCustoFuncionario)) {
-            $(`#verbaNovoDesconto`).append(`<option value="${dsCentroCusto.values[i].grupoAprovador}">${centroCusto} - ${dsCentroCusto.values[i].grupoAprovador}</option>`);
+            $(`#centroCustoDesconto`).append(`<option value="${dsCentroCusto.values[i].grupoAprovador}">${centroCusto} - ${dsCentroCusto.values[i].grupoAprovador}</option>`);
         }
     }
+}
+
+function consultaProcessosDescontosAtivos(funcionario) {
+    let constraints = new Array();
+    let listaSolicitacoes = new Array();
+
+    constraints.push(DatasetFactory.createConstraint('nomeColaborador', funcionario, funcionario, ConstraintType.MUST));
+    constraints.push(DatasetFactory.createConstraint('atividadeAtual', '27', '27', ConstraintType.MUST_NOT));
+    constraints.push(DatasetFactory.createConstraint('atividadeAtual', '10', '10', ConstraintType.MUST_NOT));
+
+    let dataset = DatasetFactory.getDataset('ds_form_lancamento_desconto_funcionario', null, constraints, null);
+
+    dataset.values.forEach((element, index) => {
+        if (element?.solicitacao_fluig) {
+            listaSolicitacoes.push(element.solicitacao_fluig)
+        }
+    });
+
+    if (listaSolicitacoes.length > 0) {
+        toastMsg('Atenção', `Existem processos de descontos ativos para o funcionário selecionado. Aguarde a finalização dos seguintes processos: ${listaSolicitacoes}`, 'warning')
+        return false;
+    }
+    else {
+        return true;
+    }
+
 }

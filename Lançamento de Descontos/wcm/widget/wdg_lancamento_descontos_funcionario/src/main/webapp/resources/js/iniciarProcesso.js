@@ -70,16 +70,19 @@ async function iniciarProcesso() {
     if (confirmacao.tipoConfirmacao === 'ASSINATURA_FUNC') {
       if (!confirmacao.assinaturaFuncionarioBase64) {
         toastMsg('Atenção', 'Assinatura do funcionário é obrigatória.', 'warning');
+        $("#loadingOverlay").hide();
         return;
       }
     } else {
       if (!confirmacao.motivoRecusa) {
         toastMsg('Atenção', 'Informe o motivo da recusa.', 'warning');
+        $("#loadingOverlay").hide();
         return;
       }
       const faltantes = (confirmacao.testemunhas || []).filter(t => !t?.nome || !t?.cpf || !t?.assinaturaBase64);
       if (faltantes.length > 0) {
         toastMsg('Atenção', 'Preencha nome, CPF e assinatura das duas testemunhas.', 'warning');
+        $("#loadingOverlay").hide();
         return;
       }
     }
@@ -91,6 +94,7 @@ async function iniciarProcesso() {
 
     if (!fotoData) {
       toastMsg('Atenção', 'É necessário anexar a foto do funcionário.', 'warning');
+      $("#loadingOverlay").hide();
       return;
     }
 
@@ -210,13 +214,14 @@ async function montarConstraints({ fotoData, assinaturaData, pdfBase64, parcelas
   const anoAtual = String(dataAtual.getFullYear());
   const mesAtual = String(dataAtual.getMonth() + 1).padStart(2, '0');
   const periodoAtual = $('#periodoAtual').text() || `${anoAtual?.trim()}${mesAtual?.trim()}`
+  const grupoAprovador = $('#centroCustoDesconto')?.val()?.trim() || "Pool:Group:erros_processos_ti";
 
-  const quinzeSalarioTxt =
+  const valSalarioTxt =
     (document.getElementById("salario")?.value) ||
     (document.getElementById("salarioModal")?.innerText) ||
     "";
 
-  const valSalarioTxt =
+  const quinzeSalarioTxt =
     (document.getElementById("valQuinzePorCentroSalario")?.value) ||
     (document.getElementById("quinzePorCentroSalario")?.innerText) ||
     "";
@@ -243,6 +248,8 @@ async function montarConstraints({ fotoData, assinaturaData, pdfBase64, parcelas
   constraints.push(DatasetFactory.createConstraint("formField", "tipoDesconto", String(tipoDesconto), ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("formField", "codVerba", String(codVerba), ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("formField", "periodoAtual", String(periodoAtual), ConstraintType.MUST));
+
+  constraints.push(DatasetFactory.createConstraint("formField", "grupoAprovadorCC", String(grupoAprovador), ConstraintType.MUST));
 
   constraints.push(DatasetFactory.createConstraint("formField", "parcelas_json", JSON.stringify(parcelas || []), ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("formField", "confirmacao_tipo", confirmacao?.tipoConfirmacao || "", ConstraintType.MUST));
@@ -287,7 +294,7 @@ async function montarConstraints({ fotoData, assinaturaData, pdfBase64, parcelas
   constraints.push(DatasetFactory.createConstraint("formField", "evidencias_json", truncateJsonString(evidManifest, 3800), ConstraintType.MUST));
 
   constraints.push(DatasetFactory.createConstraint("comments", "Lançamento de descontos iniciado pela Widget", "Lançamento de descontos iniciado pela Widget", ConstraintType.MUST));
-  constraints.push(DatasetFactory.createConstraint("choosedState", 22, 22, ConstraintType.MUST));
+  constraints.push(DatasetFactory.createConstraint("choosedState", 32, 32, ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("processId", PROCESS_ID, PROCESS_ID, ConstraintType.MUST));
 
   return constraints;

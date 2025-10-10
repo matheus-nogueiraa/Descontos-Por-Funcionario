@@ -10,7 +10,8 @@
     <publicProcess>false</publicProcess>
     <volumeId>Default</volumeId>
     <categoryId>Departamento Pessoal</categoryId>
-    <managerEngineAllocationId></managerEngineAllocationId>
+    <managerEngineAllocationId>Papel</managerEngineAllocationId>
+    <managerEngineAllocationConfiguration>&lt;AssignmentController&gt;&lt;Role&gt;admin&lt;/Role&gt;&lt;/AssignmentController&gt;</managerEngineAllocationConfiguration>
     <snapshotFrequency>0</snapshotFrequency>
     <baseDay>0</baseDay>
     <baseMonth>0</baseMonth>
@@ -28,7 +29,7 @@
     <processDefinitionVersionPK>
       <companyId>1</companyId>
       <processId>Lançamento de Descontos por Funcionário</processId>
-      <version>17</version>
+      <version>31</version>
     </processDefinitionVersionPK>
     <versionDescription></versionDescription>
     <formId>340891</formId>
@@ -124,8 +125,8 @@
       <notifyAuthorityFollowUp>true</notifyAuthorityFollowUp>
       <notifyRequisitionerFollowUp>false</notifyRequisitionerFollowUp>
       <automatic>false</automatic>
-      <positionX>570</positionX>
-      <positionY>123</positionY>
+      <positionX>780</positionX>
+      <positionY>122</positionY>
       <forecastedEffortType>0</forecastedEffortType>
       <forecastedEffort>0</forecastedEffort>
       <notifyManagerFollowUp>false</notifyManagerFollowUp>
@@ -176,8 +177,8 @@
       <notifyAuthorityFollowUp>true</notifyAuthorityFollowUp>
       <notifyRequisitionerFollowUp>false</notifyRequisitionerFollowUp>
       <automatic>false</automatic>
-      <positionX>570</positionX>
-      <positionY>274</positionY>
+      <positionX>780</positionX>
+      <positionY>281</positionY>
       <forecastedEffortType>0</forecastedEffortType>
       <forecastedEffort>0</forecastedEffort>
       <notifyManagerFollowUp>false</notifyManagerFollowUp>
@@ -228,8 +229,8 @@
       <notifyAuthorityFollowUp>true</notifyAuthorityFollowUp>
       <notifyRequisitionerFollowUp>false</notifyRequisitionerFollowUp>
       <automatic>false</automatic>
-      <positionX>200</positionX>
-      <positionY>116</positionY>
+      <positionX>410</positionX>
+      <positionY>115</positionY>
       <forecastedEffortType>0</forecastedEffortType>
       <forecastedEffort>0</forecastedEffort>
       <notifyManagerFollowUp>false</notifyManagerFollowUp>
@@ -279,8 +280,59 @@
       <notifyAuthorityFollowUp>true</notifyAuthorityFollowUp>
       <notifyRequisitionerFollowUp>false</notifyRequisitionerFollowUp>
       <automatic>false</automatic>
-      <positionX>200</positionX>
-      <positionY>260</positionY>
+      <positionX>410</positionX>
+      <positionY>267</positionY>
+      <forecastedEffortType>0</forecastedEffortType>
+      <forecastedEffort>0</forecastedEffort>
+      <notifyManagerFollowUp>false</notifyManagerFollowUp>
+      <notifyManagerDelay>false</notifyManagerDelay>
+      <allowanceManagerTime>0</allowanceManagerTime>
+      <frequenceManagerTime>0</frequenceManagerTime>
+      <inhibitTransfer>false</inhibitTransfer>
+      <periodId></periodId>
+      <stateType>0</stateType>
+      <bpmnType>82</bpmnType>
+      <signalId>0</signalId>
+      <counterSign>false</counterSign>
+      <openInstances>0</openInstances>
+      <noticeExpirationAuthorityTime>0</noticeExpirationAuthorityTime>
+      <noticeExpirationRequisitionerTime>0</noticeExpirationRequisitionerTime>
+      <noticeExpirationManagerTime>0</noticeExpirationManagerTime>
+      <destinationStates/>
+      <digitalSignature>false</digitalSignature>
+      <executionType>2</executionType>
+    </ProcessState>
+    <ProcessState>
+      <processStatePK>
+        <companyId>1</companyId>
+        <processId>wf_lancamento_descontos_funcionario</processId>
+        <version>1</version>
+        <sequence>32</sequence>
+      </processStatePK>
+      <stateName>Consulta Grupo Aprovador</stateName>
+      <stateDescription>Consulta Grupo Aprovador</stateDescription>
+      <instruction></instruction>
+      <deadlineTime>0</deadlineTime>
+      <deadlineFieldName></deadlineFieldName>
+      <joint>false</joint>
+      <agreementPercentage>0</agreementPercentage>
+      <engineAllocationId></engineAllocationId>
+      <selectColleague>1</selectColleague>
+      <initialState>false</initialState>
+      <notifyAuthorityDelay>false</notifyAuthorityDelay>
+      <notifyRequisitionerDelay>false</notifyRequisitionerDelay>
+      <allowanceAuthorityTime>0</allowanceAuthorityTime>
+      <frequenceAuthorityTime>0</frequenceAuthorityTime>
+      <allowanceRequisitionerTime>0</allowanceRequisitionerTime>
+      <frequenceRequisitionerTime>0</frequenceRequisitionerTime>
+      <transferAttachments>false</transferAttachments>
+      <subProcessId></subProcessId>
+      <formFolder>0</formFolder>
+      <notifyAuthorityFollowUp>true</notifyAuthorityFollowUp>
+      <notifyRequisitionerFollowUp>false</notifyRequisitionerFollowUp>
+      <automatic>false</automatic>
+      <positionX>210</positionX>
+      <positionY>115</positionY>
       <forecastedEffortType>0</forecastedEffortType>
       <forecastedEffort>0</forecastedEffort>
       <notifyManagerFollowUp>false</notifyManagerFollowUp>
@@ -330,8 +382,8 @@
       <notifyAuthorityFollowUp>true</notifyAuthorityFollowUp>
       <notifyRequisitionerFollowUp>false</notifyRequisitionerFollowUp>
       <automatic>false</automatic>
-      <positionX>660</positionX>
-      <positionY>163</positionY>
+      <positionX>870</positionX>
+      <positionY>162</positionY>
       <forecastedEffortType>0</forecastedEffortType>
       <forecastedEffort>0</forecastedEffort>
       <notifyManagerFollowUp>false</notifyManagerFollowUp>
@@ -363,8 +415,8 @@
       <subProcessId></subProcessId>
       <formFolder>0</formFolder>
       <automatic>true</automatic>
-      <positionX>810</positionX>
-      <positionY>107</positionY>
+      <positionX>1020</positionX>
+      <positionY>106</positionY>
       <inhibitTransfer>false</inhibitTransfer>
       <stateType>1</stateType>
       <bpmnType>120</bpmnType>
@@ -388,8 +440,8 @@
       <subProcessId></subProcessId>
       <formFolder>0</formFolder>
       <automatic>true</automatic>
-      <positionX>390</positionX>
-      <positionY>100</positionY>
+      <positionX>600</positionX>
+      <positionY>99</positionY>
       <inhibitTransfer>false</inhibitTransfer>
       <stateType>1</stateType>
       <bpmnType>120</bpmnType>
@@ -427,7 +479,7 @@
       <notifyAuthorityFollowUp>false</notifyAuthorityFollowUp>
       <notifyRequisitionerFollowUp>false</notifyRequisitionerFollowUp>
       <automatic>false</automatic>
-      <positionX>1010</positionX>
+      <positionX>1220</positionX>
       <positionY>140</positionY>
       <forecastedEffortType>0</forecastedEffortType>
       <forecastedEffort>0</forecastedEffort>
@@ -474,8 +526,8 @@
       <notifyAuthorityFollowUp>false</notifyAuthorityFollowUp>
       <notifyRequisitionerFollowUp>false</notifyRequisitionerFollowUp>
       <automatic>false</automatic>
-      <positionX>402</positionX>
-      <positionY>20</positionY>
+      <positionX>612</positionX>
+      <positionY>27</positionY>
       <forecastedEffortType>0</forecastedEffortType>
       <forecastedEffort>0</forecastedEffort>
       <notifyManagerFollowUp>false</notifyManagerFollowUp>
@@ -499,7 +551,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>1</expressionOrder>
-        <version>17</version>
+        <version>31</version>
         <sequence>18</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -511,7 +563,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>2</expressionOrder>
-        <version>17</version>
+        <version>31</version>
         <sequence>18</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -523,7 +575,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>1</expressionOrder>
-        <version>17</version>
+        <version>31</version>
         <sequence>24</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -535,7 +587,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>2</expressionOrder>
-        <version>17</version>
+        <version>31</version>
         <sequence>24</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -634,23 +686,6 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <version>1</version>
-        <linkSequence>23</linkSequence>
-      </processLinkPK>
-      <actionLabel></actionLabel>
-      <returnPermited>false</returnPermited>
-      <initialStateSequence>4</initialStateSequence>
-      <finalStateSequence>22</finalStateSequence>
-      <returnLabel></returnLabel>
-      <name></name>
-      <automaticLink>false</automaticLink>
-      <defaultLink>false</defaultLink>
-      <type>0</type>
-    </ProcessLink>
-    <ProcessLink>
-      <processLinkPK>
-        <companyId>1</companyId>
-        <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>1</version>
         <linkSequence>25</linkSequence>
       </processLinkPK>
       <actionLabel></actionLabel>
@@ -731,6 +766,40 @@
       <defaultLink>false</defaultLink>
       <type>0</type>
     </ProcessLink>
+    <ProcessLink>
+      <processLinkPK>
+        <companyId>1</companyId>
+        <processId>wf_lancamento_descontos_funcionario</processId>
+        <version>1</version>
+        <linkSequence>33</linkSequence>
+      </processLinkPK>
+      <actionLabel></actionLabel>
+      <returnPermited>false</returnPermited>
+      <initialStateSequence>4</initialStateSequence>
+      <finalStateSequence>32</finalStateSequence>
+      <returnLabel></returnLabel>
+      <name></name>
+      <automaticLink>false</automaticLink>
+      <defaultLink>false</defaultLink>
+      <type>0</type>
+    </ProcessLink>
+    <ProcessLink>
+      <processLinkPK>
+        <companyId>1</companyId>
+        <processId>wf_lancamento_descontos_funcionario</processId>
+        <version>1</version>
+        <linkSequence>34</linkSequence>
+      </processLinkPK>
+      <actionLabel></actionLabel>
+      <returnPermited>false</returnPermited>
+      <initialStateSequence>32</initialStateSequence>
+      <finalStateSequence>22</finalStateSequence>
+      <returnLabel></returnLabel>
+      <name></name>
+      <automaticLink>false</automaticLink>
+      <defaultLink>false</defaultLink>
+      <type>0</type>
+    </ProcessLink>
   </list>
   <list/>
   <list>
@@ -803,6 +872,27 @@ function getCurrentDate() {&#xd;
 &#xd;
 function getCurrentTime() {&#xd;
     return new java.text.SimpleDateFormat(&quot;HH:mm&quot;).format(new java.util.Date());&#xd;
+}</eventDescription>
+    </WorkflowProcessEvent>
+    <WorkflowProcessEvent>
+      <workflowProcessEventPK>
+        <companyId>1</companyId>
+        <eventId>servicetask32</eventId>
+        <processId>wf_lancamento_descontos_funcionario</processId>
+        <version>1</version>
+      </workflowProcessEventPK>
+      <eventDescription>function servicetask32(attempt, message) {
+    try {
+        var grupoAprovadorCC = (hAPI.getCardValue(&apos;grupoAprovadorCC&apos;) + &quot;&quot;).trim();
+
+        if (grupoAprovadorCC == &quot;&quot; || grupoAprovadorCC == null) {
+            hAPI.setCardValue(&apos;grupoAprovadorCC&apos;, &quot;Pool:Group:erros_processos_ti&quot;);
+        }
+    } catch (error) {
+        log.warn(&quot;--servicetask32-- error: &quot; + error);
+        log.warn(&quot;--servicetask32-- error.message: &quot; + error.message);
+        log.warn(&quot;--servicetask32-- error.lineNumber: &quot; + error.lineNumber);
+    }
 }</eventDescription>
     </WorkflowProcessEvent>
     <WorkflowProcessEvent>
@@ -1078,19 +1168,105 @@ function safeJSONStringify(obj) {
         <processId>wf_lancamento_descontos_funcionario</processId>
         <version>1</version>
       </workflowProcessEventPK>
-      <eventDescription>function servicetask29(attempt, message) {
+      <eventDescription>function parseDateTimeES5(dateStr, timeStr) {
+    dateStr = (dateStr || &quot;&quot;).trim();
+    timeStr = (timeStr || &quot;&quot;).trim();
+
+    // Hora padrão se vier vazia
+    if (!timeStr) timeStr = &quot;00:00:00&quot;;
+
+    // Normaliza hora para HH:MM:SS
+    var hParts = timeStr.split(&quot;:&quot;);
+    var h = parseInt(hParts[0], 10) || 0;
+    var m = parseInt(hParts[1], 10) || 0;
+    var s = parseInt(hParts[2], 10) || 0;
+
+    var y, mo, d;
+
+    // yyyy-mm-dd
+    if (dateStr.indexOf(&quot;-&quot;) !== -1) {
+        var dParts = dateStr.split(&quot;-&quot;);
+        y = parseInt(dParts[0], 10);
+        mo = parseInt(dParts[1], 10);
+        d = parseInt(dParts[2], 10);
+    }
+    // dd/mm/yyyy (fallback)
+    else if (dateStr.indexOf(&quot;/&quot;) !== -1) {
+        var dParts2 = dateStr.split(&quot;/&quot;);
+        d = parseInt(dParts2[0], 10);
+        mo = parseInt(dParts2[1], 10);
+        y = parseInt(dParts2[2], 10);
+    } else {
+        return null; // formato desconhecido
+    }
+
+    if (isNaN(y) || isNaN(mo) || isNaN(d) || isNaN(h) || isNaN(m) || isNaN(s)) {
+        return null;
+    }
+
+    // Importante: mês é 0-based
+    return new Date(y, mo - 1, d, h, m, s);
+}
+
+function diffToTextES5(ms) {
+    if (ms &lt; 0) ms = -ms; // se quiser tratar futuro como positivo
+    var seg = Math.floor(ms / 1000);
+    var min = Math.floor(seg / 60);
+    var hor = Math.floor(min / 60);
+    var dia = Math.floor(hor / 24);
+
+    hor = hor % 24;
+    min = min % 60;
+    seg = seg % 60;
+
+    return dia + &quot;dia(s) &quot; + hor + &quot;hora(s) &quot; + min + &quot;minuto(s) &quot; + seg + &quot;segundo(s)&quot;;
+}
+
+// ---- Uso no seu código ----
+function servicetask29(attempt, message) {
     try {
         log.info(&apos;INICIO DESCONTOS POR FUNCIONÁRIO - ATIVIDADE ENVIA WF GERENTE/DIRETOR **********************&apos;);
 
-        log.info(&apos;Data Execução: &apos;+getCurrentDate());
-        log.info(&apos;Hora Execução: &apos;+getCurrentTime());
+        var numFluig = hAPI.getCardValue(&quot;solicitacao_fluig&quot;);
+        var nomeColaborador = (hAPI.getCardValue(&quot;nomeColaborador&quot;) + &quot;&quot;).trim();
+        var tipoDesconto = (hAPI.getCardValue(&quot;tipoDesconto&quot;) + &quot;&quot;).trim();
+        var descricao = (hAPI.getCardValue(&quot;descricao&quot;) + &quot;&quot;).trim();
+        var valTotalDesconto = (hAPI.getCardValue(&quot;valorEpi&quot;) + &quot;&quot;).trim();
+        var dataSolicitacao = (hAPI.getCardValue(&quot;dataSolicitacao&quot;) + &quot;&quot;).trim(); // yyyy-mm-dd
+        var horaSolicitacao = (hAPI.getCardValue(&quot;horaSolicitacao&quot;) + &quot;&quot;).trim(); // HH:MM:SS ou HH:MM
+        var dtInclusao = dataSolicitacao + &quot; - &quot; + horaSolicitacao;
 
-        log.info(&apos;FIM DESCONTOS POR FUNCIONÁRIO - ATIVIDADE ENVIA WF GERENTE/DIRETOR **********************&apos;);
+        var dataHoraSolicitacao = parseDateTimeES5(dataSolicitacao, horaSolicitacao);
+
+        if (!dataHoraSolicitacao || isNaN(dataHoraSolicitacao.getTime())) {
+            throw new Error(&quot;Data/hora de solicitação inválida(s): &apos;&quot; + dataSolicitacao + &quot;&apos; &apos;&quot; + horaSolicitacao + &quot;&apos;&quot;);
+        }
+
+        var agora = new Date();
+        var diffMs = agora.getTime() - dataHoraSolicitacao.getTime();
+        var tempoPendente = diffToTextES5(diffMs);
+
+        log.info(&apos;nomeColaborador: &apos; + nomeColaborador);
+        log.info(&apos;tipoDesconto: &apos; + tipoDesconto);
+        log.info(&apos;descricao: &apos; + descricao);
+        log.info(&apos;valTotalDesconto: &apos; + valTotalDesconto);
+        log.info(&apos;dtInclusao: &apos; + dtInclusao);
+        log.info(&apos;tempoPendente: &apos; + tempoPendente + &quot; (desde &quot; + dataHoraSolicitacao.toString() + &quot;)&quot;);
+        log.info(&apos;numFluig: &apos; + numFluig);
+
+        var qtdEmailsEnviados = (hAPI.getCardValue(&quot;qtdEmailsEnviados&quot;) + &quot;&quot;).trim();
+        if (qtdEmailsEnviados == &quot;&quot; || qtdEmailsEnviados == null) qtdEmailsEnviados = &quot;0&quot;;
+        log.info(&apos;qtdEmailsEnviados: &apos; + qtdEmailsEnviados);
+
+        hAPI.setCardValue(&apos;qtdEmailsEnviados&apos;, (parseInt(qtdEmailsEnviados, 10) + 1) + &quot;&quot;);
+        // enviaEmailAtraso(wkproces);
+
+        log.info(&apos;FINAL 2 DESCONTOS POR FUNCIONÁRIO - ATIVIDADE ENVIA WF GERENTE/DIRETOR **********************&apos;);
     } catch (error) {
-		log.warn(&quot;--servicetask29-- error: &quot; + error);
-		log.warn(&quot;--servicetask29-- error.message: &quot; + error.message);
-		log.warn(&quot;--servicetask29-- error.lineNumber: &quot; + error.lineNumber);
-		hAPI.setTaskComments(getValue(&quot;WKUser&quot;), getValue(&apos;WKNumProces&apos;), 0, &quot;Erro no envio do WF para Gerente/Diretor: &quot; + error.message);
+        log.warn(&quot;--servicetask29-- error: &quot; + error);
+        log.warn(&quot;--servicetask29-- error.message: &quot; + error.message);
+        log.warn(&quot;--servicetask29-- error.lineNumber: &quot; + error.lineNumber);
+        hAPI.setTaskComments(getValue(&quot;WKUser&quot;), getValue(&apos;WKNumProces&apos;), 0, &quot;Erro no envio do WF para Gerente/Diretor: &quot; + error.message);
     }
 }
 
@@ -1100,6 +1276,51 @@ function getCurrentDate() {
 
 function getCurrentTime() {
     return new java.text.SimpleDateFormat(&quot;HH:mm&quot;).format(new java.util.Date());
+}
+
+function sendMailProtheusSuccess(wkproces, funcionarioMatricula) {
+    var numFluig = hAPI.getCardValue(&quot;solicitacao_fluig&quot;);
+
+    var soliEmail = hAPI.getCardValue(&quot;email_responsavel&quot;);
+    var sender = &quot;fluig.workflow&quot;;
+    var serverUrl = fluigAPI.getPageService().getServerURL();
+    var processInstanceID = serverUrl + &quot;/portal/p/1/pageworkflowview?app_ecm_workflowview_detailsProcessInstanceID=&quot; + wkproces;
+    var parametros = new java.util.HashMap();
+    var destinatarios = new java.util.ArrayList();
+    var subject = &quot;&quot;;
+    var codCentroCusto = hAPI.getCardValue(&quot;codigo_ccusto&quot;);
+    var listEmailsCentroCusto = getListEmailCentroCusto(codCentroCusto);
+    try {
+        subject = &quot; Admissão de funcionário realizada - Fluig: &quot; + wkproces + &quot;&quot;;
+        parametros.put(&quot;subject&quot;, subject);
+        parametros.put(&quot;processUrl&quot;, processInstanceID);
+        parametros.put(&quot;numeroFluig&quot;, numFluig);
+        parametros.put(&quot;nomeFunc&quot;, funcionarioNome);
+        parametros.put(&quot;cpfFunc&quot;, funcionarioCPF);
+        parametros.put(&quot;matriculaProtheus&quot;, funcionarioMatricula);
+        parametros.put(&quot;dataAdmissao&quot;, funcionarioDataAdmissao);
+        parametros.put(&quot;funcaoFunc&quot;, funcionarioFuncao);
+        parametros.put(&quot;ccustoFunc&quot;, funcionarioCCusto);
+        destinatarios.add(soliEmail);
+        destinatarios.add(&quot;dpmatriz@elcop.eng.br&quot;);
+
+        log.info(&quot;Lista de e-mails do centro de custo: &quot;);
+        log.dir(listEmailsCentroCusto);
+
+        // Adiciona emails dos usuários do centro de custo como destinatários.
+        for (var j = 0; j &lt; listEmailsCentroCusto.length; j++) {
+            log.info(&quot;Adicionando destinatario: &quot;);
+            log.info(listEmailsCentroCusto[j] + &quot;&quot;)
+
+            destinatarios.add(listEmailsCentroCusto[j] + &quot;&quot;);
+        }
+
+        notifier.notify(sender, &quot;admissao_realizada&quot;, parametros, destinatarios, &quot;text/html&quot;);
+    } catch (e) {
+        log.warn(&quot;--sendMailProtheusSucess - catch e: &quot; + e);
+        log.warn(&quot;--sendMailProtheusSucess - catch e.message: &quot; + e.message);
+        log.warn(&quot;--sendMailProtheusSucess - catch lineNumber: &quot; + e.lineNumber);
+    }
 }</eventDescription>
     </WorkflowProcessEvent>
   </list>
@@ -1169,12 +1390,12 @@ function getCurrentTime() {
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>17</version>
+        <version>31</version>
         <linkSequence>31</linkSequence>
         <bendSequence>1</bendSequence>
       </processLinkBendPK>
-      <positionX>372</positionX>
-      <positionY>302</positionY>
+      <positionX>542</positionX>
+      <positionY>299</positionY>
     </ProcessLinkBend>
   </list>
   <list/>
@@ -1245,6 +1466,17 @@ function getCurrentTime() {
       <sequence>29</sequence>
       <attempts>0</attempts>
       <sucessFullMessage>Integração executada com sucesso</sucessFullMessage>
+      <serviceName></serviceName>
+      <frequency>1</frequency>
+      <frequencyType>0</frequencyType>
+    </ProcessStateService>
+    <ProcessStateService>
+      <companyId>1</companyId>
+      <processId>wf_lancamento_descontos_funcionario</processId>
+      <version>1</version>
+      <sequence>32</sequence>
+      <attempts>0</attempts>
+      <sucessFullMessage>Grupo definido com Sucesso</sucessFullMessage>
       <serviceName></serviceName>
       <frequency>1</frequency>
       <frequencyType>0</frequencyType>

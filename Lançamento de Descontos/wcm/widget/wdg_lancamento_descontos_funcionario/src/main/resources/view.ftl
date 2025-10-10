@@ -207,7 +207,7 @@
                             </div>
                             <div class="panel-body">
                                 <div class="row">
-                                    <div class="col-md-3">
+                                    <div class="col-md-4">
                                         <div>
                                             <label> <input name="rdTipoDesconto" id="rdTipoDesconto_almoxarifado"
                                                     value="almoxarifado" type="radio"
@@ -250,12 +250,12 @@
                                             </label>
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-4">
                                         <select name="centroCustoDesconto" id="centroCustoDesconto" class="form-control">
 
                                         </select>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <select name="verbaNovoDesconto" id="verbaNovoDesconto" class="form-control">
 
                                         </select>

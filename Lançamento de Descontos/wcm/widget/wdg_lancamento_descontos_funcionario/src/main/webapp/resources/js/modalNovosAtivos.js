@@ -30,7 +30,7 @@ function fecharModalAtivos() {
 function mudaVerbasNovoDesconto(tipoDesconto){
   $(`#verbaNovoDesconto`).find('option').remove();
 
-  $(`#verbaNovoDesconto`).append(`<option value="" disabled selected>Selecione uma verba</option>`);
+  $(`#verbaNovoDesconto`).append(`<option value="" disabled selected>Selecione a verba...</option>`);
 
   VERBAS[tipoDesconto].forEach(element => {
     $(`#verbaNovoDesconto`).append(`<option value="${element.id?.trim()}">${element.id?.trim()} - ${element.desc?.trim()}</option>`);
