@@ -1,18 +1,23 @@
 function abrirModalAtivos() {
-  $('#modalAtivos').show();
+  const nomeFuncionario = $('#nomeColaborador')?.val()?.trim() || '';
+  const nenhumProcessoAtivo = consultaProcessosDescontosAtivos(nomeFuncionario);
 
-  const filial = $('#codFilial').val();
-  const codFilial = filial ? filial.split(' ')[ 0 ] : '';
+  if (nenhumProcessoAtivo) {
+    $('#modalAtivos').show();
 
-  const funcionario = $('#matriculaFunc').val();
+    const filial = $('#codFilial').val();
+    const codFilial = filial ? filial.split(' ')[0] : '';
 
-  const salario = $('#salario').val();
-  const salario15 = $('#salario15').val();
+    const funcionario = $('#matriculaFunc').val();
 
-  $('#codFilialModal').text(codFilial);
-  $('#codFuncionarioModal').text(funcionario);
-  $('#salarioModal').text(salario);
-  $('#15salarioModal').text(salario15);
+    const salario = $('#salario').val();
+    const salario15 = $('#salario15').val();
+
+    $('#codFilialModal').text(codFilial);
+    $('#codFuncionarioModal').text(funcionario);
+    $('#salarioModal').text(salario);
+    $('#15salarioModal').text(salario15);
+  }
 }
 
 function fecharModalAtivos() {
@@ -27,7 +32,7 @@ function fecharModalAtivos() {
   $('.previewFotoEPI').attr('src', '');
 }
 
-function mudaVerbasNovoDesconto(tipoDesconto){
+function mudaVerbasNovoDesconto(tipoDesconto) {
   $(`#verbaNovoDesconto`).find('option').remove();
 
   $(`#verbaNovoDesconto`).append(`<option value="" disabled selected>Selecione a verba...</option>`);
@@ -35,4 +40,30 @@ function mudaVerbasNovoDesconto(tipoDesconto){
   VERBAS[tipoDesconto].forEach(element => {
     $(`#verbaNovoDesconto`).append(`<option value="${element.id?.trim()}">${element.id?.trim()} - ${element.desc?.trim()}</option>`);
   });
+}
+
+function consultaProcessosDescontosAtivos(funcionario) {
+  let constraints = new Array();
+  let listaSolicitacoes = new Array();
+
+  constraints.push(DatasetFactory.createConstraint('nomeColaborador', funcionario, funcionario, ConstraintType.MUST));
+  constraints.push(DatasetFactory.createConstraint('atividadeAtual', '27', '27', ConstraintType.MUST_NOT));
+  constraints.push(DatasetFactory.createConstraint('atividadeAtual', '10', '10', ConstraintType.MUST_NOT));
+  constraints.push(DatasetFactory.createConstraint('atividadeAtual', '00', '00', ConstraintType.MUST_NOT));
+
+  let dataset = DatasetFactory.getDataset('ds_form_lancamento_desconto_funcionario', null, constraints, null);
+
+  dataset.values.forEach((element, index) => {
+    if (element?.solicitacao_fluig) {
+      listaSolicitacoes.push(element.solicitacao_fluig)
+    }
+  });
+
+  if (listaSolicitacoes.length > 0) {
+    showSweetAlert('Atenção', `Existem processos de descontos ativos para o funcionário selecionado. Aguarde a finalização dos seguintes processos: \n${listaSolicitacoes}`, 'warning');
+    return false;
+  }
+  else {
+    return true;
+  }
 }

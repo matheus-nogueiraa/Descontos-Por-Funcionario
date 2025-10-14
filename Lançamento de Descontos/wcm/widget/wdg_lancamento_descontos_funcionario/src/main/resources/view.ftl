@@ -12,7 +12,6 @@
     <link rel="stylesheet" href="../webapp/resources/css/wdg_lancamento_descontos_funcionario.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
     <link rel="stylesheet" href="../webapp/resources/css/wgd_descontos_por_funcionario.css">
-    <!-- <link rel="stylesheet" href="https://fluigtst.elcop.eng.br:8443//style-guide/css/fluig-style-guide.min.css"> -->
     <link type="text/css" rel="stylesheet" href="//cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
     <script src="/portal/resources/js/jquery/jquery.js"></script>
     <script src="/portal/resources/js/jquery/jquery-ui.min.js"></script>

@@ -29,7 +29,7 @@
     <processDefinitionVersionPK>
       <companyId>1</companyId>
       <processId>Lançamento de Descontos por Funcionário</processId>
-      <version>31</version>
+      <version>33</version>
     </processDefinitionVersionPK>
     <versionDescription></versionDescription>
     <formId>340891</formId>
@@ -209,7 +209,7 @@
       <stateName>Gerente Aprova ou Abona</stateName>
       <stateDescription>Gerente Aprova ou Abona</stateDescription>
       <instruction></instruction>
-      <deadlineTime>300</deadlineTime>
+      <deadlineTime>172800</deadlineTime>
       <deadlineFieldName></deadlineFieldName>
       <joint>false</joint>
       <agreementPercentage>0</agreementPercentage>
@@ -551,7 +551,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>1</expressionOrder>
-        <version>31</version>
+        <version>33</version>
         <sequence>18</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -563,7 +563,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>2</expressionOrder>
-        <version>31</version>
+        <version>33</version>
         <sequence>18</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -575,7 +575,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>1</expressionOrder>
-        <version>31</version>
+        <version>33</version>
         <sequence>24</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -587,7 +587,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>2</expressionOrder>
-        <version>31</version>
+        <version>33</version>
         <sequence>24</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -1225,7 +1225,7 @@ function diffToTextES5(ms) {
 // ---- Uso no seu código ----
 function servicetask29(attempt, message) {
     try {
-        log.info(&apos;INICIO DESCONTOS POR FUNCIONÁRIO - ATIVIDADE ENVIA WF GERENTE/DIRETOR **********************&apos;);
+        //log.info(&apos;INICIO DESCONTOS POR FUNCIONÁRIO - ATIVIDADE ENVIA WF GERENTE/DIRETOR **********************&apos;);
 
         var numFluig = hAPI.getCardValue(&quot;solicitacao_fluig&quot;);
         var nomeColaborador = (hAPI.getCardValue(&quot;nomeColaborador&quot;) + &quot;&quot;).trim();
@@ -1245,23 +1245,24 @@ function servicetask29(attempt, message) {
         var agora = new Date();
         var diffMs = agora.getTime() - dataHoraSolicitacao.getTime();
         var tempoPendente = diffToTextES5(diffMs);
-
+        /*
         log.info(&apos;nomeColaborador: &apos; + nomeColaborador);
         log.info(&apos;tipoDesconto: &apos; + tipoDesconto);
         log.info(&apos;descricao: &apos; + descricao);
         log.info(&apos;valTotalDesconto: &apos; + valTotalDesconto);
         log.info(&apos;dtInclusao: &apos; + dtInclusao);
-        log.info(&apos;tempoPendente: &apos; + tempoPendente + &quot; (desde &quot; + dataHoraSolicitacao.toString() + &quot;)&quot;);
+        log.info(&apos;tempoPendente: &apos; + tempoPendente);
         log.info(&apos;numFluig: &apos; + numFluig);
-
+        */
         var qtdEmailsEnviados = (hAPI.getCardValue(&quot;qtdEmailsEnviados&quot;) + &quot;&quot;).trim();
         if (qtdEmailsEnviados == &quot;&quot; || qtdEmailsEnviados == null) qtdEmailsEnviados = &quot;0&quot;;
-        log.info(&apos;qtdEmailsEnviados: &apos; + qtdEmailsEnviados);
+        //log.info(&apos;qtdEmailsEnviados: &apos; + qtdEmailsEnviados);
 
         hAPI.setCardValue(&apos;qtdEmailsEnviados&apos;, (parseInt(qtdEmailsEnviados, 10) + 1) + &quot;&quot;);
-        // enviaEmailAtraso(wkproces);
 
-        log.info(&apos;FINAL 2 DESCONTOS POR FUNCIONÁRIO - ATIVIDADE ENVIA WF GERENTE/DIRETOR **********************&apos;);
+        enviaEmailAtraso(numFluig, parseInt(qtdEmailsEnviados, 10) &gt; 0, nomeColaborador, tipoDesconto, descricao, valTotalDesconto, dtInclusao, tempoPendente);
+
+        //log.info(&apos;FINAL 2 DESCONTOS POR FUNCIONÁRIO - ATIVIDADE ENVIA WF GERENTE/DIRETOR **********************&apos;);
     } catch (error) {
         log.warn(&quot;--servicetask29-- error: &quot; + error);
         log.warn(&quot;--servicetask29-- error.message: &quot; + error.message);
@@ -1278,49 +1279,92 @@ function getCurrentTime() {
     return new java.text.SimpleDateFormat(&quot;HH:mm&quot;).format(new java.util.Date());
 }
 
-function sendMailProtheusSuccess(wkproces, funcionarioMatricula) {
-    var numFluig = hAPI.getCardValue(&quot;solicitacao_fluig&quot;);
+function enviaEmailAtraso(wkproces, avisaDiretor, nomeFunc, tipoDesconto, descDesconto, valTotDesconto, dtInclusao, tempoPendente) {
 
-    var soliEmail = hAPI.getCardValue(&quot;email_responsavel&quot;);
     var sender = &quot;fluig.workflow&quot;;
     var serverUrl = fluigAPI.getPageService().getServerURL();
     var processInstanceID = serverUrl + &quot;/portal/p/1/pageworkflowview?app_ecm_workflowview_detailsProcessInstanceID=&quot; + wkproces;
     var parametros = new java.util.HashMap();
     var destinatarios = new java.util.ArrayList();
     var subject = &quot;&quot;;
-    var codCentroCusto = hAPI.getCardValue(&quot;codigo_ccusto&quot;);
-    var listEmailsCentroCusto = getListEmailCentroCusto(codCentroCusto);
+    var grupoAprovadorCC = hAPI.getCardValue(&quot;grupoAprovadorCC&quot;);
+    var listEmailsCentroCusto = getListEmailCentroCusto(grupoAprovadorCC);
     try {
-        subject = &quot; Admissão de funcionário realizada - Fluig: &quot; + wkproces + &quot;&quot;;
+        subject = &quot; Solicitação de Desconto Pendente de Aprovação - Fluig: &quot; + wkproces + &quot;&quot;;
         parametros.put(&quot;subject&quot;, subject);
         parametros.put(&quot;processUrl&quot;, processInstanceID);
-        parametros.put(&quot;numeroFluig&quot;, numFluig);
-        parametros.put(&quot;nomeFunc&quot;, funcionarioNome);
-        parametros.put(&quot;cpfFunc&quot;, funcionarioCPF);
-        parametros.put(&quot;matriculaProtheus&quot;, funcionarioMatricula);
-        parametros.put(&quot;dataAdmissao&quot;, funcionarioDataAdmissao);
-        parametros.put(&quot;funcaoFunc&quot;, funcionarioFuncao);
-        parametros.put(&quot;ccustoFunc&quot;, funcionarioCCusto);
-        destinatarios.add(soliEmail);
-        destinatarios.add(&quot;dpmatriz@elcop.eng.br&quot;);
+        parametros.put(&quot;numeroFluig&quot;, wkproces);
+        parametros.put(&quot;nomeFunc&quot;, nomeFunc);
+        parametros.put(&quot;tipoDesconto&quot;, tipoDesconto);
+        parametros.put(&quot;descDesconto&quot;, descDesconto);
+        parametros.put(&quot;valTotDesconto&quot;, valTotDesconto);
+        parametros.put(&quot;dtInclusao&quot;, dtInclusao);
+        parametros.put(&quot;tempoPendente&quot;, tempoPendente);
 
-        log.info(&quot;Lista de e-mails do centro de custo: &quot;);
-        log.dir(listEmailsCentroCusto);
+        if (avisaDiretor) {
+            //destinatarios.add(&quot;dpmatriz@elcop.eng.br&quot;); // ADICIONAR DIRETOR
+        }
+
+        log.info(&quot;Lista de e-mails do centro de custo para descontos: &quot;);
+		log.dir(listEmailsCentroCusto);
 
         // Adiciona emails dos usuários do centro de custo como destinatários.
         for (var j = 0; j &lt; listEmailsCentroCusto.length; j++) {
-            log.info(&quot;Adicionando destinatario: &quot;);
-            log.info(listEmailsCentroCusto[j] + &quot;&quot;)
-
             destinatarios.add(listEmailsCentroCusto[j] + &quot;&quot;);
         }
 
-        notifier.notify(sender, &quot;admissao_realizada&quot;, parametros, destinatarios, &quot;text/html&quot;);
+        notifier.notify(sender, &quot;aprov_desconto_atraso&quot;, parametros, destinatarios, &quot;text/html&quot;);
     } catch (e) {
-        log.warn(&quot;--sendMailProtheusSucess - catch e: &quot; + e);
-        log.warn(&quot;--sendMailProtheusSucess - catch e.message: &quot; + e.message);
-        log.warn(&quot;--sendMailProtheusSucess - catch lineNumber: &quot; + e.lineNumber);
+        log.warn(&quot;--enviaEmailAtraso - catch e: &quot; + e);
+        log.warn(&quot;--enviaEmailAtraso - catch e.message: &quot; + e.message);
+        log.warn(&quot;--enviaEmailAtraso - catch lineNumber: &quot; + e.lineNumber);
     }
+}
+
+function getListEmailCentroCusto(grupoAprovadorCC) {
+    var codGrupo = &quot;&quot;;
+
+    if (grupoAprovadorCC.split(&apos;:&apos;).length &gt; 2) {
+        codGrupo = grupoAprovadorCC.split(&apos;:&apos;)[2];
+    }
+
+    if (!(codGrupo+&quot;&quot;).trim()) {
+        codGrupo = &quot;erros_processos_ti&quot;;
+    }
+
+    var constrainstsGrupo = new Array();
+
+    constrainstsGrupo.push(DatasetFactory.createConstraint(&quot;colleagueGroupPK.groupId&quot;, (codGrupo+&quot;&quot;).trim(), (codGrupo+&quot;&quot;).trim(), ConstraintType.MUST));
+
+    var datasetGrupo = DatasetFactory.getDataset(&quot;colleagueGroup&quot;, null, constrainstsGrupo, null);
+
+    var emailList = new Array();
+
+    if (datasetGrupo.rowsCount &gt; 0) {
+        for (var i = 0; i &lt; datasetGrupo.rowsCount; i++) {
+            var matriculaUsuario = datasetGrupo.getValue(i, &quot;colleagueGroupPK.colleagueId&quot;)
+
+            if (matriculaUsuario != &quot;&quot; &amp;&amp; matriculaUsuario != null) {
+                var constrainstsUsuario = new Array();
+
+                constrainstsUsuario.push(DatasetFactory.createConstraint(&quot;colleaguePK.colleagueId&quot;, (matriculaUsuario+&quot;&quot;).trim(), (matriculaUsuario+&quot;&quot;).trim(), ConstraintType.MUST));
+
+                var datasetUsuario = DatasetFactory.getDataset(&quot;colleague&quot;, null, constrainstsUsuario, null);
+
+                if (datasetUsuario.rowsCount &gt; 0) {
+                    for (var j = 0; j &lt; datasetUsuario.rowsCount; j++) {
+                        var email = datasetUsuario.getValue(j, &quot;mail&quot;);
+
+                        if (email != &quot;&quot; &amp;&amp; email != null) {
+                            emailList.push((email+&quot;&quot;).trim());
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return emailList;
 }</eventDescription>
     </WorkflowProcessEvent>
   </list>
@@ -1390,7 +1434,7 @@ function sendMailProtheusSuccess(wkproces, funcionarioMatricula) {
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>31</version>
+        <version>33</version>
         <linkSequence>31</linkSequence>
         <bendSequence>1</bendSequence>
       </processLinkBendPK>

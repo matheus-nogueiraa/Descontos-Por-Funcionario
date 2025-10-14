@@ -117,7 +117,7 @@ async function iniciarProcesso() {
     DatasetFactory.getDataset('ds_start_process', null, constraints, null, { // Consulta Dataset de Maneira Assíncrona
       success: function (dataset) {
 
-        tratarResultado(dataset?.values[0]);
+        tratarResultado(dataset?.values ? dataset?.values[0] : '');
         $("#loadingOverlay").hide();
       },
       error: function (jqXHR, textStatus, errorThrown) {

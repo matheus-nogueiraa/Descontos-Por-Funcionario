@@ -55,7 +55,7 @@ function diffToTextES5(ms) {
 // ---- Uso no seu código ----
 function servicetask29(attempt, message) {
     try {
-        log.info('INICIO DESCONTOS POR FUNCIONÁRIO - ATIVIDADE ENVIA WF GERENTE/DIRETOR **********************');
+        //log.info('INICIO DESCONTOS POR FUNCIONÁRIO - ATIVIDADE ENVIA WF GERENTE/DIRETOR **********************');
 
         var numFluig = hAPI.getCardValue("solicitacao_fluig");
         var nomeColaborador = (hAPI.getCardValue("nomeColaborador") + "").trim();
@@ -75,7 +75,7 @@ function servicetask29(attempt, message) {
         var agora = new Date();
         var diffMs = agora.getTime() - dataHoraSolicitacao.getTime();
         var tempoPendente = diffToTextES5(diffMs);
-
+        /*
         log.info('nomeColaborador: ' + nomeColaborador);
         log.info('tipoDesconto: ' + tipoDesconto);
         log.info('descricao: ' + descricao);
@@ -83,15 +83,16 @@ function servicetask29(attempt, message) {
         log.info('dtInclusao: ' + dtInclusao);
         log.info('tempoPendente: ' + tempoPendente);
         log.info('numFluig: ' + numFluig);
-
+        */
         var qtdEmailsEnviados = (hAPI.getCardValue("qtdEmailsEnviados") + "").trim();
         if (qtdEmailsEnviados == "" || qtdEmailsEnviados == null) qtdEmailsEnviados = "0";
-        log.info('qtdEmailsEnviados: ' + qtdEmailsEnviados);
+        //log.info('qtdEmailsEnviados: ' + qtdEmailsEnviados);
 
         hAPI.setCardValue('qtdEmailsEnviados', (parseInt(qtdEmailsEnviados, 10) + 1) + "");
-        // enviaEmailAtraso(wkproces);
 
-        log.info('FINAL 2 DESCONTOS POR FUNCIONÁRIO - ATIVIDADE ENVIA WF GERENTE/DIRETOR **********************');
+        enviaEmailAtraso(numFluig, parseInt(qtdEmailsEnviados, 10) > 0, nomeColaborador, tipoDesconto, descricao, valTotalDesconto, dtInclusao, tempoPendente);
+
+        //log.info('FINAL 2 DESCONTOS POR FUNCIONÁRIO - ATIVIDADE ENVIA WF GERENTE/DIRETOR **********************');
     } catch (error) {
         log.warn("--servicetask29-- error: " + error);
         log.warn("--servicetask29-- error.message: " + error.message);
@@ -108,47 +109,90 @@ function getCurrentTime() {
     return new java.text.SimpleDateFormat("HH:mm").format(new java.util.Date());
 }
 
-function sendMailProtheusSuccess(wkproces, funcionarioMatricula) {
-    var numFluig = hAPI.getCardValue("solicitacao_fluig");
+function enviaEmailAtraso(wkproces, avisaDiretor, nomeFunc, tipoDesconto, descDesconto, valTotDesconto, dtInclusao, tempoPendente) {
 
-    var soliEmail = hAPI.getCardValue("email_responsavel");
     var sender = "fluig.workflow";
     var serverUrl = fluigAPI.getPageService().getServerURL();
     var processInstanceID = serverUrl + "/portal/p/1/pageworkflowview?app_ecm_workflowview_detailsProcessInstanceID=" + wkproces;
     var parametros = new java.util.HashMap();
     var destinatarios = new java.util.ArrayList();
     var subject = "";
-    var codCentroCusto = hAPI.getCardValue("codigo_ccusto");
-    var listEmailsCentroCusto = getListEmailCentroCusto(codCentroCusto);
+    var grupoAprovadorCC = hAPI.getCardValue("grupoAprovadorCC");
+    var listEmailsCentroCusto = getListEmailCentroCusto(grupoAprovadorCC);
     try {
-        subject = " Admissão de funcionário realizada - Fluig: " + wkproces + "";
+        subject = " Solicitação de Desconto Pendente de Aprovação - Fluig: " + wkproces + "";
         parametros.put("subject", subject);
         parametros.put("processUrl", processInstanceID);
-        parametros.put("numeroFluig", numFluig);
-        parametros.put("nomeFunc", funcionarioNome);
-        parametros.put("cpfFunc", funcionarioCPF);
-        parametros.put("matriculaProtheus", funcionarioMatricula);
-        parametros.put("dataAdmissao", funcionarioDataAdmissao);
-        parametros.put("funcaoFunc", funcionarioFuncao);
-        parametros.put("ccustoFunc", funcionarioCCusto);
-        destinatarios.add(soliEmail);
-        destinatarios.add("dpmatriz@elcop.eng.br");
+        parametros.put("numeroFluig", wkproces);
+        parametros.put("nomeFunc", nomeFunc);
+        parametros.put("tipoDesconto", tipoDesconto);
+        parametros.put("descDesconto", descDesconto);
+        parametros.put("valTotDesconto", valTotDesconto);
+        parametros.put("dtInclusao", dtInclusao);
+        parametros.put("tempoPendente", tempoPendente);
 
-        log.info("Lista de e-mails do centro de custo: ");
-        log.dir(listEmailsCentroCusto);
+        if (avisaDiretor) {
+            //destinatarios.add("dpmatriz@elcop.eng.br"); // ADICIONAR DIRETOR
+        }
+
+        log.info("Lista de e-mails do centro de custo para descontos: ");
+		log.dir(listEmailsCentroCusto);
 
         // Adiciona emails dos usuários do centro de custo como destinatários.
         for (var j = 0; j < listEmailsCentroCusto.length; j++) {
-            log.info("Adicionando destinatario: ");
-            log.info(listEmailsCentroCusto[j] + "")
-
             destinatarios.add(listEmailsCentroCusto[j] + "");
         }
 
-        notifier.notify(sender, "admissao_realizada", parametros, destinatarios, "text/html");
+        notifier.notify(sender, "aprov_desconto_atraso", parametros, destinatarios, "text/html");
     } catch (e) {
-        log.warn("--sendMailProtheusSucess - catch e: " + e);
-        log.warn("--sendMailProtheusSucess - catch e.message: " + e.message);
-        log.warn("--sendMailProtheusSucess - catch lineNumber: " + e.lineNumber);
+        log.warn("--enviaEmailAtraso - catch e: " + e);
+        log.warn("--enviaEmailAtraso - catch e.message: " + e.message);
+        log.warn("--enviaEmailAtraso - catch lineNumber: " + e.lineNumber);
     }
+}
+
+function getListEmailCentroCusto(grupoAprovadorCC) {
+    var codGrupo = "";
+
+    if (grupoAprovadorCC.split(':').length > 2) {
+        codGrupo = grupoAprovadorCC.split(':')[2];
+    }
+
+    if (!(codGrupo+"").trim()) {
+        codGrupo = "erros_processos_ti";
+    }
+
+    var constrainstsGrupo = new Array();
+
+    constrainstsGrupo.push(DatasetFactory.createConstraint("colleagueGroupPK.groupId", (codGrupo+"").trim(), (codGrupo+"").trim(), ConstraintType.MUST));
+
+    var datasetGrupo = DatasetFactory.getDataset("colleagueGroup", null, constrainstsGrupo, null);
+
+    var emailList = new Array();
+
+    if (datasetGrupo.rowsCount > 0) {
+        for (var i = 0; i < datasetGrupo.rowsCount; i++) {
+            var matriculaUsuario = datasetGrupo.getValue(i, "colleagueGroupPK.colleagueId")
+
+            if (matriculaUsuario != "" && matriculaUsuario != null) {
+                var constrainstsUsuario = new Array();
+
+                constrainstsUsuario.push(DatasetFactory.createConstraint("colleaguePK.colleagueId", (matriculaUsuario+"").trim(), (matriculaUsuario+"").trim(), ConstraintType.MUST));
+
+                var datasetUsuario = DatasetFactory.getDataset("colleague", null, constrainstsUsuario, null);
+
+                if (datasetUsuario.rowsCount > 0) {
+                    for (var j = 0; j < datasetUsuario.rowsCount; j++) {
+                        var email = datasetUsuario.getValue(j, "mail");
+
+                        if (email != "" && email != null) {
+                            emailList.push((email+"").trim());
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return emailList;
 }
