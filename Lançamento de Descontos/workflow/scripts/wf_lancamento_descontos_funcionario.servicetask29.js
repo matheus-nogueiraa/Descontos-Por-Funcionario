@@ -132,17 +132,24 @@ function enviaEmailAtraso(wkproces, avisaDiretor, nomeFunc, tipoDesconto, descDe
         parametros.put("tempoPendente", tempoPendente);
 
         if (avisaDiretor) {
-            //destinatarios.add("dpmatriz@elcop.eng.br"); // ADICIONAR DIRETOR
-        }
+            listEmailsDiretor = getEmailDiretor(grupoAprovadorCC);
 
-        log.info("Lista de e-mails do centro de custo para descontos: ");
-		log.dir(listEmailsCentroCusto);
+            for (var x = 0; x < listEmailsDiretor.length; x++) {
+                destinatarios.add(listEmailsDiretor[x] + "");
+            }
+        }
 
         // Adiciona emails dos usuários do centro de custo como destinatários.
         for (var j = 0; j < listEmailsCentroCusto.length; j++) {
             destinatarios.add(listEmailsCentroCusto[j] + "");
         }
 
+        /*
+        log.info("LOG 2 USER EMAIL DESCONTO")
+        log.info(wkproces)
+        log.info("Lista de e-mails do centro de custo para descontos: ");
+        log.dir(destinatarios);
+        */
         notifier.notify(sender, "aprov_desconto_atraso", parametros, destinatarios, "text/html");
     } catch (e) {
         log.warn("--enviaEmailAtraso - catch e: " + e);
@@ -158,13 +165,13 @@ function getListEmailCentroCusto(grupoAprovadorCC) {
         codGrupo = grupoAprovadorCC.split(':')[2];
     }
 
-    if (!(codGrupo+"").trim()) {
+    if (!(codGrupo + "").trim()) {
         codGrupo = "erros_processos_ti";
     }
 
     var constrainstsGrupo = new Array();
 
-    constrainstsGrupo.push(DatasetFactory.createConstraint("colleagueGroupPK.groupId", (codGrupo+"").trim(), (codGrupo+"").trim(), ConstraintType.MUST));
+    constrainstsGrupo.push(DatasetFactory.createConstraint("colleagueGroupPK.groupId", (codGrupo + "").trim(), (codGrupo + "").trim(), ConstraintType.MUST));
 
     var datasetGrupo = DatasetFactory.getDataset("colleagueGroup", null, constrainstsGrupo, null);
 
@@ -177,7 +184,7 @@ function getListEmailCentroCusto(grupoAprovadorCC) {
             if (matriculaUsuario != "" && matriculaUsuario != null) {
                 var constrainstsUsuario = new Array();
 
-                constrainstsUsuario.push(DatasetFactory.createConstraint("colleaguePK.colleagueId", (matriculaUsuario+"").trim(), (matriculaUsuario+"").trim(), ConstraintType.MUST));
+                constrainstsUsuario.push(DatasetFactory.createConstraint("colleaguePK.colleagueId", (matriculaUsuario + "").trim(), (matriculaUsuario + "").trim(), ConstraintType.MUST));
 
                 var datasetUsuario = DatasetFactory.getDataset("colleague", null, constrainstsUsuario, null);
 
@@ -186,7 +193,51 @@ function getListEmailCentroCusto(grupoAprovadorCC) {
                         var email = datasetUsuario.getValue(j, "mail");
 
                         if (email != "" && email != null) {
-                            emailList.push((email+"").trim());
+                            emailList.push((email + "").trim());
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return emailList;
+}
+
+function getEmailDiretor(grupoAprovadorCC) {
+    var codGrupo = "";
+
+    if (grupoAprovadorCC.indexOf('121') !== -1) {
+        codGrupo = "diretorAdministracao"
+    } else {
+        codGrupo = "diretorOperacao"
+    }
+
+    var constrainstsGrupo = new Array();
+
+    constrainstsGrupo.push(DatasetFactory.createConstraint("colleagueGroupPK.groupId", (codGrupo + "").trim(), (codGrupo + "").trim(), ConstraintType.MUST));
+
+    var datasetGrupo = DatasetFactory.getDataset("colleagueGroup", null, constrainstsGrupo, null);
+
+    var emailList = new Array();
+
+    if (datasetGrupo.rowsCount > 0) {
+        for (var i = 0; i < datasetGrupo.rowsCount; i++) {
+            var matriculaUsuario = datasetGrupo.getValue(i, "colleagueGroupPK.colleagueId")
+
+            if (matriculaUsuario != "" && matriculaUsuario != null) {
+                var constrainstsUsuario = new Array();
+
+                constrainstsUsuario.push(DatasetFactory.createConstraint("colleaguePK.colleagueId", (matriculaUsuario + "").trim(), (matriculaUsuario + "").trim(), ConstraintType.MUST));
+
+                var datasetUsuario = DatasetFactory.getDataset("colleague", null, constrainstsUsuario, null);
+
+                if (datasetUsuario.rowsCount > 0) {
+                    for (var j = 0; j < datasetUsuario.rowsCount; j++) {
+                        var email = datasetUsuario.getValue(j, "mail");
+
+                        if (email != "" && email != null) {
+                            emailList.push((email + "").trim());
                         }
                     }
                 }

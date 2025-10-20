@@ -29,7 +29,7 @@
     <processDefinitionVersionPK>
       <companyId>1</companyId>
       <processId>Lançamento de Descontos por Funcionário</processId>
-      <version>33</version>
+      <version>36</version>
     </processDefinitionVersionPK>
     <versionDescription></versionDescription>
     <formId>340891</formId>
@@ -209,7 +209,7 @@
       <stateName>Gerente Aprova ou Abona</stateName>
       <stateDescription>Gerente Aprova ou Abona</stateDescription>
       <instruction></instruction>
-      <deadlineTime>172800</deadlineTime>
+      <deadlineTime>60</deadlineTime>
       <deadlineFieldName></deadlineFieldName>
       <joint>false</joint>
       <agreementPercentage>0</agreementPercentage>
@@ -551,7 +551,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>1</expressionOrder>
-        <version>33</version>
+        <version>36</version>
         <sequence>18</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -563,7 +563,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>2</expressionOrder>
-        <version>33</version>
+        <version>36</version>
         <sequence>18</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -575,7 +575,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>1</expressionOrder>
-        <version>33</version>
+        <version>36</version>
         <sequence>24</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -587,7 +587,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>2</expressionOrder>
-        <version>33</version>
+        <version>36</version>
         <sequence>24</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -1302,16 +1302,22 @@ function enviaEmailAtraso(wkproces, avisaDiretor, nomeFunc, tipoDesconto, descDe
         parametros.put(&quot;tempoPendente&quot;, tempoPendente);
 
         if (avisaDiretor) {
-            //destinatarios.add(&quot;dpmatriz@elcop.eng.br&quot;); // ADICIONAR DIRETOR
-        }
+            listEmailsDiretor = getEmailDiretor(grupoAprovadorCC);
 
-        log.info(&quot;Lista de e-mails do centro de custo para descontos: &quot;);
-		log.dir(listEmailsCentroCusto);
+            for (var x = 0; x &lt; listEmailsDiretor.length; x++) {
+                destinatarios.add(listEmailsDiretor[x] + &quot;&quot;);
+            }
+        }
 
         // Adiciona emails dos usuários do centro de custo como destinatários.
         for (var j = 0; j &lt; listEmailsCentroCusto.length; j++) {
             destinatarios.add(listEmailsCentroCusto[j] + &quot;&quot;);
         }
+
+        log.info(&quot;LOG 2 USER EMAIL DESCONTO&quot;)
+        log.info(wkproces)
+        log.info(&quot;Lista de e-mails do centro de custo para descontos: &quot;);
+        log.dir(destinatarios);
 
         notifier.notify(sender, &quot;aprov_desconto_atraso&quot;, parametros, destinatarios, &quot;text/html&quot;);
     } catch (e) {
@@ -1328,13 +1334,13 @@ function getListEmailCentroCusto(grupoAprovadorCC) {
         codGrupo = grupoAprovadorCC.split(&apos;:&apos;)[2];
     }
 
-    if (!(codGrupo+&quot;&quot;).trim()) {
+    if (!(codGrupo + &quot;&quot;).trim()) {
         codGrupo = &quot;erros_processos_ti&quot;;
     }
 
     var constrainstsGrupo = new Array();
 
-    constrainstsGrupo.push(DatasetFactory.createConstraint(&quot;colleagueGroupPK.groupId&quot;, (codGrupo+&quot;&quot;).trim(), (codGrupo+&quot;&quot;).trim(), ConstraintType.MUST));
+    constrainstsGrupo.push(DatasetFactory.createConstraint(&quot;colleagueGroupPK.groupId&quot;, (codGrupo + &quot;&quot;).trim(), (codGrupo + &quot;&quot;).trim(), ConstraintType.MUST));
 
     var datasetGrupo = DatasetFactory.getDataset(&quot;colleagueGroup&quot;, null, constrainstsGrupo, null);
 
@@ -1347,7 +1353,7 @@ function getListEmailCentroCusto(grupoAprovadorCC) {
             if (matriculaUsuario != &quot;&quot; &amp;&amp; matriculaUsuario != null) {
                 var constrainstsUsuario = new Array();
 
-                constrainstsUsuario.push(DatasetFactory.createConstraint(&quot;colleaguePK.colleagueId&quot;, (matriculaUsuario+&quot;&quot;).trim(), (matriculaUsuario+&quot;&quot;).trim(), ConstraintType.MUST));
+                constrainstsUsuario.push(DatasetFactory.createConstraint(&quot;colleaguePK.colleagueId&quot;, (matriculaUsuario + &quot;&quot;).trim(), (matriculaUsuario + &quot;&quot;).trim(), ConstraintType.MUST));
 
                 var datasetUsuario = DatasetFactory.getDataset(&quot;colleague&quot;, null, constrainstsUsuario, null);
 
@@ -1356,7 +1362,7 @@ function getListEmailCentroCusto(grupoAprovadorCC) {
                         var email = datasetUsuario.getValue(j, &quot;mail&quot;);
 
                         if (email != &quot;&quot; &amp;&amp; email != null) {
-                            emailList.push((email+&quot;&quot;).trim());
+                            emailList.push((email + &quot;&quot;).trim());
                         }
                     }
                 }
@@ -1365,7 +1371,52 @@ function getListEmailCentroCusto(grupoAprovadorCC) {
     }
 
     return emailList;
-}</eventDescription>
+}
+
+function getEmailDiretor(grupoAprovadorCC) {
+    var codGrupo = &quot;&quot;;
+
+    if (grupoAprovadorCC.indexOf(&apos;121&apos;) !== -1) {
+        codGrupo = &quot;diretorAdministracao&quot;
+    } else {
+        codGrupo = &quot;diretorOperacao&quot;
+    }
+
+    var constrainstsGrupo = new Array();
+
+    constrainstsGrupo.push(DatasetFactory.createConstraint(&quot;colleagueGroupPK.groupId&quot;, (codGrupo + &quot;&quot;).trim(), (codGrupo + &quot;&quot;).trim(), ConstraintType.MUST));
+
+    var datasetGrupo = DatasetFactory.getDataset(&quot;colleagueGroup&quot;, null, constrainstsGrupo, null);
+
+    var emailList = new Array();
+
+    if (datasetGrupo.rowsCount &gt; 0) {
+        for (var i = 0; i &lt; datasetGrupo.rowsCount; i++) {
+            var matriculaUsuario = datasetGrupo.getValue(i, &quot;colleagueGroupPK.colleagueId&quot;)
+
+            if (matriculaUsuario != &quot;&quot; &amp;&amp; matriculaUsuario != null) {
+                var constrainstsUsuario = new Array();
+
+                constrainstsUsuario.push(DatasetFactory.createConstraint(&quot;colleaguePK.colleagueId&quot;, (matriculaUsuario + &quot;&quot;).trim(), (matriculaUsuario + &quot;&quot;).trim(), ConstraintType.MUST));
+
+                var datasetUsuario = DatasetFactory.getDataset(&quot;colleague&quot;, null, constrainstsUsuario, null);
+
+                if (datasetUsuario.rowsCount &gt; 0) {
+                    for (var j = 0; j &lt; datasetUsuario.rowsCount; j++) {
+                        var email = datasetUsuario.getValue(j, &quot;mail&quot;);
+
+                        if (email != &quot;&quot; &amp;&amp; email != null) {
+                            emailList.push((email + &quot;&quot;).trim());
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return emailList;
+}
+</eventDescription>
     </WorkflowProcessEvent>
   </list>
   <list/>
@@ -1434,7 +1485,7 @@ function getListEmailCentroCusto(grupoAprovadorCC) {
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>33</version>
+        <version>36</version>
         <linkSequence>31</linkSequence>
         <bendSequence>1</bendSequence>
       </processLinkBendPK>
