@@ -4,7 +4,18 @@
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fluig-style-guide/css/fluig-style-guide.min.css">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
 	<link rel="stylesheet" href="./style.css">
+	<link rel="stylesheet" href="https://fluig.elcop.eng.br:8443/style-guide/css/fluig-style-guide.min.css">
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js" charset="utf-8"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js" charset="utf-8"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+	<script type="text/javascript" src="/webdesk/vcXMLRPC.js"></script>
 	<script src="./script.js"></script>
+	<script src="./functions.js"></script>
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
@@ -58,6 +69,9 @@
 
 			<input type="hidden" name="grupoAprovadorCC" id="grupoAprovadorCC" readonly>
 			<input type="hidden" name="qtdEmailsEnviados" id="qtdEmailsEnviados" readonly value="1">
+
+			<input type="hidden" name="dataHoraAssinaturaFunc" id="dataHoraAssinaturaFunc">
+			<input type="hidden" name="recusaAssinatura" id="recusaAssinatura">
 
 			<!-- Dados do Solicitante -->
 			<div class="panel panel-primary">
@@ -257,34 +271,7 @@
 			</div>
 
 			<!-- Testemunha 2 -->
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<h5 class="panel-title">Testemunha 2</h5>
-				</div>
-				<div class="panel-body">
-					<div class="row">
-						<div class="form-group col-md-4">
-							<label>Nome</label>
-							<input type="text" name="test2_nome" id="test2_nome" class="form-control" readonly>
-						</div>
-						<div class="form-group col-md-4">
-							<label>CPF</label>
-							<input type="text" name="test2_cpf" id="test2_cpf" class="form-control" readonly>
-						</div>
-						<div class="form-group col-md-4">
-							<label>Cargo/Setor</label>
-							<input type="text" name="test2_cargo" id="test2_cargo" class="form-control" readonly>
-						</div>
-					</div>
-					<div class="row" style="margin-top:8px;">
-						<div class="col-md-12">
-							<img id="assinaturaTestemunha2_img" src="" alt="Assinatura Testemunha 2"
-								style="max-width:100%; border:1px solid #ddd;">
-							<small class="text-muted">Campo técnico: <code>assinaturaTestemunha2_base64</code></small>
-						</div>
-					</div>
-				</div>
-			</div>
+			
 
 			<!-- Foto e Evidências -->
 			<div class="panel panel-default">
@@ -356,6 +343,42 @@
 								<textarea rows="4" class="form-control" name="obsAnaliseAprovadorGerente"
 									id="obsAnaliseAprovadorGerente" maxlength="300"></textarea>
 							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="panel panel-default" id="panelTestemunha2">
+				<div class="panel-heading">
+					<h5 class="panel-title">Testemunha 2</h5>
+				</div>
+				<div class="panel-body">
+					<div class="row">
+						<div class="form-group col-md-4">
+							<label>Nome</label>
+							<input type="text" name="test2_nome" id="test2_nome" class="form-control" readonly>
+						</div>
+						<div class="form-group col-md-4">
+							<label>CPF</label>
+							<input type="text" name="test2_cpf" id="test2_cpf" class="form-control">
+						</div>
+						<div class="form-group col-md-4">
+							<label>Cargo/Setor</label>
+							<input type="text" name="test2_cargo" id="test2_cargo" class="form-control">
+						</div>
+					</div>
+					<div class="row" style="margin-top:8px;">
+						<div class="col-md-8">
+							<label>Assinatura</label>
+								<canvas id="signature-pad-test2"
+									style="border:1px solid #ccc; width:100%; height:120px;"></canvas>
+								<button class="btn btn-danger"
+									onclick="clearPad('signature-pad-test2')">Limpar</button>
+						</div>
+						<div class="col-md-12">
+							<!-- <img id="assinaturaTestemunha2_img" src="" alt="Assinatura Testemunha 2"
+								style="max-width:100%; border:1px solid #ddd;"> -->
+							<small class="text-muted">Campo técnico: <code>assinaturaTestemunha2_base64</code></small>
 						</div>
 					</div>
 				</div>

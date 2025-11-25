@@ -63,6 +63,9 @@ async function iniciarProcesso() {
     const confirmDialog = await exibirConfirmacao(CONFIRMATION_MESSAGE);
     if (!confirmDialog) return;
 
+    const matricula = $("#matriculaFunc").val() || "";
+    const dadosFuncionario = obterDadosFuncionarioProtheus(matricula);
+
     $("#loadingOverlay").show();
 
     const confirmacao = await coletarConfirmacao();
@@ -81,7 +84,7 @@ async function iniciarProcesso() {
       }
       const faltantes = (confirmacao.testemunhas || []).filter(t => !t?.nome || !t?.cpf || !t?.assinaturaBase64);
       if (faltantes.length > 0) {
-        toastMsg('Atenção', 'Preencha nome, CPF e assinatura das duas testemunhas.', 'warning');
+        toastMsg('Atenção', 'Preencha nome, CPF e assinatura da testemunha.', 'warning');
         $("#loadingOverlay").hide();
         return;
       }
@@ -89,7 +92,7 @@ async function iniciarProcesso() {
 
     const [fotoData, pdfBase64] = await Promise.all([
       processarFoto(),
-      gerarRelatorioPDFBase64()
+      gerarRelatorioPDFBase64(dadosFuncionario)
     ]);
 
     if (!fotoData) {
@@ -153,6 +156,12 @@ async function exibirConfirmacao(mensagem) {
     confirmButtonText: "Sim",
     denyButtonText: "Não",
   });
+
+  if (result.isConfirmed) {
+    const dataHoraAtual = new Date().toLocaleString("pt-BR");
+    $("#dataHoraAssinaturaFunc").val(dataHoraAtual);
+  }
+
   return result.isConfirmed;
 }
 
@@ -215,7 +224,8 @@ async function montarConstraints({ fotoData, assinaturaData, pdfBase64, parcelas
   const mesAtual = String(dataAtual.getMonth() + 1).padStart(2, '0');
   const periodoAtual = $('#periodoAtual').text() || `${anoAtual?.trim()}${mesAtual?.trim()}`
   const grupoAprovador = $('#centroCustoDesconto')?.val()?.trim() || "Pool:Group:erros_processos_ti";
-
+  const recusaAssinatura = $('input[name="recusaAssinatura"]:checked').val()
+  
   const valSalarioTxt =
     (document.getElementById("salario")?.value) ||
     (document.getElementById("salarioModal")?.innerText) ||
@@ -268,6 +278,7 @@ async function montarConstraints({ fotoData, assinaturaData, pdfBase64, parcelas
   constraints.push(DatasetFactory.createConstraint("formField", "assinaturaTestemunha2_base64", (t2.assinaturaBase64 ? (t2.assinaturaBase64.split(",")[1] || "") : ""), ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("formField", "confirmacao_tipo_view", confirmacao?.tipoConfirmacao || "", ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("formField", "confirmacao_motivoRecusa_view", confirmacao?.motivoRecusa || "", ConstraintType.MUST));
+  constraints.push(DatasetFactory.createConstraint("formField", "recusaAssinatura", recusaAssinatura, ConstraintType.MUST));
 
   const evidNames = [];
   if (fotoData?.fotoBase64) {
@@ -373,7 +384,19 @@ function obterDadosUsuarioLogado() {
   }
 }
 
-async function gerarRelatorioPDFBase64() {
+function obterDadosFuncionarioProtheus(matricula) {
+  const constraints = [];
+  constraints.push(DatasetFactory.createConstraint("matricula", matricula, matricula, ConstraintType.MUST));
+  const dataset = DatasetFactory.getDataset("ds_consulta_funcionario_protheus", null, constraints, null);
+  if (dataset && dataset.values && dataset.values.length > 0) {
+    var nome = (dataset.values[0]['RA_NOME '] || dataset.values[0]['RA_NOMECMP'] || "").trim();
+    var cpf = (dataset.values[0]['RA_CIC'] || "").trim();
+    return { nome, cpf, showDateTime: true };
+  }
+}
+
+
+async function gerarRelatorioPDFBase64(dadosFuncionario) {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -437,7 +460,7 @@ async function gerarRelatorioPDFBase64() {
     doc.setDrawColor(180, 180, 180);
     doc.line(x, lineY, x + w, lineY);
   }
-  function addSignatureBlock(title, { hiddenInputId, canvasId }) {
+  function addSignatureBlock(title, { hiddenInputId, canvasId, additionalInfo, signType }) {
     doc.setFont("helvetica", "bold").setFontSize(13).setTextColor(...primaryColor);
     doc.text(title, margin, y);
     y += 5;
@@ -455,6 +478,32 @@ async function gerarRelatorioPDFBase64() {
     if (!imgData) { addP("Não informado."); y -= lineSpacing - 10; return; }
     const { usedH } = addImageSafe(imgData, 20);
     addUnderline(usedH);
+
+    // Adiciona informações adicionais (nome, CPF, data e hora) com base no tipo de assinatura
+    const currentDateTime = new Date().toLocaleString("pt-BR"); // Obtém data e hora atual
+    doc.setFont("helvetica", "normal").setFontSize(10).setTextColor(0, 0, 0);
+    y += 5;
+
+    if (signType === "funcionario") {
+      // Dados do funcionário do Protheus
+      doc.text(`Nome: ${dadosFuncionario.nome}`, pageWidth / 2, y, { align: "center" });
+      y += lineSpacing;
+      doc.text(`CPF: ${dadosFuncionario.cpf}`, pageWidth / 2, y, { align: "center" });
+      y += lineSpacing;
+      doc.text(`Data e Hora: ${currentDateTime}`, pageWidth / 2, y, { align: "center" });
+      y += lineSpacing;
+    } 
+    else if (signType === "testemunha1") {
+      // Dados do usuário logado (solicitante)
+      const nomeUsuario = document.getElementById("nomeUsuario").value || "";
+      const matriculaUsuario = document.getElementById("matriculaUsuario").value || "";
+      doc.text(`Nome: ${nomeUsuario}`, pageWidth / 2, y, { align: "center" });
+      y += lineSpacing;
+      doc.text(`Matrícula: ${matriculaUsuario}`, pageWidth / 2, y, { align: "center" });
+      y += lineSpacing;
+      doc.text(`Data e Hora: ${currentDateTime}`, pageWidth / 2, y, { align: "center" });
+      y += lineSpacing;
+    } 
   }
 
   const filial = (document.getElementById("codFilial")?.value || "").trim();
@@ -529,21 +578,43 @@ async function gerarRelatorioPDFBase64() {
     }
   }
 
-  addSignatureBlock("Assinatura do Funcionário", {
-    hiddenInputId: "assinaturaFuncionario_base64",
-    canvasId: "signature-pad-func"
-  });
-
   const recusa = document.querySelector('input[name="recusaAssinatura"]:checked')?.value === "sim";
+  if (!recusa) {
+    // Adiciona a assinatura do funcionário apenas se não houver recusa
+    addSignatureBlock("Assinatura do Funcionário", {
+      hiddenInputId: "assinaturaFuncionario_base64",
+      canvasId: "signature-pad-func",
+      signType: "funcionario"
+    });
+  }
+
   if (recusa) {
+    // Adiciona a assinatura da Testemunha 1
+    var nomeTest1 = $('#test1_nome').val() || "";
+    var cpfTest1 = $('#test1_cpf').val() || "";
+
     addSignatureBlock("Assinatura da Testemunha 1", {
       hiddenInputId: "assinaturaTestemunha1_base64",
-      canvasId: "signature-pad-test1"
+      canvasId: "signature-pad-test1",
+      additionalInfo: {
+        nome: nomeTest1,
+        cpf: cpfTest1
+      },
+      signType: "testemunha1"
     });
-    addSignatureBlock("Assinatura da Testemunha 2", {
-      hiddenInputId: "assinaturaTestemunha2_base64",
-      canvasId: "signature-pad-test2"
-    });
+
+    // Adiciona a assinatura da Testemunha 2
+    // var nomeTest2 = $('#test2_nome').val() || "";
+    // var cpfTest2 = $('#test2_cpf').val() || "";
+    // addSignatureBlock("Assinatura da Testemunha 2", {
+    //   hiddenInputId: "assinaturaTestemunha2_base64",
+    //   canvasId: "signature-pad-test2",
+    //   additionalInfo: {
+    //     nome: nomeTest2,
+    //     cpf: cpfTest2
+    //   },
+    //   signType: "testemunha2"
+    // });
   }
 
   const now = new Date();

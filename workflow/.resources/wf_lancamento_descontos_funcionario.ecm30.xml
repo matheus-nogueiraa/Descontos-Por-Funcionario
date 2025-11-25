@@ -15,7 +15,7 @@
     <snapshotFrequency>0</snapshotFrequency>
     <baseDay>0</baseDay>
     <baseMonth>0</baseMonth>
-    <periodId>DiasCorridos_24h</periodId>
+    <periodId>Default</periodId>
     <uniqueCardVersion>false</uniqueCardVersion>
     <keyWord></keyWord>
     <complementsLevel>1</complementsLevel>
@@ -29,10 +29,10 @@
     <processDefinitionVersionPK>
       <companyId>1</companyId>
       <processId>Lançamento de Descontos por Funcionário</processId>
-      <version>2</version>
+      <version>36</version>
     </processDefinitionVersionPK>
     <versionDescription></versionDescription>
-    <formId>419542</formId>
+    <formId>340891</formId>
     <editionMode>true</editionMode>
     <updateAttachmentsVersion>false</updateAttachmentsVersion>
     <controlsAttachmentsSecurity>false</controlsAttachmentsSecurity>
@@ -77,7 +77,7 @@
       <notifyRequisitionerFollowUp>false</notifyRequisitionerFollowUp>
       <automatic>false</automatic>
       <positionX>90</positionX>
-      <positionY>144</positionY>
+      <positionY>140</positionY>
       <forecastedEffortType>0</forecastedEffortType>
       <forecastedEffort>0</forecastedEffort>
       <notifyManagerFollowUp>false</notifyManagerFollowUp>
@@ -125,8 +125,8 @@
       <notifyAuthorityFollowUp>true</notifyAuthorityFollowUp>
       <notifyRequisitionerFollowUp>false</notifyRequisitionerFollowUp>
       <automatic>false</automatic>
-      <positionX>776</positionX>
-      <positionY>128</positionY>
+      <positionX>780</positionX>
+      <positionY>122</positionY>
       <forecastedEffortType>0</forecastedEffortType>
       <forecastedEffort>0</forecastedEffort>
       <notifyManagerFollowUp>false</notifyManagerFollowUp>
@@ -209,7 +209,7 @@
       <stateName>Gerente Aprova ou Abona</stateName>
       <stateDescription>Gerente Aprova ou Abona</stateDescription>
       <instruction></instruction>
-      <deadlineTime>2880</deadlineTime>
+      <deadlineTime>60</deadlineTime>
       <deadlineFieldName></deadlineFieldName>
       <joint>false</joint>
       <agreementPercentage>0</agreementPercentage>
@@ -229,8 +229,8 @@
       <notifyAuthorityFollowUp>true</notifyAuthorityFollowUp>
       <notifyRequisitionerFollowUp>false</notifyRequisitionerFollowUp>
       <automatic>false</automatic>
-      <positionX>440</positionX>
-      <positionY>120</positionY>
+      <positionX>410</positionX>
+      <positionY>115</positionY>
       <forecastedEffortType>0</forecastedEffortType>
       <forecastedEffort>0</forecastedEffort>
       <notifyManagerFollowUp>false</notifyManagerFollowUp>
@@ -280,8 +280,8 @@
       <notifyAuthorityFollowUp>true</notifyAuthorityFollowUp>
       <notifyRequisitionerFollowUp>false</notifyRequisitionerFollowUp>
       <automatic>false</automatic>
-      <positionX>440</positionX>
-      <positionY>270</positionY>
+      <positionX>410</positionX>
+      <positionY>267</positionY>
       <forecastedEffortType>0</forecastedEffortType>
       <forecastedEffort>0</forecastedEffort>
       <notifyManagerFollowUp>false</notifyManagerFollowUp>
@@ -331,8 +331,8 @@
       <notifyAuthorityFollowUp>true</notifyAuthorityFollowUp>
       <notifyRequisitionerFollowUp>false</notifyRequisitionerFollowUp>
       <automatic>false</automatic>
-      <positionX>160</positionX>
-      <positionY>120</positionY>
+      <positionX>210</positionX>
+      <positionY>115</positionY>
       <forecastedEffortType>0</forecastedEffortType>
       <forecastedEffort>0</forecastedEffort>
       <notifyManagerFollowUp>false</notifyManagerFollowUp>
@@ -382,8 +382,8 @@
       <notifyAuthorityFollowUp>true</notifyAuthorityFollowUp>
       <notifyRequisitionerFollowUp>false</notifyRequisitionerFollowUp>
       <automatic>false</automatic>
-      <positionX>866</positionX>
-      <positionY>168</positionY>
+      <positionX>870</positionX>
+      <positionY>162</positionY>
       <forecastedEffortType>0</forecastedEffortType>
       <forecastedEffort>0</forecastedEffort>
       <notifyManagerFollowUp>false</notifyManagerFollowUp>
@@ -415,8 +415,8 @@
       <subProcessId></subProcessId>
       <formFolder>0</formFolder>
       <automatic>true</automatic>
-      <positionX>1024</positionX>
-      <positionY>110</positionY>
+      <positionX>1020</positionX>
+      <positionY>106</positionY>
       <inhibitTransfer>false</inhibitTransfer>
       <stateType>1</stateType>
       <bpmnType>120</bpmnType>
@@ -440,33 +440,8 @@
       <subProcessId></subProcessId>
       <formFolder>0</formFolder>
       <automatic>true</automatic>
-      <positionX>617</positionX>
-      <positionY>104</positionY>
-      <inhibitTransfer>false</inhibitTransfer>
-      <stateType>1</stateType>
-      <bpmnType>120</bpmnType>
-      <signalId>0</signalId>
-      <openInstances>0</openInstances>
-      <destinationStates/>
-      <digitalSignature>false</digitalSignature>
-    </ProcessState>
-    <ProcessState>
-      <processStatePK>
-        <companyId>1</companyId>
-        <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>1</version>
-        <sequence>35</sequence>
-      </processStatePK>
-      <stateName>Tipo Desconto</stateName>
-      <stateDescription>Tipo Desconto</stateDescription>
-      <joint>false</joint>
-      <initialState>false</initialState>
-      <transferAttachments>false</transferAttachments>
-      <subProcessId></subProcessId>
-      <formFolder>0</formFolder>
-      <automatic>true</automatic>
-      <positionX>318</positionX>
-      <positionY>104</positionY>
+      <positionX>600</positionX>
+      <positionY>99</positionY>
       <inhibitTransfer>false</inhibitTransfer>
       <stateType>1</stateType>
       <bpmnType>120</bpmnType>
@@ -504,8 +479,8 @@
       <notifyAuthorityFollowUp>false</notifyAuthorityFollowUp>
       <notifyRequisitionerFollowUp>false</notifyRequisitionerFollowUp>
       <automatic>false</automatic>
-      <positionX>1217</positionX>
-      <positionY>143</positionY>
+      <positionX>1220</positionX>
+      <positionY>140</positionY>
       <forecastedEffortType>0</forecastedEffortType>
       <forecastedEffort>0</forecastedEffort>
       <notifyManagerFollowUp>false</notifyManagerFollowUp>
@@ -551,8 +526,8 @@
       <notifyAuthorityFollowUp>false</notifyAuthorityFollowUp>
       <notifyRequisitionerFollowUp>false</notifyRequisitionerFollowUp>
       <automatic>false</automatic>
-      <positionX>629</positionX>
-      <positionY>258</positionY>
+      <positionX>612</positionX>
+      <positionY>27</positionY>
       <forecastedEffortType>0</forecastedEffortType>
       <forecastedEffort>0</forecastedEffort>
       <notifyManagerFollowUp>false</notifyManagerFollowUp>
@@ -576,7 +551,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>1</expressionOrder>
-        <version>2</version>
+        <version>36</version>
         <sequence>18</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -588,7 +563,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>2</expressionOrder>
-        <version>2</version>
+        <version>36</version>
         <sequence>18</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -600,7 +575,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>1</expressionOrder>
-        <version>2</version>
+        <version>36</version>
         <sequence>24</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -612,35 +587,11 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>2</expressionOrder>
-        <version>2</version>
+        <version>36</version>
         <sequence>24</sequence>
       </conditionProcessStatePK>
       <condition></condition>
       <destinationSequenceId>27</destinationSequenceId>
-      <conditionType>1</conditionType>
-    </ConditionProcessState>
-    <ConditionProcessState>
-      <conditionProcessStatePK>
-        <companyId>1</companyId>
-        <processId>wf_lancamento_descontos_funcionario</processId>
-        <expressionOrder>1</expressionOrder>
-        <version>2</version>
-        <sequence>35</sequence>
-      </conditionProcessStatePK>
-      <condition></condition>
-      <destinationSequenceId>9</destinationSequenceId>
-      <conditionType>1</conditionType>
-    </ConditionProcessState>
-    <ConditionProcessState>
-      <conditionProcessStatePK>
-        <companyId>1</companyId>
-        <processId>wf_lancamento_descontos_funcionario</processId>
-        <expressionOrder>2</expressionOrder>
-        <version>2</version>
-        <sequence>35</sequence>
-      </conditionProcessStatePK>
-      <condition></condition>
-      <destinationSequenceId>22</destinationSequenceId>
       <conditionType>1</conditionType>
     </ConditionProcessState>
   </list>
@@ -820,58 +771,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <version>1</version>
-        <linkSequence>37</linkSequence>
-      </processLinkPK>
-      <actionLabel></actionLabel>
-      <returnPermited>false</returnPermited>
-      <initialStateSequence>35</initialStateSequence>
-      <finalStateSequence>9</finalStateSequence>
-      <returnLabel></returnLabel>
-      <name></name>
-      <automaticLink>false</automaticLink>
-      <defaultLink>false</defaultLink>
-      <type>0</type>
-    </ProcessLink>
-    <ProcessLink>
-      <processLinkPK>
-        <companyId>1</companyId>
-        <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>1</version>
-        <linkSequence>38</linkSequence>
-      </processLinkPK>
-      <actionLabel></actionLabel>
-      <returnPermited>false</returnPermited>
-      <initialStateSequence>32</initialStateSequence>
-      <finalStateSequence>35</finalStateSequence>
-      <returnLabel></returnLabel>
-      <name></name>
-      <automaticLink>false</automaticLink>
-      <defaultLink>false</defaultLink>
-      <type>0</type>
-    </ProcessLink>
-    <ProcessLink>
-      <processLinkPK>
-        <companyId>1</companyId>
-        <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>1</version>
-        <linkSequence>39</linkSequence>
-      </processLinkPK>
-      <actionLabel></actionLabel>
-      <returnPermited>false</returnPermited>
-      <initialStateSequence>35</initialStateSequence>
-      <finalStateSequence>22</finalStateSequence>
-      <returnLabel></returnLabel>
-      <name></name>
-      <automaticLink>false</automaticLink>
-      <defaultLink>false</defaultLink>
-      <type>0</type>
-    </ProcessLink>
-    <ProcessLink>
-      <processLinkPK>
-        <companyId>1</companyId>
-        <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>1</version>
-        <linkSequence>40</linkSequence>
+        <linkSequence>33</linkSequence>
       </processLinkPK>
       <actionLabel></actionLabel>
       <returnPermited>false</returnPermited>
@@ -883,626 +783,26 @@
       <defaultLink>false</defaultLink>
       <type>0</type>
     </ProcessLink>
+    <ProcessLink>
+      <processLinkPK>
+        <companyId>1</companyId>
+        <processId>wf_lancamento_descontos_funcionario</processId>
+        <version>1</version>
+        <linkSequence>34</linkSequence>
+      </processLinkPK>
+      <actionLabel></actionLabel>
+      <returnPermited>false</returnPermited>
+      <initialStateSequence>32</initialStateSequence>
+      <finalStateSequence>22</finalStateSequence>
+      <returnLabel></returnLabel>
+      <name></name>
+      <automaticLink>false</automaticLink>
+      <defaultLink>false</defaultLink>
+      <type>0</type>
+    </ProcessLink>
   </list>
   <list/>
-  <list>
-    <WorkflowProcessEvent>
-      <workflowProcessEventPK>
-        <companyId>1</companyId>
-        <eventId>afterProcessCreate</eventId>
-        <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>1</version>
-      </workflowProcessEventPK>
-      <eventDescription>function afterProcessCreate(processId){&#xd;
-	hAPI.setCardValue(&apos;solicitacao_fluig&apos;, processId);&#xd;
-&#xd;
-    hAPI.setCardValue(&apos;timeInicioProcesso&apos;, getTimestamp());&#xd;
-}&#xd;
-&#xd;
-function getTimestamp() {&#xd;
-    return new java.util.Date().getTime();&#xd;
-}</eventDescription>
-    </WorkflowProcessEvent>
-    <WorkflowProcessEvent>
-      <workflowProcessEventPK>
-        <companyId>1</companyId>
-        <eventId>afterStateEntry</eventId>
-        <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>1</version>
-      </workflowProcessEventPK>
-      <eventDescription>function afterStateEntry(sequenceId) {&#xd;
-    hAPI.setCardValue(&apos;atividadeAtual&apos;, sequenceId);&#xd;
-    hAPI.setCardValue(&apos;timeAtividadeAtual&apos;, getTimestamp());&#xd;
-&#xd;
-    if (sequenceId == 10 || sequenceId == 27) { // Atividade Fim do Processo.&#xd;
-        hAPI.setCardValue(&apos;timeFimProcesso&apos;, getTimestamp());&#xd;
-    }&#xd;
-}&#xd;
-&#xd;
-function getTimestamp() {&#xd;
-    return new java.util.Date().getTime();&#xd;
-}&#xd;
-&#xd;
-function getCurrentDate() {&#xd;
-    return new java.text.SimpleDateFormat(&quot;yyyy-MM-dd&quot;).format(new java.util.Date());&#xd;
-}&#xd;
-&#xd;
-function getCurrentTime() {&#xd;
-    return new java.text.SimpleDateFormat(&quot;HH:mm&quot;).format(new java.util.Date());&#xd;
-}</eventDescription>
-    </WorkflowProcessEvent>
-    <WorkflowProcessEvent>
-      <workflowProcessEventPK>
-        <companyId>1</companyId>
-        <eventId>afterCancelProcess</eventId>
-        <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>1</version>
-      </workflowProcessEventPK>
-      <eventDescription>function afterCancelProcess(colleagueId,processId){&#xd;
-    hAPI.setCardValue(&apos;atividadeAtual&apos;, &apos;00&apos;);&#xd;
-    hAPI.setCardValue(&apos;timeAtividadeAtual&apos;, getTimestamp());&#xd;
-&#xd;
-    hAPI.setCardValue(&apos;timeFimProcesso&apos;, getTimestamp());&#xd;
-}&#xd;
-&#xd;
-function getTimestamp() {&#xd;
-    return new java.util.Date().getTime();&#xd;
-}&#xd;
-&#xd;
-function getCurrentDate() {&#xd;
-    return new java.text.SimpleDateFormat(&quot;yyyy-MM-dd&quot;).format(new java.util.Date());&#xd;
-}&#xd;
-&#xd;
-function getCurrentTime() {&#xd;
-    return new java.text.SimpleDateFormat(&quot;HH:mm&quot;).format(new java.util.Date());&#xd;
-}</eventDescription>
-    </WorkflowProcessEvent>
-    <WorkflowProcessEvent>
-      <workflowProcessEventPK>
-        <companyId>1</companyId>
-        <eventId>servicetask32</eventId>
-        <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>1</version>
-      </workflowProcessEventPK>
-      <eventDescription>function servicetask32(attempt, message) {&#xd;
-    try {&#xd;
-        var grupoAprovadorCC = (hAPI.getCardValue(&apos;grupoAprovadorCC&apos;) + &quot;&quot;).trim();&#xd;
-&#xd;
-        if (grupoAprovadorCC == &quot;&quot; || grupoAprovadorCC == null) {&#xd;
-            hAPI.setCardValue(&apos;grupoAprovadorCC&apos;, &quot;Pool:Group:erros_processos_ti&quot;);&#xd;
-        }&#xd;
-    } catch (error) {&#xd;
-        log.warn(&quot;--servicetask32-- error: &quot; + error);&#xd;
-        log.warn(&quot;--servicetask32-- error.message: &quot; + error.message);&#xd;
-        log.warn(&quot;--servicetask32-- error.lineNumber: &quot; + error.lineNumber);&#xd;
-    }&#xd;
-}</eventDescription>
-    </WorkflowProcessEvent>
-    <WorkflowProcessEvent>
-      <workflowProcessEventPK>
-        <companyId>1</companyId>
-        <eventId>servicetask9</eventId>
-        <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>1</version>
-      </workflowProcessEventPK>
-      <eventDescription>function servicetask9(attempt, message) {&#xd;
-    try {&#xd;
-        log.info(&apos;INTEGRAÇÃO PROTHEUS - Lançamento de Descontos - servicetask9&apos;);&#xd;
-&#xd;
-        // ---------- Coleta de campos ----------&#xd;
-        var codFilial = (hAPI.getCardValue(&apos;codFilial&apos;) + &apos;&apos;).trim();&#xd;
-        var empresa = obterEmpresa(codFilial);&#xd;
-        var matricula = (hAPI.getCardValue(&apos;matriculaColaborador&apos;) + &apos;&apos;).trim();&#xd;
-        var roteiro = valorOuPadrao(hAPI.getCardValue(&apos;roteiro&apos;), &apos;FOL&apos;);&#xd;
-        var numpagto = valorOuPadrao(hAPI.getCardValue(&apos;numpagto&apos;), &apos;01&apos;);&#xd;
-        var codVerba = (hAPI.getCardValue(&apos;codVerba&apos;) + &apos;&apos;).trim();&#xd;
-        var tipo1 = &apos;D&apos;; // desconto&#xd;
-        var periodoForm = (hAPI.getCardValue(&apos;periodoAtual&apos;) + &apos;&apos;).trim(); // espelho do período atual exibido&#xd;
-        var parcelas = parseParcelas((hAPI.getCardValue(&apos;parcelas_json&apos;) + &apos;&apos;).trim());&#xd;
-&#xd;
-        if (!parcelas || parcelas.length === 0) {&#xd;
-            throw new Error(&apos;Não há parcelas a enviar.&apos;);&#xd;
-        }&#xd;
-&#xd;
-        // ---------- Divide em &quot;aberto&quot; (primeira parcela) e &quot;futuras&quot; (demais) ----------&#xd;
-        var primeiraParcela = parcelas[0];&#xd;
-        // periodoRef do aberto = período da primeira parcela; se vazio, tenta do form&#xd;
-        var periodoRefAberto = (primeiraParcela &amp;&amp; primeiraParcela.periodo) ? (primeiraParcela.periodo + &apos;&apos;).trim() : (periodoForm || &apos;&apos;);&#xd;
-        if (!periodoRefAberto) {&#xd;
-            throw new Error(&apos;Período da primeira parcela não informado.&apos;);&#xd;
-        }&#xd;
-&#xd;
-        var payloadAberto = {&#xd;
-            empresa: empresa,&#xd;
-            filial: codFilial,&#xd;
-            matricula: matricula,&#xd;
-            roteiro: roteiro,&#xd;
-            numpagto: numpagto,&#xd;
-            periodoRef: periodoRefAberto,&#xd;
-            verba: codVerba,&#xd;
-            tipo1: tipo1,&#xd;
-            parcelas: [primeiraParcela] // apenas 1&#xd;
-        };&#xd;
-&#xd;
-        // Futuras = todas as parcelas cujo período seja diferente do aberto (e valor &gt; 0)&#xd;
-        var restantes = [];&#xd;
-        for (var i = 1; i &lt; parcelas.length; i++) {&#xd;
-            var p = parcelas[i] || {};&#xd;
-            var per = (p.periodo + &apos;&apos;).trim();&#xd;
-            var val = parseMoney(p.valor);&#xd;
-            if (per &amp;&amp; isFinite(val) &amp;&amp; val &gt; 0 &amp;&amp; per !== periodoRefAberto) {&#xd;
-                restantes.push({ periodo: per, valor: Number(val.toFixed(2)) });&#xd;
-            }&#xd;
-        }&#xd;
-&#xd;
-        var payloadFuturo = null;&#xd;
-        if (restantes.length &gt; 0) {&#xd;
-            payloadFuturo = {&#xd;
-                empresa: empresa,&#xd;
-                filial: codFilial,&#xd;
-                matricula: matricula,&#xd;
-                periodoRef: periodoRefAberto, // usado pelo serviço para filtrar e excluir o período aberto&#xd;
-                verba: codVerba,&#xd;
-                // documento é opcional; se quiser, pode usar o número do processo:&#xd;
-                documento: (getValue(&apos;WKNumProces&apos;) + &apos;&apos;),&#xd;
-                parcelas: restantes&#xd;
-            };&#xd;
-        }&#xd;
-&#xd;
-        // ---------- Idempotência: checa se já integrou com sucesso ----------&#xd;
-        // Campos de status e payload salvos no formulário&#xd;
-        var stAberto = (hAPI.getCardValue(&apos;integ_aberto_status&apos;) + &apos;&apos;).trim();   // &quot;OK&quot; | &quot;NOK&quot; | &quot;&quot;&#xd;
-        var stFuturo = (hAPI.getCardValue(&apos;integ_futuro_status&apos;) + &apos;&apos;).trim();   // &quot;OK&quot; | &quot;NOK&quot; | &quot;&quot;&#xd;
-        var plAbertoS = (hAPI.getCardValue(&apos;integ_aberto_payload&apos;) + &apos;&apos;);         // json string&#xd;
-        var plFuturoS = (hAPI.getCardValue(&apos;integ_futuro_payload&apos;) + &apos;&apos;);         // json string&#xd;
-&#xd;
-        var plAbertoNow = safeJSONStringify(payloadAberto);&#xd;
-        var plFuturoNow = payloadFuturo ? safeJSONStringify(payloadFuturo) : &apos;&apos;;&#xd;
-&#xd;
-        // Não reenvia se já deu OK anteriormente com qualquer payload.&#xd;
-        // Se quiser reprocessar quando payload mudou, troque a lógica conforme sua política.&#xd;
-        var deveEnviarAberto = (stAberto !== &apos;OK&apos;);&#xd;
-        var deveEnviarFuturo = (!!payloadFuturo &amp;&amp; stFuturo !== &apos;OK&apos;);&#xd;
-&#xd;
-        // ---------- Envia abertas ----------&#xd;
-        var okAberto = false;&#xd;
-        var msgAberto = &apos;&apos;;&#xd;
-        if (deveEnviarAberto) {&#xd;
-            var r1 = integracaoProtheusInvoke(&apos;/rest/RESTRH/postDescontos&apos;, payloadAberto);&#xd;
-            okAberto = r1.ok;&#xd;
-            msgAberto = r1.msg;&#xd;
-            hAPI.setCardValue(&apos;integ_aberto_status&apos;, okAberto ? &apos;OK&apos; : &apos;NOK&apos;);&#xd;
-            hAPI.setCardValue(&apos;integ_aberto_msg&apos;, msgAberto);&#xd;
-            hAPI.setCardValue(&apos;integ_aberto_payload&apos;, plAbertoNow);&#xd;
-&#xd;
-            if (okAberto) {&#xd;
-                hAPI.setTaskComments(getValue(&apos;WKUser&apos;), getValue(&apos;WKNumProces&apos;), 0, &apos;Aberto (GPEA580): OK. &apos; + (msgAberto || &apos;&apos;));&#xd;
-            } else {&#xd;
-                hAPI.setTaskComments(getValue(&apos;WKUser&apos;), getValue(&apos;WKNumProces&apos;), 0, &apos;Aberto (GPEA580): FALHA. &apos; + (msgAberto || &apos;&apos;));&#xd;
-            }&#xd;
-        } else {&#xd;
-            log.info(&apos;servicetask9: Aberto já OK anteriormente. Não reenviado.&apos;);&#xd;
-        }&#xd;
-&#xd;
-        // ---------- Envia futuras ----------&#xd;
-        var okFuturo = false;&#xd;
-        var msgFuturo = &apos;&apos;;&#xd;
-        if (deveEnviarFuturo) {&#xd;
-            var r2 = integracaoProtheusInvoke(&apos;/rest/RESTRH/descontosFuturos&apos;, payloadFuturo);&#xd;
-            okFuturo = r2.ok;&#xd;
-            msgFuturo = r2.msg;&#xd;
-            hAPI.setCardValue(&apos;integ_futuro_status&apos;, okFuturo ? &apos;OK&apos; : &apos;NOK&apos;);&#xd;
-            hAPI.setCardValue(&apos;integ_futuro_msg&apos;, msgFuturo);&#xd;
-            hAPI.setCardValue(&apos;integ_futuro_payload&apos;, plFuturoNow);&#xd;
-&#xd;
-            if (okFuturo) {&#xd;
-                hAPI.setTaskComments(getValue(&apos;WKUser&apos;), getValue(&apos;WKNumProces&apos;), 0, &apos;Futuro (GPEA110): OK. &apos; + (msgFuturo || &apos;&apos;));&#xd;
-            } else {&#xd;
-                hAPI.setTaskComments(getValue(&apos;WKUser&apos;), getValue(&apos;WKNumProces&apos;), 0, &apos;Futuro (GPEA110): FALHA. &apos; + (msgFuturo || &apos;&apos;));&#xd;
-            }&#xd;
-        } else if (payloadFuturo) {&#xd;
-            log.info(&apos;servicetask9: Futuro já OK anteriormente. Não reenviado.&apos;);&#xd;
-        } else {&#xd;
-            log.info(&apos;servicetask9: Não há parcelas futuras para enviar.&apos;);&#xd;
-        }&#xd;
-&#xd;
-        // ---------- Status geral ----------&#xd;
-        // Se existir parcelas futuras, considera OK somente se ambos OK.&#xd;
-        // Se não existir, considera OK apenas se aberto OK.&#xd;
-        var statusGeralOK = false;&#xd;
-        if (payloadFuturo) {&#xd;
-            statusGeralOK = ((stAberto === &apos;OK&apos; || okAberto) &amp;&amp; (stFuturo === &apos;OK&apos; || okFuturo));&#xd;
-        } else {&#xd;
-            statusGeralOK = (stAberto === &apos;OK&apos; || okAberto);&#xd;
-        }&#xd;
-        hAPI.setCardValue(&apos;statusIntegracao&apos;, statusGeralOK ? &apos;OK&apos; : &apos;NOK&apos;);&#xd;
-&#xd;
-    } catch (error) {&#xd;
-        hAPI.setCardValue(&apos;statusIntegracao&apos;, &apos;NOK&apos;);&#xd;
-        log.warn(&apos;servicetask9 error: &apos; + error);&#xd;
-        log.warn(&apos;servicetask9 error.message: &apos; + error.message);&#xd;
-        log.warn(&apos;servicetask9 error.lineNumber: &apos; + error.lineNumber);&#xd;
-        hAPI.setTaskComments(getValue(&apos;WKUser&apos;), getValue(&apos;WKNumProces&apos;), 0, &apos;Erro na integração: &apos; + error.message);&#xd;
-    }&#xd;
-}&#xd;
-&#xd;
-/* =========================================================&#xd;
- * Chamada REST centralizada (idempotência controlada por campos)&#xd;
- * ========================================================= */&#xd;
-function integracaoProtheusInvoke(endpointPath, jsonData) {&#xd;
-    var result = { ok: false, msg: &apos;&apos; };&#xd;
-    try {&#xd;
-        log.info(&apos;servicetask9 → POST &apos; + endpointPath);&#xd;
-        log.dir(jsonData);&#xd;
-&#xd;
-        var clientService = fluigAPI.getAuthorizeClientService();&#xd;
-        var envName = (fluigAPI.getTenantService().getTenantData([&apos;envName&apos;]).get(&apos;envName&apos;) + &apos;&apos;).trim();&#xd;
-        var serviceCodeName = resolveServiceCode(envName);&#xd;
-&#xd;
-        var data = {&#xd;
-            companyId: String(fluigAPI.getSecurityService().getCurrentTenantId()),&#xd;
-            serviceCode: serviceCodeName,&#xd;
-            endpoint: endpointPath,&#xd;
-            method: &apos;POST&apos;,&#xd;
-            timeoutService: &apos;1000&apos;,&#xd;
-            params: jsonData,&#xd;
-            options: {&#xd;
-                encoding: &apos;UTF-8&apos;,&#xd;
-                mediaType: &apos;application/json&apos;,&#xd;
-                useSSL: true&#xd;
-            }&#xd;
-        };&#xd;
-&#xd;
-        var response = clientService.invoke(JSON.stringify(data));&#xd;
-        log.info(&apos;servicetask9 response raw: &apos; + response);&#xd;
-&#xd;
-        var resultStr = response &amp;&amp; response.getResult ? response.getResult() : &apos;&apos;;&#xd;
-        log.info(&apos;servicetask9 response.getResult(): &apos; + resultStr);&#xd;
-&#xd;
-        var parsed = {};&#xd;
-        if (resultStr) {&#xd;
-            try { parsed = JSON.parse(resultStr); } catch (e) { parsed = {}; }&#xd;
-        }&#xd;
-&#xd;
-        var ok = parsed &amp;&amp; parsed.status === &apos;success&apos;;&#xd;
-        result.ok = ok;&#xd;
-        result.msg = parsed &amp;&amp; parsed.msg ? parsed.msg : (ok ? &apos;OK&apos; : &apos;Falha ao integrar.&apos;);&#xd;
-&#xd;
-        return result;&#xd;
-    } catch (e) {&#xd;
-        log.warn(&apos;integracaoProtheusInvoke error: &apos; + e.message);&#xd;
-        result.ok = false;&#xd;
-        result.msg = e.message || &apos;Erro inesperado.&apos;;&#xd;
-        return result;&#xd;
-    }&#xd;
-}&#xd;
-&#xd;
-/* =========================================================&#xd;
- * Helpers ES5&#xd;
- * ========================================================= */&#xd;
-&#xd;
-function resolveServiceCode(envName) {&#xd;
-    if (envName === &apos;PRODUCAO&apos;) return &apos;API_RESTRH&apos;;&#xd;
-    if (envName === &apos;TESTE&apos;) return &apos;REST_PROTHEUS_TST&apos;;&#xd;
-    return &apos;API_RESTRH&apos;;&#xd;
-}&#xd;
-&#xd;
-function valorOuPadrao(v, def) {&#xd;
-    v = (v === null || v === undefined) ? &apos;&apos; : (v + &apos;&apos;);&#xd;
-    v = v.trim();&#xd;
-    return v ? v : def;&#xd;
-}&#xd;
-&#xd;
-function obterEmpresa(cFilial) {&#xd;
-    cFilial = (cFilial || &apos;&apos;) + &apos;&apos;;&#xd;
-    if (cFilial.length &gt;= 2) return cFilial.substring(0, 2);&#xd;
-    return &apos;01&apos;;&#xd;
-}&#xd;
-&#xd;
-// Converte dinheiro/strings PT-BR &quot;1.234,56&quot; para Number 1234.56&#xd;
-function parseMoney(v) {&#xd;
-    if (v === null || v === undefined) return 0;&#xd;
-    if (typeof v === &apos;number&apos;) return isFinite(v) ? v : 0;&#xd;
-    var s = (v + &apos;&apos;).trim();&#xd;
-    if (!s) return 0;&#xd;
-    s = s.replace(/[^\d.,-]/g, &apos;&apos;); // mantém dígito, ponto, vírgula e sinal&#xd;
-    var hasComma = s.indexOf(&apos;,&apos;) !== -1;&#xd;
-    var hasDot = s.indexOf(&apos;.&apos;) !== -1;&#xd;
-    if (hasComma &amp;&amp; hasDot) {&#xd;
-        s = s.replace(/\./g, &apos;&apos;).replace(&apos;,&apos;, &apos;.&apos;);&#xd;
-    } else if (hasComma &amp;&amp; !hasDot) {&#xd;
-        s = s.replace(&apos;,&apos;, &apos;.&apos;);&#xd;
-    }&#xd;
-    var n = Number(s);&#xd;
-    return isFinite(n) ? n : 0;&#xd;
-}&#xd;
-&#xd;
-function parseParcelas(jsonStr) {&#xd;
-    var arr = [];&#xd;
-    if (!jsonStr) return arr;&#xd;
-    try {&#xd;
-        var tmp = JSON.parse(jsonStr);&#xd;
-        if (Object.prototype.toString.call(tmp) === &apos;[object Array]&apos;) {&#xd;
-            for (var i = 0; i &lt; tmp.length; i++) {&#xd;
-                var p = tmp[i] || {};&#xd;
-                var periodo = (((p.periodo === null || p.periodo === undefined) ? &apos;&apos; : p.periodo) + &apos;&apos;).trim();&#xd;
-                var v = parseMoney(p.valor);&#xd;
-                if (periodo &amp;&amp; isFinite(v) &amp;&amp; v &gt; 0) {&#xd;
-                    arr.push({ periodo: periodo, valor: Number(v.toFixed(2)) });&#xd;
-                }&#xd;
-            }&#xd;
-        }&#xd;
-    } catch (e) {&#xd;
-        log.warn(&apos;parseParcelas: JSON inválido. value=&apos; + jsonStr);&#xd;
-    }&#xd;
-    return arr;&#xd;
-}&#xd;
-&#xd;
-function safeJSONStringify(obj) {&#xd;
-    try { return JSON.stringify(obj); } catch (e) { return &apos;&apos;; }&#xd;
-}&#xd;
-&#xd;
-</eventDescription>
-    </WorkflowProcessEvent>
-    <WorkflowProcessEvent>
-      <workflowProcessEventPK>
-        <companyId>1</companyId>
-        <eventId>servicetask29</eventId>
-        <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>1</version>
-      </workflowProcessEventPK>
-      <eventDescription>function parseDateTimeES5(dateStr, timeStr) {&#xd;
-    dateStr = (dateStr || &quot;&quot;).trim();&#xd;
-    timeStr = (timeStr || &quot;&quot;).trim();&#xd;
-&#xd;
-    // Hora padrão se vier vazia&#xd;
-    if (!timeStr) timeStr = &quot;00:00:00&quot;;&#xd;
-&#xd;
-    // Normaliza hora para HH:MM:SS&#xd;
-    var hParts = timeStr.split(&quot;:&quot;);&#xd;
-    var h = parseInt(hParts[0], 10) || 0;&#xd;
-    var m = parseInt(hParts[1], 10) || 0;&#xd;
-    var s = parseInt(hParts[2], 10) || 0;&#xd;
-&#xd;
-    var y, mo, d;&#xd;
-&#xd;
-    // yyyy-mm-dd&#xd;
-    if (dateStr.indexOf(&quot;-&quot;) !== -1) {&#xd;
-        var dParts = dateStr.split(&quot;-&quot;);&#xd;
-        y = parseInt(dParts[0], 10);&#xd;
-        mo = parseInt(dParts[1], 10);&#xd;
-        d = parseInt(dParts[2], 10);&#xd;
-    }&#xd;
-    // dd/mm/yyyy (fallback)&#xd;
-    else if (dateStr.indexOf(&quot;/&quot;) !== -1) {&#xd;
-        var dParts2 = dateStr.split(&quot;/&quot;);&#xd;
-        d = parseInt(dParts2[0], 10);&#xd;
-        mo = parseInt(dParts2[1], 10);&#xd;
-        y = parseInt(dParts2[2], 10);&#xd;
-    } else {&#xd;
-        return null; // formato desconhecido&#xd;
-    }&#xd;
-&#xd;
-    if (isNaN(y) || isNaN(mo) || isNaN(d) || isNaN(h) || isNaN(m) || isNaN(s)) {&#xd;
-        return null;&#xd;
-    }&#xd;
-&#xd;
-    // Importante: mês é 0-based&#xd;
-    return new Date(y, mo - 1, d, h, m, s);&#xd;
-}&#xd;
-&#xd;
-function diffToTextES5(ms) {&#xd;
-    if (ms &lt; 0) ms = -ms; // se quiser tratar futuro como positivo&#xd;
-    var seg = Math.floor(ms / 1000);&#xd;
-    var min = Math.floor(seg / 60);&#xd;
-    var hor = Math.floor(min / 60);&#xd;
-    var dia = Math.floor(hor / 24);&#xd;
-&#xd;
-    hor = hor % 24;&#xd;
-    min = min % 60;&#xd;
-    seg = seg % 60;&#xd;
-&#xd;
-    return dia + &quot;dia(s) &quot; + hor + &quot;hora(s) &quot; + min + &quot;minuto(s) &quot; + seg + &quot;segundo(s)&quot;;&#xd;
-}&#xd;
-&#xd;
-// ---- Uso no seu código ----&#xd;
-function servicetask29(attempt, message) {&#xd;
-    try {&#xd;
-        //log.info(&apos;INICIO DESCONTOS POR FUNCIONÁRIO - ATIVIDADE ENVIA WF GERENTE/DIRETOR **********************&apos;);&#xd;
-&#xd;
-        var numFluig = hAPI.getCardValue(&quot;solicitacao_fluig&quot;);&#xd;
-        var nomeColaborador = (hAPI.getCardValue(&quot;nomeColaborador&quot;) + &quot;&quot;).trim();&#xd;
-        var tipoDesconto = (hAPI.getCardValue(&quot;tipoDesconto&quot;) + &quot;&quot;).trim();&#xd;
-        var descricao = (hAPI.getCardValue(&quot;descricao&quot;) + &quot;&quot;).trim();&#xd;
-        var valTotalDesconto = (hAPI.getCardValue(&quot;valorEpi&quot;) + &quot;&quot;).trim();&#xd;
-        var dataSolicitacao = (hAPI.getCardValue(&quot;dataSolicitacao&quot;) + &quot;&quot;).trim(); // yyyy-mm-dd&#xd;
-        var horaSolicitacao = (hAPI.getCardValue(&quot;horaSolicitacao&quot;) + &quot;&quot;).trim(); // HH:MM:SS ou HH:MM&#xd;
-        var dtInclusao = dataSolicitacao + &quot; - &quot; + horaSolicitacao;&#xd;
-&#xd;
-        var dataHoraSolicitacao = parseDateTimeES5(dataSolicitacao, horaSolicitacao);&#xd;
-&#xd;
-        if (!dataHoraSolicitacao || isNaN(dataHoraSolicitacao.getTime())) {&#xd;
-            throw new Error(&quot;Data/hora de solicitação inválida(s): &apos;&quot; + dataSolicitacao + &quot;&apos; &apos;&quot; + horaSolicitacao + &quot;&apos;&quot;);&#xd;
-        }&#xd;
-&#xd;
-        var agora = new Date();&#xd;
-        var diffMs = agora.getTime() - dataHoraSolicitacao.getTime();&#xd;
-        var tempoPendente = diffToTextES5(diffMs);&#xd;
-        /*&#xd;
-        log.info(&apos;nomeColaborador: &apos; + nomeColaborador);&#xd;
-        log.info(&apos;tipoDesconto: &apos; + tipoDesconto);&#xd;
-        log.info(&apos;descricao: &apos; + descricao);&#xd;
-        log.info(&apos;valTotalDesconto: &apos; + valTotalDesconto);&#xd;
-        log.info(&apos;dtInclusao: &apos; + dtInclusao);&#xd;
-        log.info(&apos;tempoPendente: &apos; + tempoPendente);&#xd;
-        log.info(&apos;numFluig: &apos; + numFluig);&#xd;
-        */&#xd;
-        var qtdEmailsEnviados = (hAPI.getCardValue(&quot;qtdEmailsEnviados&quot;) + &quot;&quot;).trim();&#xd;
-        if (qtdEmailsEnviados == &quot;&quot; || qtdEmailsEnviados == null) qtdEmailsEnviados = &quot;0&quot;;&#xd;
-        //log.info(&apos;qtdEmailsEnviados: &apos; + qtdEmailsEnviados);&#xd;
-&#xd;
-        hAPI.setCardValue(&apos;qtdEmailsEnviados&apos;, (parseInt(qtdEmailsEnviados, 10) + 1) + &quot;&quot;);&#xd;
-&#xd;
-        enviaEmailAtraso(numFluig, parseInt(qtdEmailsEnviados, 10) &gt; 0, nomeColaborador, tipoDesconto, descricao, valTotalDesconto, dtInclusao, tempoPendente);&#xd;
-&#xd;
-        //log.info(&apos;FINAL 2 DESCONTOS POR FUNCIONÁRIO - ATIVIDADE ENVIA WF GERENTE/DIRETOR **********************&apos;);&#xd;
-    } catch (error) {&#xd;
-        log.warn(&quot;--servicetask29-- error: &quot; + error);&#xd;
-        log.warn(&quot;--servicetask29-- error.message: &quot; + error.message);&#xd;
-        log.warn(&quot;--servicetask29-- error.lineNumber: &quot; + error.lineNumber);&#xd;
-        hAPI.setTaskComments(getValue(&quot;WKUser&quot;), getValue(&apos;WKNumProces&apos;), 0, &quot;Erro no envio do WF para Gerente/Diretor: &quot; + error.message);&#xd;
-    }&#xd;
-}&#xd;
-&#xd;
-function getCurrentDate() {&#xd;
-    return new java.text.SimpleDateFormat(&quot;yyyy-MM-dd&quot;).format(new java.util.Date());&#xd;
-}&#xd;
-&#xd;
-function getCurrentTime() {&#xd;
-    return new java.text.SimpleDateFormat(&quot;HH:mm&quot;).format(new java.util.Date());&#xd;
-}&#xd;
-&#xd;
-function enviaEmailAtraso(wkproces, avisaDiretor, nomeFunc, tipoDesconto, descDesconto, valTotDesconto, dtInclusao, tempoPendente) {&#xd;
-&#xd;
-    var sender = &quot;fluig.workflow&quot;;&#xd;
-    var serverUrl = fluigAPI.getPageService().getServerURL();&#xd;
-    var processInstanceID = serverUrl + &quot;/portal/p/1/pageworkflowview?app_ecm_workflowview_detailsProcessInstanceID=&quot; + wkproces;&#xd;
-    var parametros = new java.util.HashMap();&#xd;
-    var destinatarios = new java.util.ArrayList();&#xd;
-    var subject = &quot;&quot;;&#xd;
-    var grupoAprovadorCC = hAPI.getCardValue(&quot;grupoAprovadorCC&quot;);&#xd;
-    var listEmailsCentroCusto = getListEmailCentroCusto(grupoAprovadorCC);&#xd;
-    try {&#xd;
-        subject = &quot; Solicitação de Desconto Pendente de Aprovação - Fluig: &quot; + wkproces + &quot;&quot;;&#xd;
-        parametros.put(&quot;subject&quot;, subject);&#xd;
-        parametros.put(&quot;processUrl&quot;, processInstanceID);&#xd;
-        parametros.put(&quot;numeroFluig&quot;, wkproces);&#xd;
-        parametros.put(&quot;nomeFunc&quot;, nomeFunc);&#xd;
-        parametros.put(&quot;tipoDesconto&quot;, tipoDesconto);&#xd;
-        parametros.put(&quot;descDesconto&quot;, descDesconto);&#xd;
-        parametros.put(&quot;valTotDesconto&quot;, valTotDesconto);&#xd;
-        parametros.put(&quot;dtInclusao&quot;, dtInclusao);&#xd;
-        parametros.put(&quot;tempoPendente&quot;, tempoPendente);&#xd;
-&#xd;
-        if (avisaDiretor) {&#xd;
-            listEmailsDiretor = getEmailDiretor(grupoAprovadorCC);&#xd;
-&#xd;
-            for (var x = 0; x &lt; listEmailsDiretor.length; x++) {&#xd;
-                destinatarios.add(listEmailsDiretor[x] + &quot;&quot;);&#xd;
-            }&#xd;
-        }&#xd;
-&#xd;
-        // Adiciona emails dos usuários do centro de custo como destinatários.&#xd;
-        for (var j = 0; j &lt; listEmailsCentroCusto.length; j++) {&#xd;
-            destinatarios.add(listEmailsCentroCusto[j] + &quot;&quot;);&#xd;
-        }&#xd;
-&#xd;
-        /*&#xd;
-        log.info(&quot;LOG 2 USER EMAIL DESCONTO&quot;)&#xd;
-        log.info(wkproces)&#xd;
-        log.info(&quot;Lista de e-mails do centro de custo para descontos: &quot;);&#xd;
-        log.dir(destinatarios);&#xd;
-        */&#xd;
-        notifier.notify(sender, &quot;aprov_desconto_atraso&quot;, parametros, destinatarios, &quot;text/html&quot;);&#xd;
-    } catch (e) {&#xd;
-        log.warn(&quot;--enviaEmailAtraso - catch e: &quot; + e);&#xd;
-        log.warn(&quot;--enviaEmailAtraso - catch e.message: &quot; + e.message);&#xd;
-        log.warn(&quot;--enviaEmailAtraso - catch lineNumber: &quot; + e.lineNumber);&#xd;
-    }&#xd;
-}&#xd;
-&#xd;
-function getListEmailCentroCusto(grupoAprovadorCC) {&#xd;
-    var codGrupo = &quot;&quot;;&#xd;
-&#xd;
-    if (grupoAprovadorCC.split(&apos;:&apos;).length &gt; 2) {&#xd;
-        codGrupo = grupoAprovadorCC.split(&apos;:&apos;)[2];&#xd;
-    }&#xd;
-&#xd;
-    if (!(codGrupo + &quot;&quot;).trim()) {&#xd;
-        codGrupo = &quot;erros_processos_ti&quot;;&#xd;
-    }&#xd;
-&#xd;
-    var constrainstsGrupo = new Array();&#xd;
-&#xd;
-    constrainstsGrupo.push(DatasetFactory.createConstraint(&quot;colleagueGroupPK.groupId&quot;, (codGrupo + &quot;&quot;).trim(), (codGrupo + &quot;&quot;).trim(), ConstraintType.MUST));&#xd;
-&#xd;
-    var datasetGrupo = DatasetFactory.getDataset(&quot;colleagueGroup&quot;, null, constrainstsGrupo, null);&#xd;
-&#xd;
-    var emailList = new Array();&#xd;
-&#xd;
-    if (datasetGrupo.rowsCount &gt; 0) {&#xd;
-        for (var i = 0; i &lt; datasetGrupo.rowsCount; i++) {&#xd;
-            var matriculaUsuario = datasetGrupo.getValue(i, &quot;colleagueGroupPK.colleagueId&quot;)&#xd;
-&#xd;
-            if (matriculaUsuario != &quot;&quot; &amp;&amp; matriculaUsuario != null) {&#xd;
-                var constrainstsUsuario = new Array();&#xd;
-&#xd;
-                constrainstsUsuario.push(DatasetFactory.createConstraint(&quot;colleaguePK.colleagueId&quot;, (matriculaUsuario + &quot;&quot;).trim(), (matriculaUsuario + &quot;&quot;).trim(), ConstraintType.MUST));&#xd;
-&#xd;
-                var datasetUsuario = DatasetFactory.getDataset(&quot;colleague&quot;, null, constrainstsUsuario, null);&#xd;
-&#xd;
-                if (datasetUsuario.rowsCount &gt; 0) {&#xd;
-                    for (var j = 0; j &lt; datasetUsuario.rowsCount; j++) {&#xd;
-                        var email = datasetUsuario.getValue(j, &quot;mail&quot;);&#xd;
-&#xd;
-                        if (email != &quot;&quot; &amp;&amp; email != null) {&#xd;
-                            emailList.push((email + &quot;&quot;).trim());&#xd;
-                        }&#xd;
-                    }&#xd;
-                }&#xd;
-            }&#xd;
-        }&#xd;
-    }&#xd;
-&#xd;
-    return emailList;&#xd;
-}&#xd;
-&#xd;
-function getEmailDiretor(grupoAprovadorCC) {&#xd;
-    var codGrupo = &quot;&quot;;&#xd;
-&#xd;
-    if (grupoAprovadorCC.indexOf(&apos;121&apos;) !== -1) {&#xd;
-        codGrupo = &quot;diretorAdministracao&quot;&#xd;
-    } else {&#xd;
-        codGrupo = &quot;diretorOperacao&quot;&#xd;
-    }&#xd;
-&#xd;
-    var constrainstsGrupo = new Array();&#xd;
-&#xd;
-    constrainstsGrupo.push(DatasetFactory.createConstraint(&quot;colleagueGroupPK.groupId&quot;, (codGrupo + &quot;&quot;).trim(), (codGrupo + &quot;&quot;).trim(), ConstraintType.MUST));&#xd;
-&#xd;
-    var datasetGrupo = DatasetFactory.getDataset(&quot;colleagueGroup&quot;, null, constrainstsGrupo, null);&#xd;
-&#xd;
-    var emailList = new Array();&#xd;
-&#xd;
-    if (datasetGrupo.rowsCount &gt; 0) {&#xd;
-        for (var i = 0; i &lt; datasetGrupo.rowsCount; i++) {&#xd;
-            var matriculaUsuario = datasetGrupo.getValue(i, &quot;colleagueGroupPK.colleagueId&quot;)&#xd;
-&#xd;
-            if (matriculaUsuario != &quot;&quot; &amp;&amp; matriculaUsuario != null) {&#xd;
-                var constrainstsUsuario = new Array();&#xd;
-&#xd;
-                constrainstsUsuario.push(DatasetFactory.createConstraint(&quot;colleaguePK.colleagueId&quot;, (matriculaUsuario + &quot;&quot;).trim(), (matriculaUsuario + &quot;&quot;).trim(), ConstraintType.MUST));&#xd;
-&#xd;
-                var datasetUsuario = DatasetFactory.getDataset(&quot;colleague&quot;, null, constrainstsUsuario, null);&#xd;
-&#xd;
-                if (datasetUsuario.rowsCount &gt; 0) {&#xd;
-                    for (var j = 0; j &lt; datasetUsuario.rowsCount; j++) {&#xd;
-                        var email = datasetUsuario.getValue(j, &quot;mail&quot;);&#xd;
-&#xd;
-                        if (email != &quot;&quot; &amp;&amp; email != null) {&#xd;
-                            emailList.push((email + &quot;&quot;).trim());&#xd;
-                        }&#xd;
-                    }&#xd;
-                }&#xd;
-            }&#xd;
-        }&#xd;
-    }&#xd;
-&#xd;
-    return emailList;&#xd;
-}&#xd;
-</eventDescription>
-    </WorkflowProcessEvent>
-  </list>
+  <list/>
   <list/>
   <list>
     <SwimLane>
@@ -1569,34 +869,12 @@ function getEmailDiretor(grupoAprovadorCC) {&#xd;
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>2</version>
+        <version>36</version>
         <linkSequence>31</linkSequence>
         <bendSequence>1</bendSequence>
       </processLinkBendPK>
-      <positionX>573</positionX>
-      <positionY>304</positionY>
-    </ProcessLinkBend>
-    <ProcessLinkBend>
-      <processLinkBendPK>
-        <companyId>1</companyId>
-        <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>2</version>
-        <linkSequence>37</linkSequence>
-        <bendSequence>1</bendSequence>
-      </processLinkBendPK>
-      <positionX>349</positionX>
-      <positionY>61</positionY>
-    </ProcessLinkBend>
-    <ProcessLinkBend>
-      <processLinkBendPK>
-        <companyId>1</companyId>
-        <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>2</version>
-        <linkSequence>37</linkSequence>
-        <bendSequence>2</bendSequence>
-      </processLinkBendPK>
-      <positionX>825</positionX>
-      <positionY>61</positionY>
+      <positionX>542</positionX>
+      <positionY>299</positionY>
     </ProcessLinkBend>
   </list>
   <list/>
@@ -1606,28 +884,10 @@ function getEmailDiretor(grupoAprovadorCC) {&#xd;
       <processFormFieldPK>
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
-        <fieldId>dataSolicitacao</fieldId>
+        <fieldId>statusIntegracao</fieldId>
       </processFormFieldPK>
-      <fieldDescription>dataSolicitacao</fieldDescription>
+      <fieldDescription>statusIntegracao</fieldDescription>
       <slotId>1</slotId>
-    </ProcessFormField>
-    <ProcessFormField>
-      <processFormFieldPK>
-        <companyId>1</companyId>
-        <processId>wf_lancamento_descontos_funcionario</processId>
-        <fieldId>horaSolicitacao</fieldId>
-      </processFormFieldPK>
-      <fieldDescription>horaSolicitacao</fieldDescription>
-      <slotId>2</slotId>
-    </ProcessFormField>
-    <ProcessFormField>
-      <processFormFieldPK>
-        <companyId>1</companyId>
-        <processId>wf_lancamento_descontos_funcionario</processId>
-        <fieldId>nomeSolicitante</fieldId>
-      </processFormFieldPK>
-      <fieldDescription>nomeSolicitante</fieldDescription>
-      <slotId>3</slotId>
     </ProcessFormField>
     <ProcessFormField>
       <processFormFieldPK>
@@ -1636,15 +896,33 @@ function getEmailDiretor(grupoAprovadorCC) {&#xd;
         <fieldId>solicitacao_fluig</fieldId>
       </processFormFieldPK>
       <fieldDescription>solicitacao_fluig</fieldDescription>
+      <slotId>2</slotId>
+    </ProcessFormField>
+    <ProcessFormField>
+      <processFormFieldPK>
+        <companyId>1</companyId>
+        <processId>wf_lancamento_descontos_funcionario</processId>
+        <fieldId>dataSolicitacao</fieldId>
+      </processFormFieldPK>
+      <fieldDescription>dataSolicitacao</fieldDescription>
+      <slotId>3</slotId>
+    </ProcessFormField>
+    <ProcessFormField>
+      <processFormFieldPK>
+        <companyId>1</companyId>
+        <processId>wf_lancamento_descontos_funcionario</processId>
+        <fieldId>horaSolicitacao</fieldId>
+      </processFormFieldPK>
+      <fieldDescription>horaSolicitacao</fieldDescription>
       <slotId>4</slotId>
     </ProcessFormField>
     <ProcessFormField>
       <processFormFieldPK>
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
-        <fieldId>statusIntegracao</fieldId>
+        <fieldId>nomeSolicitante</fieldId>
       </processFormFieldPK>
-      <fieldDescription>statusIntegracao</fieldDescription>
+      <fieldDescription>nomeSolicitante</fieldDescription>
       <slotId>5</slotId>
     </ProcessFormField>
   </list>
@@ -1721,24 +999,6 @@ function getEmailDiretor(grupoAprovadorCC) {&#xd;
       <field>rdAprovaDescGerente</field>
       <value>abonar</value>
       <operator>1</operator>
-      <valueType>1</valueType>
-    </ConditionProcessAutomaticRules>
-    <ConditionProcessAutomaticRules>
-      <sequence>35</sequence>
-      <expressionOrder>1</expressionOrder>
-      <ruleOrder>1</ruleOrder>
-      <field>tipoDesconto</field>
-      <value>DP</value>
-      <operator>1</operator>
-      <valueType>1</valueType>
-    </ConditionProcessAutomaticRules>
-    <ConditionProcessAutomaticRules>
-      <sequence>35</sequence>
-      <expressionOrder>2</expressionOrder>
-      <ruleOrder>1</ruleOrder>
-      <field>tipoDesconto</field>
-      <value>DP</value>
-      <operator>2</operator>
       <valueType>1</valueType>
     </ConditionProcessAutomaticRules>
   </list>

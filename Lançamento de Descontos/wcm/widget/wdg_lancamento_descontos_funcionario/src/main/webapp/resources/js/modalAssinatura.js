@@ -122,8 +122,29 @@ function _aplicaRegra15(tipo) {
   return t === "ALMOXARIFADO" || t === "FROTAS" || t === "FROTA" || t === "TI";
 }
 
+function getFluigUser() {
+  return new Promise((resolve, reject) => {
+    $.ajax({
+      url: '/api/public/2.0/users/getCurrent',
+      type: "GET",
+    }).done(function (data) {
+      const nomeUsuario = data?.content?.fullName || "";
+      const emailUsuario = data?.content?.email || "";
+      const matriculaUsuario = data?.content?.code || "";
+      console.log(data?.content);
+      console.log("Usuário Fluig:", nomeUsuario, emailUsuario, matriculaUsuario);
+      resolve(nomeUsuario);
+    }).fail(function (error) {
+      console.error("Erro ao obter usuário Fluig:", error);
+      reject("Erro ao obter usuário Fluig");
+    });
+  });
+}
+
 // ====== assinatura ======
-function openModalAssinatura() {
+async function openModalAssinatura() {
+  const nomeUsuario = await getFluigUser();
+  
   const descricao = $('#descricao').val().trim();
   const valor = parseMoney($('#valorEpi').val());
   const rdTipoDesconto = $('input[name="rdTipoDesconto"]:checked').val();
@@ -257,6 +278,8 @@ function openModalAssinatura() {
 
   $('#revisaoParcelas').html(tabelaParcelasHtml);
 
+  $('#test1_nome').val(nomeUsuario).prop('readonly', true);
+
   $('#modalAssinatura').show();
 
   setTimeout(() => {
@@ -361,13 +384,13 @@ async function coletarConfirmacao() {
     assinaturaBase64: getPadBase64('signature-pad-test1'),
     fotoBase64: await fileToBase64(document.getElementById('test1_foto')?.files?.[0] || null)
   };
-  const t2 = {
-    nome: $('#test2_nome').val()?.trim() || '',
-    cpf: $('#test2_cpf').val()?.trim() || '',
-    cargo: $('#test2_cargo').val()?.trim() || '',
-    assinaturaBase64: getPadBase64('signature-pad-test2'),
-    fotoBase64: await fileToBase64(document.getElementById('test2_foto')?.files?.[0] || null)
-  };
+  // const t2 = {
+  //   nome: $('#test2_nome').val()?.trim() || '',
+  //   cpf: $('#test2_cpf').val()?.trim() || '',
+  //   cargo: $('#test2_cargo').val()?.trim() || '',
+  //   assinaturaBase64: getPadBase64('signature-pad-test2'),
+  //   fotoBase64: await fileToBase64(document.getElementById('test2_foto')?.files?.[0] || null)
+  // };
 
   // evidências extras (múltiplos)
   const extras = [];
@@ -380,7 +403,7 @@ async function coletarConfirmacao() {
     tipoConfirmacao: 'RECUSA_TESTEMUNHAS',
     motivoRecusa: ($('#motivoRecusa').val() || '').trim(),
     assinaturaFuncionarioBase64: null,
-    testemunhas: [t1, t2],
+    testemunhas: [t1 /*, t2*/],
     evidenciasExtras: extras
   };
 }

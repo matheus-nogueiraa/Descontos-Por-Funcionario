@@ -448,7 +448,7 @@
                                     </div>
 
                                     <!-- Testemunha 2 -->
-                                    <div class="panel panel-default">
+                                    <!-- <div class="panel panel-default" id="">
                                         <div class="panel-heading">
                                             <h4 class="panel-title">Testemunha 2</h4>
                                         </div>
@@ -477,7 +477,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> -->
 
                                     <!-- Evidências gerais -->
                                     <div class="panel panel-default">
