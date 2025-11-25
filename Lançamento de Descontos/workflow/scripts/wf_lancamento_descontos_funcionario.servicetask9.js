@@ -9,6 +9,7 @@ function servicetask9(attempt, message) {
         var roteiro = valorOuPadrao(hAPI.getCardValue('roteiro'), 'FOL');
         var numpagto = valorOuPadrao(hAPI.getCardValue('numpagto'), '01');
         var codVerba = (hAPI.getCardValue('codVerba') + '').trim();
+        var tipoVerba = (hAPI.getCardValue('tipoVerba') + '').split(' - ')[0].trim();
         var tipo1 = 'D'; // desconto
         var periodoForm = (hAPI.getCardValue('periodoAtual') + '').trim(); // espelho do período atual exibido
         var parcelas = parseParcelas((hAPI.getCardValue('parcelas_json') + '').trim());
@@ -33,6 +34,7 @@ function servicetask9(attempt, message) {
             numpagto: numpagto,
             periodoRef: periodoRefAberto,
             verba: codVerba,
+            tipoVerba: tipoVerba,
             tipo1: tipo1,
             parcelas: [primeiraParcela] // apenas 1
         };
@@ -56,6 +58,7 @@ function servicetask9(attempt, message) {
                 matricula: matricula,
                 periodoRef: periodoRefAberto, // usado pelo serviço para filtrar e excluir o período aberto
                 verba: codVerba,
+                tipoVerba: tipoVerba,
                 // documento é opcional; se quiser, pode usar o número do processo:
                 documento: (getValue('WKNumProces') + ''),
                 parcelas: restantes

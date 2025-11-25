@@ -218,6 +218,20 @@ async function montarConstraints({ fotoData, assinaturaData, pdfBase64, parcelas
   const descricao = document.getElementById("descricao").value || "";
   const valorEpi = parseMoney(document.getElementById("valorEpi").value || "0");
   const codVerba = $('#verbaNovoDesconto').val() || "";
+  const tipoVerba = $('#tipoVerba').val() || $('#tipVerbaoNovoDesconto').val();
+
+  let descVerbaNovoDesconto = ""
+
+  if (tipoVerba == 'H') {
+    descVerbaNovoDesconto = 'EM HORAS';
+  }
+  else if (tipoVerba == 'D') {
+    descVerbaNovoDesconto = 'EM DIAS';
+  }
+  else {
+    descVerbaNovoDesconto = 'EM VALOR (R$)';
+  }
+
   const tipoDesconto = ($('input[name="rdTipoDesconto"]:checked')?.val())?.toUpperCase() || ($('#revisaoTipoDesconto').text())?.toUpperCase() || "";
   const dataAtual = new Date();
   const anoAtual = String(dataAtual.getFullYear());
@@ -225,7 +239,7 @@ async function montarConstraints({ fotoData, assinaturaData, pdfBase64, parcelas
   const periodoAtual = $('#periodoAtual').text() || `${anoAtual?.trim()}${mesAtual?.trim()}`
   const grupoAprovador = $('#centroCustoDesconto')?.val()?.trim() || "Pool:Group:erros_processos_ti";
   const recusaAssinatura = $('input[name="recusaAssinatura"]:checked').val()
-  
+
   const valSalarioTxt =
     (document.getElementById("salario")?.value) ||
     (document.getElementById("salarioModal")?.innerText) ||
@@ -256,6 +270,7 @@ async function montarConstraints({ fotoData, assinaturaData, pdfBase64, parcelas
   constraints.push(DatasetFactory.createConstraint("formField", "salarioporcento", formatMoney2(quinzePorcentoSalario), ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("formField", "totalParcelas", String(totalParcelas), ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("formField", "tipoDesconto", String(tipoDesconto), ConstraintType.MUST));
+  constraints.push(DatasetFactory.createConstraint("formField", "tipoVerba", `${String(tipoVerba)} - ${descVerbaNovoDesconto}`, ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("formField", "codVerba", String(codVerba), ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("formField", "periodoAtual", String(periodoAtual), ConstraintType.MUST));
 
@@ -492,7 +507,7 @@ async function gerarRelatorioPDFBase64(dadosFuncionario) {
       y += lineSpacing;
       doc.text(`Data e Hora: ${currentDateTime}`, pageWidth / 2, y, { align: "center" });
       y += lineSpacing;
-    } 
+    }
     else if (signType === "testemunha1") {
       // Dados do usuário logado (solicitante)
       const nomeUsuario = document.getElementById("nomeUsuario").value || "";
@@ -503,7 +518,7 @@ async function gerarRelatorioPDFBase64(dadosFuncionario) {
       y += lineSpacing;
       doc.text(`Data e Hora: ${currentDateTime}`, pageWidth / 2, y, { align: "center" });
       y += lineSpacing;
-    } 
+    }
   }
 
   const filial = (document.getElementById("codFilial")?.value || "").trim();
@@ -521,6 +536,20 @@ async function gerarRelatorioPDFBase64(dadosFuncionario) {
   const somaParcelas = (parcelas || []).reduce((a, p) => a + (Number(p?.valor) || 0), 0);
 
   const codVerba = $('#verbaNovoDesconto').val() || "";
+  const tipoVerba = $('#tipoVerba').val() || $('#tipVerbaoNovoDesconto').val();
+
+  let descVerbaNovoDesconto = ""
+
+  if (tipoVerba == 'H') {
+    descVerbaNovoDesconto = 'EM HORAS';
+  }
+  else if (tipoVerba == 'D') {
+    descVerbaNovoDesconto = 'EM DIAS';
+  }
+  else {
+    descVerbaNovoDesconto = 'EM VALOR (R$)';
+  }
+
   const tipoDesconto = ($('input[name="rdTipoDesconto"]:checked')?.val())?.toUpperCase()
     || ($('#revisaoTipoDesconto').text())?.toUpperCase() || "";
 
@@ -542,9 +571,10 @@ async function gerarRelatorioPDFBase64(dadosFuncionario) {
   addH2("Resumo do novo desconto");
   addP(`15% do Salário (teto por período): R$ ${quinzePorCentoSalario.toFixed(2)}`);
   addP(`Total de Parcelas: ${totalParcelas}`);
-  addP(`Soma das Parcelas: R$ ${somaParcelas.toFixed(2)}`);
+  addP(`Soma das Parcelas ${descVerbaNovoDesconto}: ${somaParcelas.toFixed(2)}`);
   addP(`Tipo Desconto: ${tipoDesconto}`);
   addP(`Verba: ${codVerba}${verbaDesc ? ` - ${verbaDesc}` : ""}`);
+  addP(`Tipo Verba: ${tipoVerba} - ${descVerbaNovoDesconto}`);
   y += 5;
 
   addH2("Parcelas do novo desconto");
@@ -553,7 +583,7 @@ async function gerarRelatorioPDFBase64(dadosFuncionario) {
     `R$ ${(Number(p?.valor) || 0).toFixed(2)}`
   ]);
   doc.autoTable({
-    head: [["Período (YYYYMM)", "Valor da Parcela (R$)"]],
+    head: [["Período (YYYYMM)", `Valor da Parcela ${descVerbaNovoDesconto}`]],
     body: tableBody.length ? tableBody : [["-", "-"]],
     startY: y,
     theme: "striped",
