@@ -3,7 +3,7 @@ $(document).ready(function () {
 
   $('#btn-buscar').click(function (e) {
     e.preventDefault();
-    $(this).hide();
+    //$(this).hide();
     $('#btn-limpar').show();
   });
 

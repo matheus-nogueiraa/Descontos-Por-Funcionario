@@ -150,6 +150,18 @@ async function openModalAssinatura() {
   const rdTipoDesconto = $('input[name="rdTipoDesconto"]:checked').val();
   const centroCustoDesconto = $('#centroCustoDesconto').val();
   const verbaNovoDesconto = $('#verbaNovoDesconto').val();
+  const tipVerbaoNovoDesconto = $('#tipoVerba').val();
+  let descVerbaNovoDesconto = ""
+
+   if (tipVerbaoNovoDesconto == 'H'){
+      descVerbaNovoDesconto = 'EM HORAS';
+    }
+    else if (tipVerbaoNovoDesconto == 'D'){
+      descVerbaNovoDesconto = 'EM DIAS';
+    }
+    else {
+      descVerbaNovoDesconto = 'EM VALOR (R$)';
+    }
 
   if (!rdTipoDesconto) { toastMsg('Atenção', 'Preencha o campo Tipo de Desconto antes de prosseguir para a assinatura.', 'warning'); return; }
   if (!centroCustoDesconto) { toastMsg('Atenção', 'Preencha o campo Centro de Custo antes de prosseguir para a assinatura.', 'warning'); return; }
@@ -184,7 +196,7 @@ async function openModalAssinatura() {
             <input type="text" name="descNovoDesconto" id="descNovoDesconto" value="${(descricao || "").toUpperCase()}" readonly class="form-control">
         </div>
         <div class="form-group col-md-6">
-            <label for="valorTotalNovoDesconto">Valor Total do Desconto</label>
+            <label for="valorTotalNovoDesconto">Total do Desconto <span class="text-warning">${descVerbaNovoDesconto}</span></label>
             <input type="text" name="valorTotalNovoDesconto" id="valorTotalNovoDesconto" value="${valor.toFixed(2).replace('.', ',')}" readonly class="form-control">
         </div>
     </div>
@@ -196,9 +208,13 @@ async function openModalAssinatura() {
             <label for="tipoNovoDesconto">Tipo Desconto</label>
             <input type="text" name="tipoNovoDesconto" id="tipoNovoDesconto" value="${(_normTipo(rdTipoDesconto) || "")}" readonly class="form-control">
         </div>
-        <div class="form-group col-md-6">
+        <div class="form-group col-md-3">
             <label for="verbaNovoDesconto">Verba Desconto</label>
             <input type="text" name="verbaNovoDesconto" id="verbaNovoDesconto" value="${verbaNovoDesconto}" readonly class="form-control">
+        </div>
+        <div class="form-group col-md-3">
+            <label for="tipVerbaoNovoDesconto">Tipo Verba</label>
+            <input type="text" name="tipVerbaoNovoDesconto" id="tipVerbaoNovoDesconto" value="${tipVerbaoNovoDesconto || 'V'}" readonly class="form-control">
         </div>
     </div>
     `);

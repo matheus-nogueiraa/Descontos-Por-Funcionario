@@ -40,6 +40,11 @@ function mudaVerbasNovoDesconto(tipoDesconto) {
   VERBAS[tipoDesconto].forEach(element => {
     $(`#verbaNovoDesconto`).append(`<option value="${element.id?.trim()}">${element.id?.trim()} - ${element.desc?.trim()}</option>`);
   });
+
+  $("#descricao").val('');
+  $("#tipoVerba").val('');
+  $("#valorEpi").val('');
+  $('#labelTipoDesconto').text('');
 }
 
 function consultaProcessosDescontosAtivos(funcionario) {
@@ -65,5 +70,34 @@ function consultaProcessosDescontosAtivos(funcionario) {
   }
   else {
     return true;
+  }
+}
+
+function consultaTipoVerba() {
+  const verbaNovoDesconto = $('#verbaNovoDesconto').val();
+  const filial = $('#codFilial').val();
+  const codFilial = filial ? filial.split(' ')[0] : '';
+
+  if (verbaNovoDesconto) {
+    const constraints = new Array();
+
+    constraints.push(DatasetFactory.createConstraint('filial', codFilial, codFilial, ConstraintType.MUST));
+    constraints.push(DatasetFactory.createConstraint('codVerba', verbaNovoDesconto, verbaNovoDesconto, ConstraintType.MUST));
+
+    const dataset = DatasetFactory.getDataset('ds_consultaVerbasProtheus', null, constraints, null);
+
+    const tipoVerba = dataset?.values[0]?.RV_TIPO || '';
+
+    $('#tipoVerba').val(tipoVerba);
+    
+    if (tipoVerba == 'H'){
+      $('#labelTipoDesconto').text('EM HORAS');
+    }
+    else if (tipoVerba == 'D'){
+      $('#labelTipoDesconto').text('EM DIAS');
+    }
+    else {
+      $('#labelTipoDesconto').text('EM VALOR (R$)');
+    }
   }
 }

@@ -255,7 +255,7 @@
                                         </select>
                                     </div>
                                     <div class="col-md-4">
-                                        <select name="verbaNovoDesconto" id="verbaNovoDesconto" class="form-control">
+                                        <select name="verbaNovoDesconto" id="verbaNovoDesconto" class="form-control" onchange="consultaTipoVerba()">
 
                                         </select>
                                     </div>
@@ -268,13 +268,17 @@
                             </div>
                             <div class="panel-body">
                                 <div class="row">
-                                    <div class="col-md-8">
+                                    <div class="col-md-6">
                                         <label for="descricao">Descrição do desconto</label>
                                         <input type="text" class="form-control" id="descricao"
                                             placeholder="Digite a descrição do desconto">
                                     </div>
+                                    <div class="col-md-2">
+                                        <label for="tipoVerba">Tipo Verba</label>
+                                        <input type="text" class="form-control" id="tipoVerba" readonly>
+                                    </div>
                                     <div class="col-md-4">
-                                        <label for="valorEpi">Valor total do desconto (R$)</label>
+                                        <label for="valorEpi">Total do Desconto <span id="labelTipoDesconto" class="text-warning"></span></label>
                                         <input type="text" class="form-control" id="valorEpi" placeholder="00.000,00"
                                             mask="#00.000.000.000.000,00">
                                     </div>
