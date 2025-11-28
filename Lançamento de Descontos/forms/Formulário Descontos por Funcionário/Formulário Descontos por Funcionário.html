@@ -415,21 +415,56 @@
 				const parcelas = JSON.parse(json);
 				const tbody = document.querySelector('#tabelaParcelasForm tbody');
 				let total = 0;
+
+				// Pegando a data da solicitação e a data atual
+				const dataSolicitacao = new Date(document.querySelector('[name="dataSolicitacao"]').value || ''); 
+				const dataAtual = new Date(); // Data atual
+
+				console.log('Data Solicitação:', dataSolicitacao);
+				console.log('Data Atual:', dataAtual);
+
 				if (Array.isArray(parcelas) && tbody) {
-					parcelas.forEach((p) => {
+					const diaAtual = dataAtual.getDate();
+					let ajustesMeses = 0;
+					
+					console.log('Dia atual:', diaAtual);
+					
+					if (diaAtual >= 27 || diaAtual <= 7) {
+						ajustesMeses = 1;
+						console.log('Ajustando todas as parcelas em +1 mês');
+					}
+
+					parcelas.forEach((p, index) => {
+						let periodo = p.periodo || '';
+						let ano = parseInt(periodo.substring(0, 4), 10);
+						let mes = parseInt(periodo.substring(4, 6), 10);
+
+						// Aplicar o ajuste para todas as parcelas se necessário
+						if (ajustesMeses > 0) {
+								mes += ajustesMeses;
+								if (mes > 12) {
+										mes = mes - 12;
+										ano += 1;
+								}
+								periodo = `${ano}${mes.toString().padStart(2, '0')}`;
+						}
+
 						const tr = document.createElement('tr');
 						tr.innerHTML = `
-              <td><input type="text" class="form-control" value="${p.periodo || ''}" readonly></td>
-              <td><input type="text" class="form-control text-right" value="${(Number(p.valor || 0)).toFixed(2).replace('.', ',')}" readonly></td>
-            `;
+								<td><input type="text" class="form-control" value="${periodo}" readonly></td>
+								<td><input type="text" class="form-control text-right" value="${(Number(p.valor || 0)).toFixed(2).replace('.', ',')}" readonly></td>
+						`;
 						tbody.appendChild(tr);
 						total += Number(p.valor || 0);
 					});
 				}
+
 				document.getElementById('parcelas_total').value = total;
 				const totEl = document.getElementById('parcelas_total');
 				if (totEl) totEl.value = total.toFixed(2).replace('.', ',');
-			} catch (e) { /* silencioso */ }
+			} catch (e) {
+				console.error('Erro ao processar parcelas:', e);
+			}
 		})();
 	</script>
 </body>

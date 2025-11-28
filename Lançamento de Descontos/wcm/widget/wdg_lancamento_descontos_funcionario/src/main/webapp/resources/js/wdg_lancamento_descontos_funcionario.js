@@ -54,10 +54,10 @@ const VERBAS = {
             id: '571',
             desc: 'Vale Refeição Não Utilizado'
         },
-        {
-            id: '450',
-            desc: 'Adiantamento Salarial'
-        }
+        // {
+        //     id: '450',
+        //     desc: 'Adiantamento Salarial'
+        // }
     ]
 }
 
