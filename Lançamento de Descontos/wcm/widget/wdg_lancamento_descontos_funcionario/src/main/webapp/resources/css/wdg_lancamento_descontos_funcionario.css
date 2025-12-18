@@ -235,6 +235,68 @@ td:last-child {
   background-color: rgba(0, 0, 0, 0.5);
 }
 
+/* Fix para tooltips aparecerem sobre o modal */
+.tooltip {
+  z-index: 1100 !important;
+}
+
+.tooltip.fade.top.in,
+.tooltip.fade.bottom.in,
+.tooltip.fade.left.in,
+.tooltip.fade.right.in,
+.tooltip.fade.in {
+  z-index: 1100 !important;
+}
+
+/* Fix para tooltips do Fluig */
+.fluig-tooltip,
+.fluig-tooltip-inner,
+[data-toggle="tooltip"] + .tooltip {
+  z-index: 1100 !important;
+}
+
+/* Melhorias na visualização dos tooltips */
+.tooltip-inner {
+  background-color: #333 !important;
+  color: #fff !important;
+  border-radius: 6px !important;
+  padding: 8px 12px !important;
+  font-size: 13px !important;
+  line-height: 1.4 !important;
+  max-width: 250px !important;
+  text-align: left !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3) !important;
+  font-family: "Poppins", sans-serif !important;
+}
+
+.tooltip.top .tooltip-arrow {
+  border-top-color: #333 !important;
+}
+
+.tooltip.bottom .tooltip-arrow {
+  border-bottom-color: #333 !important;
+}
+
+.tooltip.left .tooltip-arrow {
+  border-left-color: #333 !important;
+}
+
+.tooltip.right .tooltip-arrow {
+  border-right-color: #333 !important;
+}
+
+/* Estilo dos ícones de ajuda */
+.fluigicon-question-sign {
+  color: #7d1e0a !important;
+  cursor: help !important;
+  margin-left: 5px !important;
+  transition: color 0.2s ease !important;
+}
+
+.fluigicon-question-sign:hover {
+  color: #7d1e0a !important;
+}
+
 .modal-content {
   background-color: #fefefe;
   margin: 10% auto;

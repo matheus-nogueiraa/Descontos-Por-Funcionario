@@ -13,56 +13,110 @@ function servicetask9(attempt, message) {
         var tipo1 = 'D'; // desconto
         var periodoForm = (hAPI.getCardValue('periodoAtual') + '').trim(); // espelho do período atual exibido
         var parcelas = parseParcelas((hAPI.getCardValue('parcelas_json') + '').trim());
+        var descontoAtivo = (hAPI.getCardValue('descontoAtivo') + '').trim().toLowerCase() === 'true';
 
         if (!parcelas || parcelas.length === 0) {
             throw new Error('Não há parcelas a enviar.');
         }
 
-        // ---------- Divide em "aberto" (primeira parcela) e "futuras" (demais) ----------
-        var primeiraParcela = parcelas[0];
-        // periodoRef do aberto = período da primeira parcela; se vazio, tenta do form
-        var periodoRefAberto = (primeiraParcela && primeiraParcela.periodo) ? (primeiraParcela.periodo + '').trim() : (periodoForm || '');
-        if (!periodoRefAberto) {
-            throw new Error('Período da primeira parcela não informado.');
-        }
-
-        var payloadAberto = {
-            empresa: empresa,
-            filial: codFilial,
-            matricula: matricula,
-            roteiro: roteiro,
-            numpagto: numpagto,
-            periodoRef: periodoRefAberto,
-            verba: codVerba,
-            tipoVerba: tipoVerba,
-            tipo1: tipo1,
-            parcelas: [primeiraParcela] // apenas 1
-        };
-
-        // Futuras = todas as parcelas cujo período seja diferente do aberto (e valor > 0)
-        var restantes = [];
-        for (var i = 1; i < parcelas.length; i++) {
-            var p = parcelas[i] || {};
-            var per = (p.periodo + '').trim();
-            var val = parseMoney(p.valor);
-            if (per && isFinite(val) && val > 0 && per !== periodoRefAberto) {
-                restantes.push({ periodo: per, valor: Number(val.toFixed(2)) });
-            }
-        }
-
+        // ---------- Lógica de divisão baseada em desconto ativo ----------
+        var payloadAberto = null;
         var payloadFuturo = null;
-        if (restantes.length > 0) {
-            payloadFuturo = {
+        
+        if (descontoAtivo) {
+            log.info('servicetask9: Desconto ativo detectado. Enviando todas as parcelas como futuras.');
+            
+            // Quando há desconto ativo, todas as parcelas vão para futuros
+            var todasParcelas = [];
+            var ultimoPeriodo = '';
+            
+            for (var i = 0; i < parcelas.length; i++) {
+                var p = parcelas[i] || {};
+                var per = (p.periodo + '').trim();
+                var val = parseMoney(p.valor);
+                if (per && isFinite(val) && val > 0) {
+                    todasParcelas.push({ periodo: per, valor: Number(val.toFixed(2)) });
+                    
+                    // Encontra o último período (maior cronologicamente)
+                    if (!ultimoPeriodo || per > ultimoPeriodo) {
+                        ultimoPeriodo = per;
+                    }
+                }
+            }
+            
+            if (todasParcelas.length > 0) {
+                // Usa o último período da tabela como referência
+                var periodoReferencia = ultimoPeriodo || periodoForm;
+                log.info('servicetask9: Usando período de referência para futuros: ' + periodoReferencia);
+                
+                payloadFuturo = {
+                    empresa: empresa,
+                    filial: codFilial,
+                    matricula: matricula,
+                    periodoRef: periodoReferencia,
+                    verba: codVerba,
+                    tipoVerba: tipoVerba,
+                    documento: (getValue('WKNumProces') + ''),
+                    parcelas: todasParcelas
+                };
+            }
+        } else {
+            // ---------- Divide em "aberto" (primeira parcela) e "futuras" (demais) ----------
+            var primeiraParcela = parcelas[0];
+            // periodoRef do aberto = período da primeira parcela; se vazio, tenta do form
+            var periodoRefAberto = (primeiraParcela && primeiraParcela.periodo) ? (primeiraParcela.periodo + '').trim() : (periodoForm || '');
+            if (!periodoRefAberto) {
+                throw new Error('Período da primeira parcela não informado.');
+            }
+
+            payloadAberto = {
                 empresa: empresa,
                 filial: codFilial,
                 matricula: matricula,
-                periodoRef: periodoRefAberto, // usado pelo serviço para filtrar e excluir o período aberto
+                roteiro: roteiro,
+                numpagto: numpagto,
+                periodoRef: periodoRefAberto,
                 verba: codVerba,
                 tipoVerba: tipoVerba,
-                // documento é opcional; se quiser, pode usar o número do processo:
-                documento: (getValue('WKNumProces') + ''),
-                parcelas: restantes
+                tipo1: tipo1,
+                parcelas: [primeiraParcela] // apenas 1
             };
+
+            // Futuras = todas as parcelas cujo período seja diferente do aberto (e valor > 0)
+            var restantes = [];
+            var ultimoPeriodoFuturo = '';
+            
+            for (var i = 1; i < parcelas.length; i++) {
+                var p = parcelas[i] || {};
+                var per = (p.periodo + '').trim();
+                var val = parseMoney(p.valor);
+                if (per && isFinite(val) && val > 0 && per !== periodoRefAberto) {
+                    restantes.push({ periodo: per, valor: Number(val.toFixed(2)) });
+                    
+                    // Encontra o último período das parcelas futuras
+                    if (!ultimoPeriodoFuturo || per > ultimoPeriodoFuturo) {
+                        ultimoPeriodoFuturo = per;
+                    }
+                }
+            }
+
+            if (restantes.length > 0) {
+                // Usa o último período das futuras como referência
+                var periodoRefFuturo = ultimoPeriodoFuturo || periodoRefAberto;
+                log.info('servicetask9: Usando período de referência para parcelas futuras: ' + periodoRefFuturo);
+                
+                payloadFuturo = {
+                    empresa: empresa,
+                    filial: codFilial,
+                    matricula: matricula,
+                    periodoRef: periodoRefFuturo, // usa o último período das futuras
+                    verba: codVerba,
+                    tipoVerba: tipoVerba,
+                    // documento é opcional; se quiser, pode usar o número do processo:
+                    documento: (getValue('WKNumProces') + ''),
+                    parcelas: restantes
+                };
+            }
         }
 
         // ---------- Idempotência: checa se já integrou com sucesso ----------
@@ -77,13 +131,23 @@ function servicetask9(attempt, message) {
 
         // Não reenvia se já deu OK anteriormente com qualquer payload.
         // Se quiser reprocessar quando payload mudou, troque a lógica conforme sua política.
-        var deveEnviarAberto = (stAberto !== 'OK');
+        var deveEnviarAberto = (!!payloadAberto && stAberto !== 'OK');
         var deveEnviarFuturo = (!!payloadFuturo && stFuturo !== 'OK');
 
         // ---------- Envia abertas ----------
         var okAberto = false;
         var msgAberto = '';
-        if (deveEnviarAberto) {
+        
+        if (descontoAtivo) {
+            // Quando há desconto ativo, não lança no período atual - apenas retorna OK fictício
+            log.info('servicetask9: Desconto ativo detectado. Não enviando para período atual - retornando OK fictício.');
+            okAberto = true;
+            msgAberto = 'Desconto ativo: não enviado para período atual, todas as parcelas enviadas como futuras.';
+            hAPI.setCardValue('integ_aberto_status', 'OK');
+            hAPI.setCardValue('integ_aberto_msg', msgAberto);
+            hAPI.setCardValue('integ_aberto_payload', 'N/A - Desconto ativo');
+            hAPI.setTaskComments(getValue('WKUser'), getValue('WKNumProces'), 0, 'Período Atual: OK (não enviado devido a desconto ativo). ' + msgAberto);
+        } else if (deveEnviarAberto) {
             var r1 = integracaoProtheusInvoke('/rest/RESTRH/postDescontos', payloadAberto);
             okAberto = r1.ok;
             msgAberto = r1.msg;
@@ -96,8 +160,12 @@ function servicetask9(attempt, message) {
             } else {
                 hAPI.setTaskComments(getValue('WKUser'), getValue('WKNumProces'), 0, 'Aberto (GPEA580): FALHA. ' + (msgAberto || ''));
             }
-        } else {
+        } else if (payloadAberto) {
             log.info('servicetask9: Aberto já OK anteriormente. Não reenviado.');
+            okAberto = true; // considera como OK para não impactar status geral
+        } else {
+            log.info('servicetask9: Sem payload aberto.');
+            okAberto = true; // considera como OK quando não há payload aberto
         }
 
         // ---------- Envia futuras ----------
@@ -123,13 +191,19 @@ function servicetask9(attempt, message) {
         }
 
         // ---------- Status geral ----------
-        // Se existir parcelas futuras, considera OK somente se ambos OK.
-        // Se não existir, considera OK apenas se aberto OK.
         var statusGeralOK = false;
-        if (payloadFuturo) {
-            statusGeralOK = ((stAberto === 'OK' || okAberto) && (stFuturo === 'OK' || okFuturo));
+        if (descontoAtivo) {
+            // Quando há desconto ativo, não lança no atual - só considera status futuro
+            log.info('servicetask9: Status geral com desconto ativo - considerando apenas status das parcelas futuras.');
+            statusGeralOK = (stFuturo === 'OK' || okFuturo);
         } else {
-            statusGeralOK = (stAberto === 'OK' || okAberto);
+            // Lógica original: se existir parcelas futuras, considera OK somente se ambos OK.
+            // Se não existir, considera OK apenas se aberto OK.
+            if (payloadFuturo) {
+                statusGeralOK = ((stAberto === 'OK' || okAberto) && (stFuturo === 'OK' || okFuturo));
+            } else {
+                statusGeralOK = (stAberto === 'OK' || okAberto);
+            }
         }
         hAPI.setCardValue('statusIntegracao', statusGeralOK ? 'OK' : 'NOK');
 

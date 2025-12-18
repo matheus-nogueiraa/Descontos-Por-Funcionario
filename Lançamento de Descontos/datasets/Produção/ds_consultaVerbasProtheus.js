@@ -7,48 +7,33 @@ function createDataset(fields, constraints, sortFields) {
     var created = false;
     var myQuery = "";
     var filial = "";
-    var matricula = "";
-    var periodoAtual = "";
+    var codVerba = "";
 
     if (constraints.length > 0) {
         for (var c = 0; c < constraints.length; c++) {
             if (constraints[c].fieldName == "filial") {
                 filial = ("" + constraints[c].initialValue + "").trim();
             }
-            if (constraints[c].fieldName == "matricula") {
-                matricula = ("" + constraints[c].initialValue + "").trim();
-            }
-            if (constraints[c].fieldName == "periodoAtual") {
-                periodoAtual = ("" + constraints[c].initialValue + "").trim();
+            if (constraints[c].fieldName == "codVerba") {
+                codVerba = ("" + constraints[c].initialValue + "").trim();
             }
         }
     }
 
-    if (!filial || !matricula || !periodoAtual) {
-        newDataset.addColumn('ERRO');
-        newDataset.addRow(['Filial, Matrícula ou Período Inválidos']);
-        return newDataset;
-    }
-
     myQuery += " SELECT "
-    myQuery += "     SRK.RK_FILIAL codFilial, "
-    myQuery += "     SRK.RK_PROCES codProcesso, "
-    myQuery += "     SRK.RK_MAT matricula, "
-    myQuery += "     SRK.RK_PD codVerba, "
-    myQuery += "     SRV.RV_DESC descVerba, "
-    myQuery += "     SRK.RK_DTVENC dtVencimento, "
-    myQuery += "     SRK.RK_VALORTO valor "
-    myQuery += " FROM SRK010 SRK "
-    myQuery += " INNER JOIN SRV010 SRV "
-    myQuery += " ON SRV.D_E_L_E_T_ = ' ' "
-    myQuery += " AND SRV.RV_FILIAL = LEFT(SRK.RK_FILIAL, 2) "
-    myQuery += " AND SRV.RV_COD = SRK.RK_PD "
-    myQuery += " WHERE SRK.D_E_L_E_T_ = ' ' "
-    myQuery += " AND SRK.RK_PD IN ('516','373','522','523','525','520','440','445','518','521','570','571','450') "
-    myQuery += " AND SRK.RK_FILIAL = '" + filial + "' "
-    myQuery += " AND SRK.RK_MAT = '" + matricula + "' "
-    myQuery += " AND SRK.RK_DTVENC >= '" + periodoAtual + "01' "
-    myQuery += " ORDER BY RK_DTVENC DESC "
+    myQuery += "     * "
+    myQuery += " FROM SRV010 SRV "
+    myQuery += " WHERE SRV.D_E_L_E_T_ = ' ' "
+
+    if (filial){
+        myQuery += " AND SRV.RV_FILIAL = LEFT('" + filial + "', 2) "
+    }
+    
+    if (codVerba){
+        myQuery += " AND SRV.RV_COD = '" + codVerba + "' "
+    }
+    
+    myQuery += " ORDER BY SRV.RV_COD "   
 
     try {
         var conn = ds.getConnection();

@@ -45,6 +45,18 @@ function mudaVerbasNovoDesconto(tipoDesconto) {
   $("#tipoVerba").val('');
   $("#valorEpi").val('');
   $('#labelTipoDesconto').text('');
+
+  // Mostra o campo de foto por padrão quando muda o tipo de desconto
+  $('#cameraContainer').parent().parent().show();
+
+  // Esconde o campo centro de custo se for tipo DP
+  if (tipoDesconto === 'dp') {
+    $(`#centroCustoDesconto`).hide();
+    $(`#btnVincularEpiXFuncionario`).text('Avançar')
+  } else {
+    $(`#centroCustoDesconto`).show();
+    $(`#btnVincularEpiXFuncionario`).text('Solicitar Assinatura')
+  }
 }
 
 function consultaProcessosDescontosAtivos(funcionario) {
@@ -77,7 +89,6 @@ function consultaTipoVerba() {
   const verbaNovoDesconto = $('#verbaNovoDesconto').val();
   const filial = $('#codFilial').val();
   const codFilial = filial ? filial.split(' ')[0] : '';
-
   if (verbaNovoDesconto) {
     const constraints = new Array();
 
@@ -92,12 +103,22 @@ function consultaTipoVerba() {
     
     if (tipoVerba == 'H'){
       $('#labelTipoDesconto').text('EM HORAS');
+      $('#valorEpi').attr('placeholder', '000:00');
     }
     else if (tipoVerba == 'D'){
       $('#labelTipoDesconto').text('EM DIAS');
+      $('#valorEpi').attr('placeholder', '00');
     }
     else {
       $('#labelTipoDesconto').text('EM VALOR (R$)');
+      $('#valorEpi').attr('placeholder', '00.000,00');
     }
+  }
+
+  const verbasSemFoto = ["440", "445", "570", "571"];
+  if (verbasSemFoto.includes(verbaNovoDesconto)) {
+    $('#cameraContainer').parent().parent().hide(); // Oculta todo o painel de captura de foto
+  } else {
+    $('#cameraContainer').parent().parent().show(); // Mostra o painel de captura de foto
   }
 }

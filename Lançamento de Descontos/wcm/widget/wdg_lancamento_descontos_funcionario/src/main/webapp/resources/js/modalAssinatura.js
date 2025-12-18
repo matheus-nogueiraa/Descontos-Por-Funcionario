@@ -38,6 +38,12 @@ function addMonth(periodoYYYYMM) {
   return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}`;
 }
 
+function extractPeriodoFromDate(dateStr) {
+  // Converte YYYYMMDD para YYYYMM
+  if (!dateStr || dateStr.length < 6) return '';
+  return dateStr.substring(0, 6);
+}
+
 function somaPorPeriodo(datasetValues, campoPeriodo = 'codPeriodo', campoValor = 'valor', ignoreCodesSet, campoVerba = 'codVerba') {
   const mapa = {};
   (datasetValues || []).forEach(function (row) {
@@ -164,14 +170,24 @@ async function openModalAssinatura() {
     }
 
   if (!rdTipoDesconto) { toastMsg('Atenção', 'Preencha o campo Tipo de Desconto antes de prosseguir para a assinatura.', 'warning'); return; }
-  if (!centroCustoDesconto) { toastMsg('Atenção', 'Preencha o campo Centro de Custo antes de prosseguir para a assinatura.', 'warning'); return; }
-  if (!verbaNovoDesconto) { toastMsg('Atenção', 'Preencha o campo Verba antes de prosseguir para a assinatura.', 'warning'); return; }
-  if (!descricao) { toastMsg('Atenção', 'Preencha o campo descrição antes de prosseguir para a assinatura.', 'warning'); return; }
-  if (!valor || valor <= 0) { toastMsg('Atenção', 'Preencha o campo Valor total do desconto com um valor maior que zero.', 'warning'); return; }
+  
+  // Para tipo DP, pula as validações
+  if (rdTipoDesconto !== 'dp') {
+    if (!centroCustoDesconto) { toastMsg('Atenção', 'Preencha o campo Centro de Custo antes de prosseguir para a assinatura.', 'warning'); return; }
+    if (!verbaNovoDesconto) { toastMsg('Atenção', 'Preencha o campo Verba antes de prosseguir para a assinatura.', 'warning'); return; }
+    if (!descricao) { toastMsg('Atenção', 'Preencha o campo descrição antes de prosseguir para a assinatura.', 'warning'); return; }
+    if (!valor || valor <= 0) { toastMsg('Atenção', 'Preencha o campo Valor total do desconto com um valor maior que zero.', 'warning'); return; }
 
-  const input = document.getElementById('cameraInputPhotoEPI');
-  const file = input?.files?.[0];
-  if (!file) { toastMsg('Atenção', 'Adicione uma foto do funcionário antes de prosseguir para a assinatura.', 'warning'); return; }
+    // Verifica se é uma verba que não precisa de foto
+    const verbasSemFoto = ["440", "445", "570", "571"];
+    const precisaFoto = !verbasSemFoto.includes(verbaNovoDesconto);
+    
+    if (precisaFoto) {
+      const input = document.getElementById('cameraInputPhotoEPI');
+      const file = input?.files?.[0];
+      if (!file) { toastMsg('Atenção', 'Adicione uma foto do funcionário antes de prosseguir para a assinatura.', 'warning'); return; }
+    }
+  }
 
   const codFilial = $('#codFilial').val();
   const matriculaFunc = $('#matriculaFunc').val();
@@ -228,12 +244,40 @@ async function openModalAssinatura() {
   constraintsIncidencias.push(DatasetFactory.createConstraint("periodoAtual", periodoAtual, periodoAtual, ConstraintType.MUST));
   const datasetIncidencias = DatasetFactory.getDataset("ds_consultaIncidenciasFuncionario", null, constraintsIncidencias, null);
 
-  // aplica regra: DP => ignora 15% e manda 1 parcela; Almox/Frotas/TI => respeita 15%
+  const constraintsLancFuturos = [];
+  constraintsLancFuturos.push(DatasetFactory.createConstraint("filial", codFilial, codFilial, ConstraintType.MUST));
+  constraintsLancFuturos.push(DatasetFactory.createConstraint("matricula", matriculaFunc, matriculaFunc, ConstraintType.MUST));
+  constraintsLancFuturos.push(DatasetFactory.createConstraint("periodoAtual", periodoAtual, periodoAtual, ConstraintType.MUST));
+  const datasetLancFuturos = DatasetFactory.getDataset("ds_consultaLancFuturosFuncionario", null, constraintsLancFuturos, null);
+
   const aplica15 = _aplicaRegra15(rdTipoDesconto);
 
-  const mapaComprometido = aplica15
-  ? somaPorPeriodo(datasetIncidencias && datasetIncidencias.values, 'codPeriodo', 'valor', DP_CODES, 'codVerba')
-  : somaPorPeriodo(datasetIncidencias && datasetIncidencias.values, 'codPeriodo', 'valor');
+  let mapaComprometido = {};
+  
+  if (aplica15) {
+    mapaComprometido = somaPorPeriodo(datasetIncidencias && datasetIncidencias.values, 'codPeriodo', 'valor', DP_CODES, 'codVerba');
+    
+    (datasetLancFuturos?.values || []).forEach(row => {
+      const codVerba = String(row.codVerba || row.RK_PD || '').trim();
+      if (DP_CODES.has(codVerba)) return;
+      
+      const periodo = extractPeriodoFromDate(String(row.dtVencimento || row.RK_DTVENC || '').trim());
+      if (!periodo) return;
+      
+      const valor = parseMoney(row.valor || row.RK_VALORTO || 0);
+      mapaComprometido[periodo] = (mapaComprometido[periodo] || 0) + valor;
+    });
+  } else {
+    mapaComprometido = somaPorPeriodo(datasetIncidencias && datasetIncidencias.values, 'codPeriodo', 'valor');
+    
+    (datasetLancFuturos?.values || []).forEach(row => {
+      const periodo = extractPeriodoFromDate(String(row.dtVencimento || row.RK_DTVENC || '').trim());
+      if (!periodo) return;
+      
+      const valor = parseMoney(row.valor || row.RK_VALORTO || 0);
+      mapaComprometido[periodo] = (mapaComprometido[periodo] || 0) + valor;
+    });
+  }
 
   let totalPeriodoAtual, parcelas;
   if (aplica15) {
@@ -245,10 +289,13 @@ async function openModalAssinatura() {
     );
     totalPeriodoAtual = r.totalPeriodoAtual;
     parcelas = r.parcelas;
+    console.log('Parcelas Calculadas:', parcelas);
   } else {
     parcelas = [{ periodo: periodoAtual, valor: Number(parseMoney(valor).toFixed(2)) }];
     totalPeriodoAtual = Number(((mapaComprometido[periodoAtual] || 0) + parseMoney(valor)).toFixed(2));
+    console.log('DP - Parcela Única:', parcelas);
   }
+  console.log('=== FIM DEBUG ===');
 
   const tabelaParcelasHtml = (() => {
     let total = 0;
@@ -295,6 +342,14 @@ async function openModalAssinatura() {
   $('#revisaoParcelas').html(tabelaParcelasHtml);
 
   $('#test1_nome').val(nomeUsuario).prop('readonly', true);
+
+  if (rdTipoDesconto === 'dp') {
+    $('#painelFotoCapturada').hide();
+    $('#painelConfirmacao').hide();
+  } else {
+    $('#painelFotoCapturada').show();
+    $('#painelConfirmacao').show();
+  }
 
   $('#modalAssinatura').show();
 
@@ -400,13 +455,13 @@ async function coletarConfirmacao() {
     assinaturaBase64: getPadBase64('signature-pad-test1'),
     fotoBase64: await fileToBase64(document.getElementById('test1_foto')?.files?.[0] || null)
   };
-  // const t2 = {
-  //   nome: $('#test2_nome').val()?.trim() || '',
-  //   cpf: $('#test2_cpf').val()?.trim() || '',
-  //   cargo: $('#test2_cargo').val()?.trim() || '',
-  //   assinaturaBase64: getPadBase64('signature-pad-test2'),
-  //   fotoBase64: await fileToBase64(document.getElementById('test2_foto')?.files?.[0] || null)
-  // };
+  const t2 = {
+    nome: $('#test2_nome').val()?.trim() || '',
+    cpf: $('#test2_cpf').val()?.trim() || '',
+    cargo: $('#test2_cargo').val()?.trim() || '',
+    assinaturaBase64: getPadBase64('signature-pad-test2'),
+    fotoBase64: await fileToBase64(document.getElementById('test2_foto')?.files?.[0] || null)
+  };
 
   // evidências extras (múltiplos)
   const extras = [];
@@ -419,7 +474,7 @@ async function coletarConfirmacao() {
     tipoConfirmacao: 'RECUSA_TESTEMUNHAS',
     motivoRecusa: ($('#motivoRecusa').val() || '').trim(),
     assinaturaFuncionarioBase64: null,
-    testemunhas: [t1 /*, t2*/],
+    testemunhas: [t1, t2],
     evidenciasExtras: extras
   };
 }

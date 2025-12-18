@@ -73,6 +73,8 @@
 			<input type="hidden" name="dataHoraAssinaturaFunc" id="dataHoraAssinaturaFunc">
 			<input type="hidden" name="recusaAssinatura" id="recusaAssinatura">
 
+			<input type="hidden" name="descontoAtivo" id="descontoAtivo" value="">
+
 			<!-- Dados do Solicitante -->
 			<div class="panel panel-primary">
 				<div class="panel-heading">
@@ -275,7 +277,34 @@
 			</div>
 
 			<!-- Testemunha 2 -->
-			
+				<div class="panel panel-default">
+				<div class="panel-heading">
+					<h5 class="panel-title">Testemunha 2</h5>
+				</div>
+				<div class="panel-body">
+					<div class="row">
+						<div class="form-group col-md-4">
+							<label>Nome</label>
+							<input type="text" name="test2_nome" id="test2_nome" class="form-control" readonly>
+						</div>
+						<div class="form-group col-md-4">
+							<label>CPF</label>
+							<input type="text" name="test2_cpf" id="test2_cpf" class="form-control" readonly>
+						</div>
+						<div class="form-group col-md-4">
+							<label>Cargo/Setor</label>
+							<input type="text" name="test2_cargo" id="test2_cargo" class="form-control" readonly>
+						</div>
+					</div>
+					<div class="row" style="margin-top:8px;">
+						<div class="col-md-12">
+							<img id="assinaturaTestemunha2_img" src="" alt="Assinatura Testemunha 2"
+								style="max-width:100%; border:1px solid #ddd;">
+							<small class="text-muted">Campo técnico: <code>assinaturaTestemunha2_base64</code></small>
+						</div>
+					</div>
+				</div>
+			</div>
 
 			<!-- Foto e Evidências -->
 			<div class="panel panel-default">
@@ -352,7 +381,7 @@
 				</div>
 			</div>
 
-			<div class="panel panel-default" id="panelTestemunha2">
+			<!-- <div class="panel panel-default" id="panelTestemunha2">
 				<div class="panel-heading">
 					<h5 class="panel-title">Testemunha 2</h5>
 				</div>
@@ -380,13 +409,13 @@
 									onclick="clearPad('signature-pad-test2')">Limpar</button>
 						</div>
 						<div class="col-md-12">
-							<!-- <img id="assinaturaTestemunha2_img" src="" alt="Assinatura Testemunha 2"
+							 <img id="assinaturaTestemunha2_img" src="" alt="Assinatura Testemunha 2"
 								style="max-width:100%; border:1px solid #ddd;"> -->
-							<small class="text-muted">Campo técnico: <code>assinaturaTestemunha2_base64</code></small>
+							<!-- <small class="text-muted">Campo técnico: <code>assinaturaTestemunha2_base64</code></small>
 						</div>
 					</div>
 				</div>
-			</div>
+			</div> -->
 
 		</form>
 	</div>

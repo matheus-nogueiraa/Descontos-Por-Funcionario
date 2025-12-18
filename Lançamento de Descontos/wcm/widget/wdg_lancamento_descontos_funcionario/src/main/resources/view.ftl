@@ -52,6 +52,7 @@
         <input type="hidden" id="emailUsuario">
         <input type="hidden" id="matriculaUsuario">
         <input type="hidden" id="futuros_json" value="">
+        <input type="hidden" id="descontoAtivo" value="">
 
         <input type="hidden" name="grupo_aprovador" id="grupo_aprovador">
 
@@ -356,7 +357,7 @@
                         </div>
 
                         <!-- Foto Capturada -->
-                        <div class="panel panel-default">
+                        <div class="panel panel-default" id="painelFotoCapturada">
                             <div class="panel-heading">
                                 <h3 class="panel-title">Foto Capturada</h3>
                             </div>
@@ -366,7 +367,7 @@
                         </div>
 
                         <!-- Confirmação -->
-                        <div class="panel panel-default">
+                        <div class="panel panel-default" id="painelConfirmacao">
                             <div class="panel-heading">
                                 <h3 class="panel-title">Confirmação</h3>
                             </div>
@@ -452,7 +453,7 @@
                                     </div>
 
                                     <!-- Testemunha 2 -->
-                                    <!-- <div class="panel panel-default" id="">
+                                    <div class="panel panel-default" id="">
                                         <div class="panel-heading">
                                             <h4 class="panel-title">Testemunha 2</h4>
                                         </div>
@@ -481,7 +482,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </div> -->
+                                    </div>
 
                                     <!-- Evidências gerais -->
                                     <div class="panel panel-default">

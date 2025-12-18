@@ -84,7 +84,7 @@ async function iniciarProcesso() {
       }
       const faltantes = (confirmacao.testemunhas || []).filter(t => !t?.nome || !t?.cpf || !t?.assinaturaBase64);
       if (faltantes.length > 0) {
-        toastMsg('Atenção', 'Preencha nome, CPF e assinatura da testemunha.', 'warning');
+        toastMsg('Atenção', 'Preencha nome, CPF e assinatura das duas testemunhas.', 'warning');
         $("#loadingOverlay").hide();
         return;
       }
@@ -94,8 +94,9 @@ async function iniciarProcesso() {
       processarFoto(),
       gerarRelatorioPDFBase64(dadosFuncionario)
     ]);
-
-    if (!fotoData) {
+    
+    const verbasSemFoto = ["440", "445", "570", "571"];
+    if (!fotoData && !verbasSemFoto.includes($('#verbaNovoDesconto').val())) {
       toastMsg('Atenção', 'É necessário anexar a foto do funcionário.', 'warning');
       $("#loadingOverlay").hide();
       return;
@@ -166,6 +167,10 @@ async function exibirConfirmacao(mensagem) {
 }
 
 async function processarFoto() {
+  const verbasSemFoto = ["440", "445", "570", "571"];
+  if (verbasSemFoto.includes($('#verbaNovoDesconto').val())) {
+    return null; // Não precisa de foto para essas verbas
+  }
   const fotoInput = document.getElementById("cameraInputPhotoEPI");
   const foto = fotoInput.files[0];
   if (!foto) {
@@ -294,6 +299,7 @@ async function montarConstraints({ fotoData, assinaturaData, pdfBase64, parcelas
   constraints.push(DatasetFactory.createConstraint("formField", "confirmacao_tipo_view", confirmacao?.tipoConfirmacao || "", ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("formField", "confirmacao_motivoRecusa_view", confirmacao?.motivoRecusa || "", ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("formField", "recusaAssinatura", recusaAssinatura, ConstraintType.MUST));
+  constraints.push(DatasetFactory.createConstraint("formField", "descontoAtivo", $('#descontoAtivo').val() || '', ConstraintType.MUST));
 
   const evidNames = [];
   if (fotoData?.fotoBase64) {
@@ -633,18 +639,18 @@ async function gerarRelatorioPDFBase64(dadosFuncionario) {
       signType: "testemunha1"
     });
 
-    // Adiciona a assinatura da Testemunha 2
-    // var nomeTest2 = $('#test2_nome').val() || "";
-    // var cpfTest2 = $('#test2_cpf').val() || "";
-    // addSignatureBlock("Assinatura da Testemunha 2", {
-    //   hiddenInputId: "assinaturaTestemunha2_base64",
-    //   canvasId: "signature-pad-test2",
-    //   additionalInfo: {
-    //     nome: nomeTest2,
-    //     cpf: cpfTest2
-    //   },
-    //   signType: "testemunha2"
-    // });
+    //Adiciona a assinatura da Testemunha 2
+    var nomeTest2 = $('#test2_nome').val() || "";
+    var cpfTest2 = $('#test2_cpf').val() || "";
+    addSignatureBlock("Assinatura da Testemunha 2", {
+      hiddenInputId: "assinaturaTestemunha2_base64",
+      canvasId: "signature-pad-test2",
+      additionalInfo: {
+        nome: nomeTest2,
+        cpf: cpfTest2
+      },
+      signType: "testemunha2"
+    });
   }
 
   const now = new Date();

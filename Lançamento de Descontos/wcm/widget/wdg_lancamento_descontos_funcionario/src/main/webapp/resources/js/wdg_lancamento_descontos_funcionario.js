@@ -221,7 +221,7 @@ var MyWidget = SuperWidget.extend({
             { title: 'Sequência', data: 'seqVerba' },
         ];
 
-        $('#tabelaDescontos').DataTable({
+        var table = $('#tabelaDescontos').DataTable({
             destroy: true,
             paging: false,
             searching: false,
@@ -231,6 +231,10 @@ var MyWidget = SuperWidget.extend({
             columns: columns,
             data: produtosComParcelas
         });
+
+        // Verificar quantidade de registros e setar descontoAtivo
+        var totalRegistros = table.rows().count();
+        $('#descontoAtivo').val(totalRegistros > 0 ? 'true' : 'false');
 
         const quinzePorCentroSalario = salario * 0.15
         $('#valQuinzePorCentroSalario').val(quinzePorCentroSalario);
@@ -254,17 +258,10 @@ var MyWidget = SuperWidget.extend({
         var dados = [];
         var total = 0;
 
-        // helper p/ formatar MMYYYY -> MM/YYYY
+        // helper p/ formatar YYYYMMDD -> DD/MM/YYYY
         function fmtMesDissidio(m) {
-            m = (m || '') + '';
-            if (m.length === 6 && /^\d+$/.test(m)) {
-                return m.substr(0, 2) + '/' + m.substr(2, 4);
-            }
-            // se já vier YYYYMM, tenta inverter
-            if (m.length === 6 && m.substr(0, 4).match(/^\d{4}$/)) {
-                return m.substr(4, 2) + '/' + m.substr(0, 4);
-            }
-            return m;
+            if (!m || m.length !== 8) return m;
+            return m.substring(6, 8) + '/' + m.substring(4, 6) + '/' + m.substring(0, 4);
         }
 
         // monta linhas normalizadas para a tabela
@@ -282,7 +279,8 @@ var MyWidget = SuperWidget.extend({
                 codFilial: (el.codFilial || '') + '',
                 codProcesso: (el.codProcesso || '') + '',
                 verba: verbaFmt,
-                mesDissidio: fmtMesDissidio(el.mesDissidio || el.RK_MESDISS),
+                dtVencimento: fmtMesDissidio(el.dtVencimento || el.RK_DTVENC),
+                dtVencimentoSort: el.dtVencimento || el.RK_DTVENC, // Valor original para ordenação
                 valorNum: bruto,
                 valor: bruto.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
             });
@@ -304,7 +302,12 @@ var MyWidget = SuperWidget.extend({
             { title: 'Filial', data: 'codFilial' },
             { title: 'Processo', data: 'codProcesso' },
             { title: 'Verba', data: 'verba' },
-            { title: 'Mês Dissídio', data: 'mesDissidio' },
+            { 
+                title: 'Data Vencimento', 
+                data: 'dtVencimento',
+                type: 'string',
+                orderData: [3, 3] // Usa o próprio campo para ordenação, mas com lógica customizada
+            },
             { title: 'Valor', data: 'valor', className: 'text-right' }
         ];
 
@@ -312,11 +315,26 @@ var MyWidget = SuperWidget.extend({
             destroy: true,
             paging: false,
             searching: false,
-            ordering: false,
+            ordering: true,
             info: false,
             autoWidth: false,
             columns: columns,
             data: dados,
+            order: [[3, 'asc']], // Ordena pela coluna "Data Vencimento" (índice 3) em ordem crescente
+            columnDefs: [
+                {
+                    targets: 3, // Coluna Data Vencimento
+                    type: 'date-br', // Tipo customizado para datas brasileiras
+                    render: function(data, type, row) {
+                        if (type === 'sort' || type === 'type') {
+                            // Para ordenação, usa o valor original YYYYMMDD
+                            return row.dtVencimentoSort || '';
+                        }
+                        // Para display, usa o valor formatado
+                        return data;
+                    }
+                }
+            ],
             language: { url: '//cdn.datatables.net/plug-ins/1.11.3/i18n/pt_br.json' }
         });
     },
