@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://fluig.elcop.eng.br:8443/style-guide/css/fluig-style-guide.min.css">
+  <link rel="stylesheet" href="../webapp/resources/css/wgd_consulta_lancamentos_descontos_funcionario.css">
+  <script src="../webapp/resources/js/wgd_consulta_lancamentos_descontos.js"></script>
+
+  <title>Document</title>
+</head>
+
+<div id="MyWidget_${instanceId}" class="super-widget wcm-widget-class fluig-style-guide" data-params="MyWidget.instance()">
+  <body>
+
+    <div class="card">
+      <div class="card-body">
+        <div class="row">
+          <div class="form-group col-md-6 css_header_img" style="margin-left: 1rem;">
+            <img src="/wgd_consulta_lancamentos_descontos/resources/images/elcop_nossa_energia.png" alt="Logo Elcop"
+              width="329" height="194">
+            <label class="css_header_text">Consulta Lançamentos de Descontos</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Switch com ON/OFF -->
+    <div class="card">
+      <div class="card-body">
+        <div class="row">
+          <div class="form-group col-md-6">
+            <label for="permitirAprovacao">Status</label>
+            <div id="switchDinamicoContainer" class="mt-2">
+              <div id="switchWrapper" class="switch switch-success switch-labels switch-lg">
+                <input class="switch-input" type="checkbox" id="permitirAprovacao" checked />
+                <label class="switch-button" for="permitirAprovacao">Toggle</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</div>
+
+</html>

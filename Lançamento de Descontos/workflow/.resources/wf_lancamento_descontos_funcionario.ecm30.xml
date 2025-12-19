@@ -29,7 +29,7 @@
     <processDefinitionVersionPK>
       <companyId>1</companyId>
       <processId>Lançamento de Descontos por Funcionário</processId>
-      <version>6</version>
+      <version>8</version>
     </processDefinitionVersionPK>
     <versionDescription></versionDescription>
     <formId>419542</formId>
@@ -576,7 +576,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>1</expressionOrder>
-        <version>6</version>
+        <version>8</version>
         <sequence>18</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -588,7 +588,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>2</expressionOrder>
-        <version>6</version>
+        <version>8</version>
         <sequence>18</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -600,7 +600,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>1</expressionOrder>
-        <version>6</version>
+        <version>8</version>
         <sequence>24</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -612,7 +612,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>2</expressionOrder>
-        <version>6</version>
+        <version>8</version>
         <sequence>24</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -624,7 +624,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>1</expressionOrder>
-        <version>6</version>
+        <version>8</version>
         <sequence>35</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -636,7 +636,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>2</expressionOrder>
-        <version>6</version>
+        <version>8</version>
         <sequence>35</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -1033,7 +1033,7 @@ function getCurrentTime() {&#xd;
             &#xd;
             if (todasParcelas.length &gt; 0) {&#xd;
                 // Usa o último período da tabela como referência&#xd;
-                var periodoReferencia = ultimoPeriodo || periodoForm;&#xd;
+                var periodoReferencia = periodoForm;&#xd;
                 log.info(&apos;servicetask9: Usando período de referência para futuros: &apos; + periodoReferencia);&#xd;
                 &#xd;
                 payloadFuturo = {&#xd;
@@ -1089,7 +1089,7 @@ function getCurrentTime() {&#xd;
 &#xd;
             if (restantes.length &gt; 0) {&#xd;
                 // Usa o último período das futuras como referência&#xd;
-                var periodoRefFuturo = ultimoPeriodoFuturo || periodoRefAberto;&#xd;
+                var periodoRefFuturo = periodoForm;&#xd;
                 log.info(&apos;servicetask9: Usando período de referência para parcelas futuras: &apos; + periodoRefFuturo);&#xd;
                 &#xd;
                 payloadFuturo = {&#xd;
@@ -1646,7 +1646,7 @@ function getEmailDiretor(grupoAprovadorCC) {&#xd;
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>6</version>
+        <version>8</version>
         <linkSequence>31</linkSequence>
         <bendSequence>1</bendSequence>
       </processLinkBendPK>
@@ -1657,7 +1657,7 @@ function getEmailDiretor(grupoAprovadorCC) {&#xd;
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>6</version>
+        <version>8</version>
         <linkSequence>37</linkSequence>
         <bendSequence>1</bendSequence>
       </processLinkBendPK>
@@ -1668,7 +1668,7 @@ function getEmailDiretor(grupoAprovadorCC) {&#xd;
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>6</version>
+        <version>8</version>
         <linkSequence>37</linkSequence>
         <bendSequence>2</bendSequence>
       </processLinkBendPK>

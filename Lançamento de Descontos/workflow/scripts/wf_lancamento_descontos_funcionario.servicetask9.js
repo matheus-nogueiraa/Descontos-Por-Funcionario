@@ -46,7 +46,7 @@ function servicetask9(attempt, message) {
             
             if (todasParcelas.length > 0) {
                 // Usa o último período da tabela como referência
-                var periodoReferencia = ultimoPeriodo || periodoForm;
+                var periodoReferencia = periodoForm;
                 log.info('servicetask9: Usando período de referência para futuros: ' + periodoReferencia);
                 
                 payloadFuturo = {
@@ -102,7 +102,7 @@ function servicetask9(attempt, message) {
 
             if (restantes.length > 0) {
                 // Usa o último período das futuras como referência
-                var periodoRefFuturo = ultimoPeriodoFuturo || periodoRefAberto;
+                var periodoRefFuturo = periodoForm;
                 log.info('servicetask9: Usando período de referência para parcelas futuras: ' + periodoRefFuturo);
                 
                 payloadFuturo = {
