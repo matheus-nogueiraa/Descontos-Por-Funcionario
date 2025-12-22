@@ -13,7 +13,8 @@ var beforeSendValidate = function (numState, nextState) {
     else if (numState == ATIVIDADES.APROV_GERENTE) {
         // Consulta ao dataset antes de aprovar
         var constraints = [
-            DatasetFactory.createConstraint('metadata#id', '486718', '486718', ConstraintType.MUST)
+            DatasetFactory.createConstraint('metadata#id', '486718', '486718', ConstraintType.MUST),
+            DatasetFactory.createConstraint('userSecurityId', 'admin', 'admin', ConstraintType.MUST)
         ];
         var dataset = DatasetFactory.getDataset('ds_parametro_aprovacao_descontos', null, constraints, null);
 

@@ -1,6 +1,7 @@
 function abrirModalAtivos() {
   var constraintsAprovacao = [
-    DatasetFactory.createConstraint('metadata#id', '486718', '486718', ConstraintType.MUST)
+    DatasetFactory.createConstraint('metadata#id', '486718', '486718', ConstraintType.MUST),
+    DatasetFactory.createConstraint('userSecurityId', 'admin', 'admin', ConstraintType.MUST)
   ];
   var dataset = DatasetFactory.getDataset('ds_parametro_aprovacao_descontos', null, constraintsAprovacao, null);
 
