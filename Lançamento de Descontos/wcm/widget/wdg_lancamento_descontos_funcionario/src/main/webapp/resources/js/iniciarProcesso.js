@@ -70,8 +70,10 @@ async function iniciarProcesso() {
 
     const confirmacao = await coletarConfirmacao();
 
+    const departamentoDesconto = ($('input[name="rdTipoDesconto"]:checked')?.val())?.toUpperCase() || ($('#revisaoTipoDesconto').text())?.toUpperCase() || "";
+
     if (confirmacao.tipoConfirmacao === 'ASSINATURA_FUNC') {
-      if (!confirmacao.assinaturaFuncionarioBase64) {
+      if (!confirmacao.assinaturaFuncionarioBase64 && departamentoDesconto != 'DP') {
         toastMsg('Atenção', 'Assinatura do funcionário é obrigatória.', 'warning');
         $("#loadingOverlay").hide();
         return;
