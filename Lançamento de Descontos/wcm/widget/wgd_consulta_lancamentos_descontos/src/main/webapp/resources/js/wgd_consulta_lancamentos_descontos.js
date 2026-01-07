@@ -17,7 +17,13 @@ var MyWidget = SuperWidget.extend({
 
             self.setLoading(true);
             self.updateSwitchColor(isChecked);
-            self.atualizarParametroAprovacao(isChecked, 486590, 486718);
+            
+            // Define valores baseado no ambiente (teste vs produção)
+            var isTestEnvironment = window.location.origin.includes(':8443');
+            var documentId = isTestEnvironment ? 341793 : 486590;
+            var cardId = isTestEnvironment ? 341794 : 486718;
+            
+            self.atualizarParametroAprovacao(isChecked, documentId, cardId);
         });
     },
     // Adiciona/Remove loading e desabilita o switch
@@ -63,9 +69,12 @@ var MyWidget = SuperWidget.extend({
     // Método para consultar o valor inicial do parâmetro
     consultarParametroInicial: function () {
         var self = this;
-        
+
+        var isTestEnvironment = window.location.origin.includes(':8443');
+        var metadataid = isTestEnvironment ? "341794" : "486718";
+
         var constraints = [
-            DatasetFactory.createConstraint('metadata#id', '486718', '486718', ConstraintType.MUST)
+            DatasetFactory.createConstraint('metadata#id', metadataid, metadataid, ConstraintType.MUST)
         ];
 
         var dataset = DatasetFactory.getDataset('ds_parametro_aprovacao_descontos', null, constraints, null);

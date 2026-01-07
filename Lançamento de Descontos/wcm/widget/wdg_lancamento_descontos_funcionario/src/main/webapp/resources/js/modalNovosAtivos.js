@@ -1,6 +1,9 @@
 function abrirModalAtivos() {
+  var isTestEnvironment = window.location.origin.includes(':8443');
+  var metadataid = isTestEnvironment ? "341794" : "486718";
+
   var constraintsAprovacao = [
-    DatasetFactory.createConstraint('metadata#id', '486718', '486718', ConstraintType.MUST),
+    DatasetFactory.createConstraint('metadata#id', metadataid, metadataid, ConstraintType.MUST),
     DatasetFactory.createConstraint('userSecurityId', 'admin', 'admin', ConstraintType.MUST)
   ];
   var dataset = DatasetFactory.getDataset('ds_parametro_aprovacao_descontos', null, constraintsAprovacao, null);
@@ -11,7 +14,7 @@ function abrirModalAtivos() {
     permitirAprovacao = valorInicial === true || valorInicial === 'true';
   }
 
-  if (!permitirAprovacao) {
+  if (!permitirAprovacao) {   
     showSweetAlert('Atenção', 'Lançamento de novos descontos não permitida no momento.', 'error');
     return;
   }
