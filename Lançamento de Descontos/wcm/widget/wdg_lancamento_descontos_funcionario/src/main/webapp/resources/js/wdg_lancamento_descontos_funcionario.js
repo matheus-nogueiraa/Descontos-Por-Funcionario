@@ -232,12 +232,26 @@ var MyWidget = SuperWidget.extend({
             data: produtosComParcelas
         });
 
-        // Verificar quantidade de registros e setar descontoAtivo
-        var totalRegistros = table.rows().count();
-        $('#descontoAtivo').val(totalRegistros > 0 ? 'true' : 'false');
-
-        const quinzePorCentroSalario = salario * 0.15
+        // Calcular limite de 15% do salário
+        const quinzePorCentroSalario = salario * 0.15;
         $('#valQuinzePorCentroSalario').val(quinzePorCentroSalario);
+
+        // Verificar se há descontos ativos
+        var totalRegistros = table.rows().count();
+        var temDescontoAtivo = totalRegistros > 0;
+        
+        // Verificar se o valor dos descontos ativos ultrapassa 15% do salário
+        var ultrapassaLimite = valorPeriodo > quinzePorCentroSalario;
+        
+        // Calcular quanto ainda pode ser lançado dentro do limite de 15%
+        var margemDisponivel = quinzePorCentroSalario - valorPeriodo;
+        margemDisponivel = margemDisponivel > 0 ? margemDisponivel : 0;
+        
+        // Armazenar informações para controle
+        $('#descontoAtivo').val(temDescontoAtivo ? 'true' : 'false');
+        $('#ultrapassaLimite').val(ultrapassaLimite ? 'true' : 'false');
+        $('#margemDisponivel').val(margemDisponivel.toFixed(2));
+        $('#valorDescontosAtivos').val(valorPeriodo.toFixed(2));
 
         // Preenche a tabela de resumo geral
         $('#valorTotalResumo').text(valorTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));

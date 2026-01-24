@@ -159,35 +159,33 @@ async function openModalAssinatura() {
   const tipVerbaoNovoDesconto = $('#tipoVerba').val();
   let descVerbaNovoDesconto = ""
 
-   if (tipVerbaoNovoDesconto == 'H'){
-      descVerbaNovoDesconto = 'EM HORAS';
-    }
-    else if (tipVerbaoNovoDesconto == 'D'){
-      descVerbaNovoDesconto = 'EM DIAS';
-    }
-    else {
-      descVerbaNovoDesconto = 'EM VALOR (R$)';
-    }
+  if (tipVerbaoNovoDesconto == 'H'){
+    descVerbaNovoDesconto = 'EM HORAS';
+  }
+  else if (tipVerbaoNovoDesconto == 'D'){
+    descVerbaNovoDesconto = 'EM DIAS';
+  }
+  else {
+    descVerbaNovoDesconto = 'EM VALOR (R$)';
+  }
 
   if (!rdTipoDesconto) { toastMsg('Atenção', 'Preencha o campo Tipo de Desconto antes de prosseguir para a assinatura.', 'warning'); return; }
   
-  // Para tipo DP, pula as validações
-  if (rdTipoDesconto !== 'dp') {
-    if (!centroCustoDesconto) { toastMsg('Atenção', 'Preencha o campo Centro de Custo antes de prosseguir para a assinatura.', 'warning'); return; }
-    if (!verbaNovoDesconto) { toastMsg('Atenção', 'Preencha o campo Verba antes de prosseguir para a assinatura.', 'warning'); return; }
-    if (!descricao) { toastMsg('Atenção', 'Preencha o campo descrição antes de prosseguir para a assinatura.', 'warning'); return; }
-    if (!valor || valor <= 0) { toastMsg('Atenção', 'Preencha o campo Valor total do desconto com um valor maior que zero.', 'warning'); return; }
+  if (!centroCustoDesconto && rdTipoDesconto !== 'dp') { toastMsg('Atenção', 'Preencha o campo Centro de Custo antes de prosseguir para a assinatura.', 'warning'); return; }
+  if (!verbaNovoDesconto) { toastMsg('Atenção', 'Preencha o campo Verba antes de prosseguir para a assinatura.', 'warning'); return; }
+  if (!descricao) { toastMsg('Atenção', 'Preencha o campo descrição antes de prosseguir para a assinatura.', 'warning'); return; }
+  if (!valor || valor <= 0) { toastMsg('Atenção', 'Preencha o campo Valor total do desconto com um valor maior que zero.', 'warning'); return; }
 
-    // Verifica se é uma verba que não precisa de foto
-    const verbasSemFoto = ["440", "445", "570", "571"];
-    const precisaFoto = !verbasSemFoto.includes(verbaNovoDesconto);
-    
-    if (precisaFoto) {
-      const input = document.getElementById('cameraInputPhotoEPI');
-      const file = input?.files?.[0];
-      if (!file) { toastMsg('Atenção', 'Adicione uma foto do funcionário antes de prosseguir para a assinatura.', 'warning'); return; }
-    }
+  // Verifica se é uma verba que não precisa de foto
+  const verbasSemFoto = ["440", "445", "570", "571"];
+  const precisaFoto = !verbasSemFoto.includes(verbaNovoDesconto);
+  
+  if (precisaFoto) {
+    const input = document.getElementById('cameraInputPhotoEPI');
+    const file = input?.files?.[0];
+    if (!file) { toastMsg('Atenção', 'Adicione uma foto do funcionário antes de prosseguir para a assinatura.', 'warning'); return; }
   }
+  
 
   const codFilial = $('#codFilial').val();
   const matriculaFunc = $('#matriculaFunc').val();

@@ -29,10 +29,10 @@
     <processDefinitionVersionPK>
       <companyId>1</companyId>
       <processId>Lançamento de Descontos por Funcionário</processId>
-      <version>42</version>
+      <version>23</version>
     </processDefinitionVersionPK>
     <versionDescription></versionDescription>
-    <formId>340891</formId>
+    <formId>419542</formId>
     <editionMode>true</editionMode>
     <updateAttachmentsVersion>false</updateAttachmentsVersion>
     <controlsAttachmentsSecurity>false</controlsAttachmentsSecurity>
@@ -576,7 +576,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>1</expressionOrder>
-        <version>42</version>
+        <version>23</version>
         <sequence>18</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -588,7 +588,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>2</expressionOrder>
-        <version>42</version>
+        <version>23</version>
         <sequence>18</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -600,7 +600,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>1</expressionOrder>
-        <version>42</version>
+        <version>23</version>
         <sequence>24</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -612,7 +612,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>2</expressionOrder>
-        <version>42</version>
+        <version>23</version>
         <sequence>24</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -624,7 +624,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>1</expressionOrder>
-        <version>42</version>
+        <version>23</version>
         <sequence>35</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -636,7 +636,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>2</expressionOrder>
-        <version>42</version>
+        <version>23</version>
         <sequence>35</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -987,9 +987,8 @@ function getCurrentTime() {&#xd;
       </workflowProcessEventPK>
       <eventDescription>function servicetask9(attempt, message) {&#xd;
     try {&#xd;
-        log.info(&apos;INTEGRAÇÃO PROTHEUS - Lançamento de Descontos - servicetask9&apos;);&#xd;
+        log.info(&apos;INTEGRAÇÃO PROTHEUS - Lançamento de Descontos&apos;);&#xd;
 &#xd;
-        // ---------- Coleta de campos ----------&#xd;
         var codFilial = (hAPI.getCardValue(&apos;codFilial&apos;) + &apos;&apos;).trim();&#xd;
         var empresa = obterEmpresa(codFilial);&#xd;
         var matricula = (hAPI.getCardValue(&apos;matriculaColaborador&apos;) + &apos;&apos;).trim();&#xd;
@@ -997,201 +996,215 @@ function getCurrentTime() {&#xd;
         var numpagto = valorOuPadrao(hAPI.getCardValue(&apos;numpagto&apos;), &apos;01&apos;);&#xd;
         var codVerba = (hAPI.getCardValue(&apos;codVerba&apos;) + &apos;&apos;).trim();&#xd;
         var tipoVerba = (hAPI.getCardValue(&apos;tipoVerba&apos;) + &apos;&apos;).split(&apos; - &apos;)[0].trim();&#xd;
-        var tipo1 = &apos;D&apos;; // desconto&#xd;
-        var periodoForm = (hAPI.getCardValue(&apos;periodoAtual&apos;) + &apos;&apos;).trim(); // espelho do período atual exibido&#xd;
+        var tipo1 = &apos;D&apos;;&#xd;
+        var periodoForm = (hAPI.getCardValue(&apos;periodoAtual&apos;) + &apos;&apos;).trim();&#xd;
         var parcelas = parseParcelas((hAPI.getCardValue(&apos;parcelas_json&apos;) + &apos;&apos;).trim());&#xd;
-        var descontoAtivo = (hAPI.getCardValue(&apos;descontoAtivo&apos;) + &apos;&apos;).trim().toLowerCase() === &apos;true&apos;;&#xd;
+        &#xd;
+        var margemDisponivelRaw = (hAPI.getCardValue(&apos;margemDisponivel&apos;) + &apos;&apos;).trim();&#xd;
+        var valorDescontosAtivosRaw = (hAPI.getCardValue(&apos;valorDescontosAtivos&apos;) + &apos;&apos;).trim();&#xd;
+        var salarioRaw = (hAPI.getCardValue(&apos;salario&apos;) + &apos;&apos;).trim();&#xd;
+        var salario15Raw = (hAPI.getCardValue(&apos;salario15&apos;) + &apos;&apos;).trim();&#xd;
+        &#xd;
+        var margemDisponivel = parseMoney(margemDisponivelRaw);&#xd;
+        var valorDescontosAtivos = parseMoney(valorDescontosAtivosRaw);&#xd;
+        &#xd;
+        // Fallback: calcula margem a partir do salário se não vier do front&#xd;
+        if (margemDisponivelRaw === &apos;null&apos; || margemDisponivelRaw === &apos;&apos; || margemDisponivel === 0) {&#xd;
+            var salario = parseMoney(salarioRaw);&#xd;
+            var salario15 = parseMoney(salario15Raw);&#xd;
+            &#xd;
+            if (salario15 &gt; 0) {&#xd;
+                margemDisponivel = salario15 - valorDescontosAtivos;&#xd;
+            } else if (salario &gt; 0) {&#xd;
+                margemDisponivel = (salario * 0.15) - valorDescontosAtivos;&#xd;
+            }&#xd;
+            &#xd;
+            if (margemDisponivel &lt; 0) margemDisponivel = 0;&#xd;
+            log.warn(&apos;Margem calculada via fallback: &apos; + margemDisponivel);&#xd;
+        }&#xd;
 &#xd;
         if (!parcelas || parcelas.length === 0) {&#xd;
             throw new Error(&apos;Não há parcelas a enviar.&apos;);&#xd;
         }&#xd;
 &#xd;
-        // ---------- Lógica de divisão baseada em desconto ativo ----------&#xd;
+        var totalLancamento = 0;&#xd;
+        for (var i = 0; i &lt; parcelas.length; i++) {&#xd;
+            var p = parcelas[i] || {};&#xd;
+            var val = parseMoney(p.valor);&#xd;
+            if (isFinite(val) &amp;&amp; val &gt; 0) {&#xd;
+                totalLancamento += val;&#xd;
+            }&#xd;
+        }&#xd;
+        &#xd;
+        log.info(&apos;Total: &apos; + totalLancamento + &apos; | Margem: &apos; + margemDisponivel);&#xd;
+&#xd;
+        // Divisão baseada na margem de 15% do salário&#xd;
         var payloadAberto = null;&#xd;
         var payloadFuturo = null;&#xd;
+        var valorParaAtual = 0;&#xd;
+        var valorParaFuturos = 0;&#xd;
         &#xd;
-        if (descontoAtivo) {&#xd;
-            log.info(&apos;servicetask9: Desconto ativo detectado. Enviando todas as parcelas como futuras.&apos;);&#xd;
-            &#xd;
-            // Quando há desconto ativo, todas as parcelas vão para futuros&#xd;
-            var todasParcelas = [];&#xd;
-            var ultimoPeriodo = &apos;&apos;;&#xd;
-            &#xd;
-            for (var i = 0; i &lt; parcelas.length; i++) {&#xd;
-                var p = parcelas[i] || {};&#xd;
-                var per = (p.periodo + &apos;&apos;).trim();&#xd;
-                var val = parseMoney(p.valor);&#xd;
-                if (per &amp;&amp; isFinite(val) &amp;&amp; val &gt; 0) {&#xd;
-                    todasParcelas.push({ periodo: per, valor: Number(val.toFixed(2)) });&#xd;
-                    &#xd;
-                    // Encontra o último período (maior cronologicamente)&#xd;
-                    if (!ultimoPeriodo || per &gt; ultimoPeriodo) {&#xd;
-                        ultimoPeriodo = per;&#xd;
-                    }&#xd;
-                }&#xd;
-            }&#xd;
-            &#xd;
-            if (todasParcelas.length &gt; 0) {&#xd;
-                // Usa o último período da tabela como referência&#xd;
-                var periodoReferencia = periodoForm;&#xd;
-                log.info(&apos;servicetask9: Usando período de referência para futuros: &apos; + periodoReferencia);&#xd;
-                &#xd;
-                payloadFuturo = {&#xd;
-                    empresa: empresa,&#xd;
-                    filial: codFilial,&#xd;
-                    matricula: matricula,&#xd;
-                    periodoRef: periodoReferencia,&#xd;
-                    verba: codVerba,&#xd;
-                    tipoVerba: tipoVerba,&#xd;
-                    documento: (getValue(&apos;WKNumProces&apos;) + &apos;&apos;),&#xd;
-                    parcelas: todasParcelas&#xd;
-                };&#xd;
-            }&#xd;
+        if (margemDisponivel &gt;= totalLancamento) {&#xd;
+            valorParaAtual = totalLancamento;&#xd;
+            valorParaFuturos = 0;&#xd;
+        } else if (margemDisponivel &gt; 0) {&#xd;
+            valorParaAtual = margemDisponivel;&#xd;
+            valorParaFuturos = totalLancamento - margemDisponivel;&#xd;
         } else {&#xd;
-            // ---------- Divide em &quot;aberto&quot; (primeira parcela) e &quot;futuras&quot; (demais) ----------&#xd;
+            valorParaAtual = 0;&#xd;
+            valorParaFuturos = totalLancamento;&#xd;
+        }&#xd;
+        &#xd;
+        log.info(&apos;Divisão -&gt; Atual: &apos; + valorParaAtual + &apos; | Futuros: &apos; + valorParaFuturos);&#xd;
+        &#xd;
+        // Construir payload para período atual&#xd;
+        if (valorParaAtual &gt; 0) {&#xd;
             var primeiraParcela = parcelas[0];&#xd;
-            // periodoRef do aberto = período da primeira parcela; se vazio, tenta do form&#xd;
             var periodoRefAberto = (primeiraParcela &amp;&amp; primeiraParcela.periodo) ? (primeiraParcela.periodo + &apos;&apos;).trim() : (periodoForm || &apos;&apos;);&#xd;
             if (!periodoRefAberto) {&#xd;
                 throw new Error(&apos;Período da primeira parcela não informado.&apos;);&#xd;
             }&#xd;
 &#xd;
-            payloadAberto = {&#xd;
-                empresa: empresa,&#xd;
-                filial: codFilial,&#xd;
-                matricula: matricula,&#xd;
-                roteiro: roteiro,&#xd;
-                numpagto: numpagto,&#xd;
-                periodoRef: periodoRefAberto,&#xd;
-                verba: codVerba,&#xd;
-                tipoVerba: tipoVerba,&#xd;
-                tipo1: tipo1,&#xd;
-                parcelas: [primeiraParcela] // apenas 1&#xd;
-            };&#xd;
-&#xd;
-            // Futuras = todas as parcelas cujo período seja diferente do aberto (e valor &gt; 0)&#xd;
-            var restantes = [];&#xd;
-            var ultimoPeriodoFuturo = &apos;&apos;;&#xd;
-            &#xd;
-            for (var i = 1; i &lt; parcelas.length; i++) {&#xd;
-                var p = parcelas[i] || {};&#xd;
-                var per = (p.periodo + &apos;&apos;).trim();&#xd;
-                var val = parseMoney(p.valor);&#xd;
-                if (per &amp;&amp; isFinite(val) &amp;&amp; val &gt; 0 &amp;&amp; per !== periodoRefAberto) {&#xd;
-                    restantes.push({ periodo: per, valor: Number(val.toFixed(2)) });&#xd;
-                    &#xd;
-                    // Encontra o último período das parcelas futuras&#xd;
-                    if (!ultimoPeriodoFuturo || per &gt; ultimoPeriodoFuturo) {&#xd;
-                        ultimoPeriodoFuturo = per;&#xd;
+            if (valorParaFuturos === 0) {&#xd;
+                var todasParcelasAtual = [];&#xd;
+                for (var i = 0; i &lt; parcelas.length; i++) {&#xd;
+                    var p = parcelas[i] || {};&#xd;
+                    var per = (p.periodo + &apos;&apos;).trim();&#xd;
+                    var val = parseMoney(p.valor);&#xd;
+                    if (per &amp;&amp; isFinite(val) &amp;&amp; val &gt; 0) {&#xd;
+                        todasParcelasAtual.push({&#xd;
+                            periodo: per,&#xd;
+                            valor: Number(val.toFixed(2))&#xd;
+                        });&#xd;
                     }&#xd;
                 }&#xd;
-            }&#xd;
-&#xd;
-            if (restantes.length &gt; 0) {&#xd;
-                // Usa o último período das futuras como referência&#xd;
-                var periodoRefFuturo = periodoForm;&#xd;
-                log.info(&apos;servicetask9: Usando período de referência para parcelas futuras: &apos; + periodoRefFuturo);&#xd;
                 &#xd;
-                payloadFuturo = {&#xd;
+                payloadAberto = {&#xd;
                     empresa: empresa,&#xd;
                     filial: codFilial,&#xd;
                     matricula: matricula,&#xd;
-                    periodoRef: periodoRefFuturo, // usa o último período das futuras&#xd;
+                    roteiro: roteiro,&#xd;
+                    numpagto: numpagto,&#xd;
+                    periodoRef: periodoRefAberto,&#xd;
                     verba: codVerba,&#xd;
                     tipoVerba: tipoVerba,&#xd;
-                    // documento é opcional; se quiser, pode usar o número do processo:&#xd;
-                    documento: (getValue(&apos;WKNumProces&apos;) + &apos;&apos;),&#xd;
-                    parcelas: restantes&#xd;
+                    tipo1: tipo1,&#xd;
+                    parcelas: todasParcelasAtual&#xd;
+                };&#xd;
+            } else {&#xd;
+                payloadAberto = {&#xd;
+                    empresa: empresa,&#xd;
+                    filial: codFilial,&#xd;
+                    matricula: matricula,&#xd;
+                    roteiro: roteiro,&#xd;
+                    numpagto: numpagto,&#xd;
+                    periodoRef: periodoRefAberto,&#xd;
+                    verba: codVerba,&#xd;
+                    tipoVerba: tipoVerba,&#xd;
+                    tipo1: tipo1,&#xd;
+                    parcelas: [{&#xd;
+                        periodo: periodoRefAberto,&#xd;
+                        valor: Number(valorParaAtual.toFixed(2))&#xd;
+                    }]&#xd;
                 };&#xd;
             }&#xd;
         }&#xd;
 &#xd;
-        // ---------- Idempotência: checa se já integrou com sucesso ----------&#xd;
-        // Campos de status e payload salvos no formulário&#xd;
-        var stAberto = (hAPI.getCardValue(&apos;integ_aberto_status&apos;) + &apos;&apos;).trim();   // &quot;OK&quot; | &quot;NOK&quot; | &quot;&quot;&#xd;
-        var stFuturo = (hAPI.getCardValue(&apos;integ_futuro_status&apos;) + &apos;&apos;).trim();   // &quot;OK&quot; | &quot;NOK&quot; | &quot;&quot;&#xd;
-        var plAbertoS = (hAPI.getCardValue(&apos;integ_aberto_payload&apos;) + &apos;&apos;);         // json string&#xd;
-        var plFuturoS = (hAPI.getCardValue(&apos;integ_futuro_payload&apos;) + &apos;&apos;);         // json string&#xd;
+        // Construir payload para períodos futuros&#xd;
+        if (valorParaFuturos &gt; 0) {&#xd;
+            var parcelasFuturas = [];&#xd;
+            var primeiraParcela = parcelas[0];&#xd;
+            var valorPrimeiraOriginal = parseMoney(primeiraParcela.valor);&#xd;
+            var periodoRefAberto = (primeiraParcela &amp;&amp; primeiraParcela.periodo) ? (primeiraParcela.periodo + &apos;&apos;).trim() : (periodoForm || &apos;&apos;);&#xd;
+            &#xd;
+            if (valorParaAtual === 0) {&#xd;
+                for (var i = 0; i &lt; parcelas.length; i++) {&#xd;
+                    var p = parcelas[i] || {};&#xd;
+                    var per = (p.periodo + &apos;&apos;).trim();&#xd;
+                    var val = parseMoney(p.valor);&#xd;
+                    if (per &amp;&amp; isFinite(val) &amp;&amp; val &gt; 0) {&#xd;
+                        parcelasFuturas.push({&#xd;
+                            periodo: per,&#xd;
+                            valor: Number(val.toFixed(2))&#xd;
+                        });&#xd;
+                    }&#xd;
+                }&#xd;
+            } else {&#xd;
+                var restoPrimeira = valorPrimeiraOriginal - valorParaAtual;&#xd;
+                if (restoPrimeira &gt; 0) {&#xd;
+                    parcelasFuturas.push({&#xd;
+                        periodo: periodoRefAberto,&#xd;
+                        valor: Number(restoPrimeira.toFixed(2))&#xd;
+                    });&#xd;
+                }&#xd;
+                &#xd;
+                for (var i = 1; i &lt; parcelas.length; i++) {&#xd;
+                    var p = parcelas[i] || {};&#xd;
+                    var per = (p.periodo + &apos;&apos;).trim();&#xd;
+                    var val = parseMoney(p.valor);&#xd;
+                    if (per &amp;&amp; isFinite(val) &amp;&amp; val &gt; 0) {&#xd;
+                        parcelasFuturas.push({&#xd;
+                            periodo: per,&#xd;
+                            valor: Number(val.toFixed(2))&#xd;
+                        });&#xd;
+                    }&#xd;
+                }&#xd;
+            }&#xd;
+            &#xd;
+            if (parcelasFuturas.length &gt; 0) {&#xd;
+                payloadFuturo = {&#xd;
+                    empresa: empresa,&#xd;
+                    filial: codFilial,&#xd;
+                    matricula: matricula,&#xd;
+                    periodoRef: periodoForm,&#xd;
+                    verba: codVerba,&#xd;
+                    tipoVerba: tipoVerba,&#xd;
+                    documento: (getValue(&apos;WKNumProces&apos;) + &apos;&apos;),&#xd;
+                    parcelas: parcelasFuturas&#xd;
+                };&#xd;
+            }&#xd;
+        }&#xd;
 &#xd;
-        var plAbertoNow = safeJSONStringify(payloadAberto);&#xd;
-        var plFuturoNow = payloadFuturo ? safeJSONStringify(payloadFuturo) : &apos;&apos;;&#xd;
-&#xd;
-        // Não reenvia se já deu OK anteriormente com qualquer payload.&#xd;
-        // Se quiser reprocessar quando payload mudou, troque a lógica conforme sua política.&#xd;
+        // Idempotência&#xd;
+        var stAberto = (hAPI.getCardValue(&apos;integ_aberto_status&apos;) + &apos;&apos;).trim();&#xd;
+        var stFuturo = (hAPI.getCardValue(&apos;integ_futuro_status&apos;) + &apos;&apos;).trim();&#xd;
         var deveEnviarAberto = (!!payloadAberto &amp;&amp; stAberto !== &apos;OK&apos;);&#xd;
         var deveEnviarFuturo = (!!payloadFuturo &amp;&amp; stFuturo !== &apos;OK&apos;);&#xd;
 &#xd;
-        // ---------- Envia abertas ----------&#xd;
         var okAberto = false;&#xd;
         var msgAberto = &apos;&apos;;&#xd;
         &#xd;
-        if (descontoAtivo) {&#xd;
-            // Quando há desconto ativo, não lança no período atual - apenas retorna OK fictício&#xd;
-            log.info(&apos;servicetask9: Desconto ativo detectado. Não enviando para período atual - retornando OK fictício.&apos;);&#xd;
-            okAberto = true;&#xd;
-            msgAberto = &apos;Desconto ativo: não enviado para período atual, todas as parcelas enviadas como futuras.&apos;;&#xd;
-            hAPI.setCardValue(&apos;integ_aberto_status&apos;, &apos;OK&apos;);&#xd;
-            hAPI.setCardValue(&apos;integ_aberto_msg&apos;, msgAberto);&#xd;
-            hAPI.setCardValue(&apos;integ_aberto_payload&apos;, &apos;N/A - Desconto ativo&apos;);&#xd;
-            hAPI.setTaskComments(getValue(&apos;WKUser&apos;), getValue(&apos;WKNumProces&apos;), 0, &apos;Período Atual: OK (não enviado devido a desconto ativo). &apos; + msgAberto);&#xd;
-        } else if (deveEnviarAberto) {&#xd;
+        if (deveEnviarAberto) {&#xd;
             var r1 = integracaoProtheusInvoke(&apos;/rest/RESTRH/postDescontos&apos;, payloadAberto);&#xd;
             okAberto = r1.ok;&#xd;
             msgAberto = r1.msg;&#xd;
             hAPI.setCardValue(&apos;integ_aberto_status&apos;, okAberto ? &apos;OK&apos; : &apos;NOK&apos;);&#xd;
             hAPI.setCardValue(&apos;integ_aberto_msg&apos;, msgAberto);&#xd;
-            hAPI.setCardValue(&apos;integ_aberto_payload&apos;, plAbertoNow);&#xd;
-&#xd;
-            if (okAberto) {&#xd;
-                hAPI.setTaskComments(getValue(&apos;WKUser&apos;), getValue(&apos;WKNumProces&apos;), 0, &apos;Aberto (GPEA580): OK. &apos; + (msgAberto || &apos;&apos;));&#xd;
-            } else {&#xd;
-                hAPI.setTaskComments(getValue(&apos;WKUser&apos;), getValue(&apos;WKNumProces&apos;), 0, &apos;Aberto (GPEA580): FALHA. &apos; + (msgAberto || &apos;&apos;));&#xd;
-            }&#xd;
-        } else if (payloadAberto) {&#xd;
-            log.info(&apos;servicetask9: Aberto já OK anteriormente. Não reenviado.&apos;);&#xd;
-            okAberto = true; // considera como OK para não impactar status geral&#xd;
+            hAPI.setCardValue(&apos;integ_aberto_payload&apos;, safeJSONStringify(payloadAberto));&#xd;
+            hAPI.setTaskComments(getValue(&apos;WKUser&apos;), getValue(&apos;WKNumProces&apos;), 0, &#xd;
+                &apos;Período Atual (GPEA580): &apos; + (okAberto ? &apos;OK&apos; : &apos;FALHA&apos;) + &apos;. &apos; + msgAberto);&#xd;
         } else {&#xd;
-            log.info(&apos;servicetask9: Sem payload aberto.&apos;);&#xd;
-            okAberto = true; // considera como OK quando não há payload aberto&#xd;
+            okAberto = true;&#xd;
         }&#xd;
 &#xd;
-        // ---------- Envia futuras ----------&#xd;
         var okFuturo = false;&#xd;
         var msgFuturo = &apos;&apos;;&#xd;
+        &#xd;
         if (deveEnviarFuturo) {&#xd;
             var r2 = integracaoProtheusInvoke(&apos;/rest/RESTRH/descontosFuturos&apos;, payloadFuturo);&#xd;
             okFuturo = r2.ok;&#xd;
             msgFuturo = r2.msg;&#xd;
             hAPI.setCardValue(&apos;integ_futuro_status&apos;, okFuturo ? &apos;OK&apos; : &apos;NOK&apos;);&#xd;
             hAPI.setCardValue(&apos;integ_futuro_msg&apos;, msgFuturo);&#xd;
-            hAPI.setCardValue(&apos;integ_futuro_payload&apos;, plFuturoNow);&#xd;
-&#xd;
-            if (okFuturo) {&#xd;
-                hAPI.setTaskComments(getValue(&apos;WKUser&apos;), getValue(&apos;WKNumProces&apos;), 0, &apos;Futuro (GPEA110): OK. &apos; + (msgFuturo || &apos;&apos;));&#xd;
-            } else {&#xd;
-                hAPI.setTaskComments(getValue(&apos;WKUser&apos;), getValue(&apos;WKNumProces&apos;), 0, &apos;Futuro (GPEA110): FALHA. &apos; + (msgFuturo || &apos;&apos;));&#xd;
-            }&#xd;
-        } else if (payloadFuturo) {&#xd;
-            log.info(&apos;servicetask9: Futuro já OK anteriormente. Não reenviado.&apos;);&#xd;
-        } else {&#xd;
-            log.info(&apos;servicetask9: Não há parcelas futuras para enviar.&apos;);&#xd;
+            hAPI.setCardValue(&apos;integ_futuro_payload&apos;, safeJSONStringify(payloadFuturo));&#xd;
+            hAPI.setTaskComments(getValue(&apos;WKUser&apos;), getValue(&apos;WKNumProces&apos;), 0, &#xd;
+                &apos;Períodos Futuros (GPEA110): &apos; + (okFuturo ? &apos;OK&apos; : &apos;FALHA&apos;) + &apos;. &apos; + msgFuturo);&#xd;
         }&#xd;
 &#xd;
-        // ---------- Status geral ----------&#xd;
-        var statusGeralOK = false;&#xd;
-        if (descontoAtivo) {&#xd;
-            // Quando há desconto ativo, não lança no atual - só considera status futuro&#xd;
-            log.info(&apos;servicetask9: Status geral com desconto ativo - considerando apenas status das parcelas futuras.&apos;);&#xd;
-            statusGeralOK = (stFuturo === &apos;OK&apos; || okFuturo);&#xd;
-        } else {&#xd;
-            // Lógica original: se existir parcelas futuras, considera OK somente se ambos OK.&#xd;
-            // Se não existir, considera OK apenas se aberto OK.&#xd;
-            if (payloadFuturo) {&#xd;
-                statusGeralOK = ((stAberto === &apos;OK&apos; || okAberto) &amp;&amp; (stFuturo === &apos;OK&apos; || okFuturo));&#xd;
-            } else {&#xd;
-                statusGeralOK = (stAberto === &apos;OK&apos; || okAberto);&#xd;
-            }&#xd;
-        }&#xd;
+        var statusGeralOK = payloadFuturo &#xd;
+            ? ((stAberto === &apos;OK&apos; || okAberto) &amp;&amp; (stFuturo === &apos;OK&apos; || okFuturo)) &#xd;
+            : (stAberto === &apos;OK&apos; || okAberto);&#xd;
+        &#xd;
         hAPI.setCardValue(&apos;statusIntegracao&apos;, statusGeralOK ? &apos;OK&apos; : &apos;NOK&apos;);&#xd;
 &#xd;
     } catch (error) {&#xd;
@@ -1203,13 +1216,10 @@ function getCurrentTime() {&#xd;
     }&#xd;
 }&#xd;
 &#xd;
-/* =========================================================&#xd;
- * Chamada REST centralizada (idempotência controlada por campos)&#xd;
- * ========================================================= */&#xd;
 function integracaoProtheusInvoke(endpointPath, jsonData) {&#xd;
     var result = { ok: false, msg: &apos;&apos; };&#xd;
     try {&#xd;
-        log.info(&apos;servicetask9 → POST &apos; + endpointPath);&#xd;
+        log.info(&apos;POST &apos; + endpointPath);&#xd;
         log.dir(jsonData);&#xd;
 &#xd;
         var clientService = fluigAPI.getAuthorizeClientService();&#xd;
@@ -1231,12 +1241,9 @@ function integracaoProtheusInvoke(endpointPath, jsonData) {&#xd;
         };&#xd;
 &#xd;
         var response = clientService.invoke(JSON.stringify(data));&#xd;
-        log.info(&apos;servicetask9 response raw: &apos; + response);&#xd;
-&#xd;
         var resultStr = response &amp;&amp; response.getResult ? response.getResult() : &apos;&apos;;&#xd;
-        log.info(&apos;servicetask9 response.getResult(): &apos; + resultStr);&#xd;
-&#xd;
         var parsed = {};&#xd;
+        &#xd;
         if (resultStr) {&#xd;
             try { parsed = JSON.parse(resultStr); } catch (e) { parsed = {}; }&#xd;
         }&#xd;
@@ -1247,16 +1254,12 @@ function integracaoProtheusInvoke(endpointPath, jsonData) {&#xd;
 &#xd;
         return result;&#xd;
     } catch (e) {&#xd;
-        log.warn(&apos;integracaoProtheusInvoke error: &apos; + e.message);&#xd;
+        log.warn(&apos;Erro integração: &apos; + e.message);&#xd;
         result.ok = false;&#xd;
         result.msg = e.message || &apos;Erro inesperado.&apos;;&#xd;
         return result;&#xd;
     }&#xd;
 }&#xd;
-&#xd;
-/* =========================================================&#xd;
- * Helpers ES5&#xd;
- * ========================================================= */&#xd;
 &#xd;
 function resolveServiceCode(envName) {&#xd;
     if (envName === &apos;PRODUCAO&apos;) return &apos;API_RESTRH&apos;;&#xd;
@@ -1276,13 +1279,12 @@ function obterEmpresa(cFilial) {&#xd;
     return &apos;01&apos;;&#xd;
 }&#xd;
 &#xd;
-// Converte dinheiro/strings PT-BR &quot;1.234,56&quot; para Number 1234.56&#xd;
 function parseMoney(v) {&#xd;
     if (v === null || v === undefined) return 0;&#xd;
     if (typeof v === &apos;number&apos;) return isFinite(v) ? v : 0;&#xd;
     var s = (v + &apos;&apos;).trim();&#xd;
     if (!s) return 0;&#xd;
-    s = s.replace(/[^\d.,-]/g, &apos;&apos;); // mantém dígito, ponto, vírgula e sinal&#xd;
+    s = s.replace(/[^\d.,-]/g, &apos;&apos;);&#xd;
     var hasComma = s.indexOf(&apos;,&apos;) !== -1;&#xd;
     var hasDot = s.indexOf(&apos;.&apos;) !== -1;&#xd;
     if (hasComma &amp;&amp; hasDot) {&#xd;
@@ -1646,7 +1648,7 @@ function getEmailDiretor(grupoAprovadorCC) {&#xd;
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>42</version>
+        <version>23</version>
         <linkSequence>31</linkSequence>
         <bendSequence>1</bendSequence>
       </processLinkBendPK>
@@ -1657,7 +1659,7 @@ function getEmailDiretor(grupoAprovadorCC) {&#xd;
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>42</version>
+        <version>23</version>
         <linkSequence>37</linkSequence>
         <bendSequence>1</bendSequence>
       </processLinkBendPK>
@@ -1668,7 +1670,7 @@ function getEmailDiretor(grupoAprovadorCC) {&#xd;
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>42</version>
+        <version>23</version>
         <linkSequence>37</linkSequence>
         <bendSequence>2</bendSequence>
       </processLinkBendPK>

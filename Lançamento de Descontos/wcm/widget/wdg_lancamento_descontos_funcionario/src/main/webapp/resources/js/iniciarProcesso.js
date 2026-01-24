@@ -262,6 +262,33 @@ async function montarConstraints({ fotoData, assinaturaData, pdfBase64, parcelas
 
   const totalParcelas = Array.isArray(parcelas) ? parcelas.length : 0;
 
+  // ===== CÁLCULO CORRETO DE ultrapassaLimite e margemDisponivel =====
+  // Valor dos descontos já ativos no período (obtido da tabela de descontos ativos)
+  const valorDescontosAtivosRaw = $('#valorDescontosAtivos').val() || '0';
+  const valorDescontosAtivos = parseMoney(valorDescontosAtivosRaw);
+  
+  // Valor do primeiro período do novo desconto que está sendo lançado
+  const valorPrimeiraParcela = (parcelas && parcelas.length > 0) ? parseMoney(parcelas[0].valor) : 0;
+  
+  // Total que vai ter no período após o lançamento
+  const valorTotalPeriodo = valorDescontosAtivos + valorPrimeiraParcela;
+  
+  // Verifica se ultrapassa o limite de 15%
+  const ultrapassaLimite = valorTotalPeriodo > quinzePorcentoSalario;
+  
+  // Calcula a margem disponível (quanto ainda cabe dentro dos 15%)
+  let margemDisponivel = quinzePorcentoSalario - valorDescontosAtivos;
+  margemDisponivel = margemDisponivel > 0 ? margemDisponivel : 0;
+  
+  console.log('=== CÁLCULO LIMITE 15% ===');
+  console.log('valorDescontosAtivos:', valorDescontosAtivos);
+  console.log('valorPrimeiraParcela:', valorPrimeiraParcela);
+  console.log('valorTotalPeriodo:', valorTotalPeriodo);
+  console.log('quinzePorcentoSalario:', quinzePorcentoSalario);
+  console.log('ultrapassaLimite:', ultrapassaLimite);
+  console.log('margemDisponivel:', margemDisponivel);
+  // ==================================================================
+
   const constraints = [];
   constraints.push(DatasetFactory.createConstraint("formField", "dataSolicitacao", dataSolicitacao, ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("formField", "horaSolicitacao", horaSolicitacao, ConstraintType.MUST));
@@ -283,6 +310,10 @@ async function montarConstraints({ fotoData, assinaturaData, pdfBase64, parcelas
 
   constraints.push(DatasetFactory.createConstraint("formField", "grupoAprovadorCC", String(grupoAprovador), ConstraintType.MUST));
 
+  // Adiciona os campos de controle de limite de 15%
+  constraints.push(DatasetFactory.createConstraint("formField", "ultrapassaLimite", ultrapassaLimite ? 'true' : 'false', ConstraintType.MUST));
+  constraints.push(DatasetFactory.createConstraint("formField", "margemDisponivel", margemDisponivel.toFixed(2), ConstraintType.MUST));
+
   constraints.push(DatasetFactory.createConstraint("formField", "parcelas_json", JSON.stringify(parcelas || []), ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("formField", "confirmacao_tipo", confirmacao?.tipoConfirmacao || "", ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("formField", "confirmacao_motivoRecusa", confirmacao?.motivoRecusa || "", ConstraintType.MUST));
@@ -301,7 +332,11 @@ async function montarConstraints({ fotoData, assinaturaData, pdfBase64, parcelas
   constraints.push(DatasetFactory.createConstraint("formField", "confirmacao_tipo_view", confirmacao?.tipoConfirmacao || "", ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("formField", "confirmacao_motivoRecusa_view", confirmacao?.motivoRecusa || "", ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("formField", "recusaAssinatura", recusaAssinatura, ConstraintType.MUST));
+  
   constraints.push(DatasetFactory.createConstraint("formField", "descontoAtivo", $('#descontoAtivo').val() || '', ConstraintType.MUST));
+  constraints.push(DatasetFactory.createConstraint("formField", "ultrapassaLimite", $('#ultrapassaLimite').val() || '', ConstraintType.MUST));
+  constraints.push(DatasetFactory.createConstraint("formField", "margemDisponivel", $('#margemDisponivel').val() || '', ConstraintType.MUST));
+  constraints.push(DatasetFactory.createConstraint("formField", "valorDescontosAtivos", $('#valorDescontosAtivos').val() || '', ConstraintType.MUST));
 
   const evidNames = [];
   if (fotoData?.fotoBase64) {

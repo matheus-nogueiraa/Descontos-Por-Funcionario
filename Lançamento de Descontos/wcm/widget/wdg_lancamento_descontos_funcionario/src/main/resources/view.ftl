@@ -45,6 +45,7 @@
         <div class="loading-overlay" id="loadingOverlay" style="display: none;">
             <div class="loading-spinner"></div>
         </div>
+        
         <!-- Inputs hidden -->
         <input type="hidden" id="salario">
         <input type="hidden" id="salario15">
@@ -53,7 +54,10 @@
         <input type="hidden" id="matriculaUsuario">
         <input type="hidden" id="futuros_json" value="">
         <input type="hidden" id="descontoAtivo" value="">
-
+        <input type="hidden" id="ultrapassaLimite" value="">
+        <input type="hidden" id="margemDisponivel" value="">
+        <input type="hidden" id="valorDescontosAtivos" value="">
+        
         <input type="hidden" name="grupo_aprovador" id="grupo_aprovador">
 
         <!-- Header -->
