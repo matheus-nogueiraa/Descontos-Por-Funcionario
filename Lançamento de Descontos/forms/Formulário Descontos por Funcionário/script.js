@@ -11,9 +11,12 @@ var beforeSendValidate = function (numState, nextState) {
         msg += 'Este processo deve ser iniciado exclusivamente pela Página Pública de Lançamentos de Descontos. Feche esta tela e utilize a página oficial.';
     }
     else if (numState == ATIVIDADES.APROV_GERENTE) {
+        var isTestEnvironment = window.location.origin.includes(':8443');
+        var metadataid = isTestEnvironment ? "341794" : "486718";
+        
         // Consulta ao dataset antes de aprovar
         var constraints = [
-            DatasetFactory.createConstraint('metadata#id', '486718', '486718', ConstraintType.MUST),
+            DatasetFactory.createConstraint('metadata#id', metadataid, metadataid, ConstraintType.MUST),
             DatasetFactory.createConstraint('userSecurityId', 'admin', 'admin', ConstraintType.MUST)
         ];
         var dataset = DatasetFactory.getDataset('ds_parametro_aprovacao_descontos', null, constraints, null);

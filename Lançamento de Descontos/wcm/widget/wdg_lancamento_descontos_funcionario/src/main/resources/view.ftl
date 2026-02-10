@@ -131,7 +131,7 @@
                                             <td id="valorParcelaMensalResumo"></td>
                                         </tr>
                                         <tr>
-                                            <th>15% do Salário Bruto</th>
+                                            <th>Máximo de desconto permitido</th>
                                             <td id="quinzePorCentroSalario"></td>
                                             <input type="hidden" name="valQuinzePorCentroSalario"
                                                 id="valQuinzePorCentroSalario" value="0">
@@ -194,12 +194,12 @@
                                         <div class="destaqueText"><strong>Funcionário:</strong></div>
                                         <div id="codFuncionarioModal"></div>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-3" style="display: none;">
                                         <div class="destaqueText"><strong>Salário Bruto:</strong></div>
                                         <div id="salarioModal"></div>
                                     </div>
                                     <div class="col-md-3">
-                                        <div class="destaqueText"><strong>15% do Salário Bruto:</strong></div>
+                                        <div class="destaqueText"><strong>Máximo de desconto permitido:</strong></div>
                                         <div id="15salarioModal"></div>
                                     </div>
                                 </div>

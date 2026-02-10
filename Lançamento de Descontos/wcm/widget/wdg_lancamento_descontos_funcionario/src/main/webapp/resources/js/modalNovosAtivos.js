@@ -84,9 +84,16 @@ function consultaProcessosDescontosAtivos(funcionario) {
   let listaSolicitacoes = new Array();
 
   constraints.push(DatasetFactory.createConstraint('nomeColaborador', funcionario, funcionario, ConstraintType.MUST));
+  constraints.push(DatasetFactory.createConstraint('rdTipoDesconto', 'dp', 'dp', ConstraintType.MUST_NOT));
+  constraints.push(DatasetFactory.createConstraint('atividadeAtual', '32', '32', ConstraintType.MUST_NOT));
+  constraints.push(DatasetFactory.createConstraint('atividadeAtual', '22', '22', ConstraintType.MUST_NOT));
   constraints.push(DatasetFactory.createConstraint('atividadeAtual', '27', '27', ConstraintType.MUST_NOT));
   constraints.push(DatasetFactory.createConstraint('atividadeAtual', '10', '10', ConstraintType.MUST_NOT));
+  constraints.push(DatasetFactory.createConstraint('atividadeAtual', '29', '29', ConstraintType.MUST_NOT));
+  constraints.push(DatasetFactory.createConstraint('atividadeAtual', '15', '15', ConstraintType.MUST_NOT));
   constraints.push(DatasetFactory.createConstraint('atividadeAtual', '00', '00', ConstraintType.MUST_NOT));
+  constraints.push(DatasetFactory.createConstraint('atividadeAtual', '9', '9', ConstraintType.MUST_NOT));
+
 
   let dataset = DatasetFactory.getDataset('ds_form_lancamento_desconto_funcionario', null, constraints, null);
 

@@ -337,6 +337,7 @@ async function montarConstraints({ fotoData, assinaturaData, pdfBase64, parcelas
   constraints.push(DatasetFactory.createConstraint("formField", "ultrapassaLimite", $('#ultrapassaLimite').val() || '', ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("formField", "margemDisponivel", $('#margemDisponivel').val() || '', ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("formField", "valorDescontosAtivos", $('#valorDescontosAtivos').val() || '', ConstraintType.MUST));
+  constraints.push(DatasetFactory.createConstraint("formField", "rdTipoDesconto", $('#rdTipoDesconto').val() || '', ConstraintType.MUST));
 
   const evidNames = [];
   if (fotoData?.fotoBase64) {

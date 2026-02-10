@@ -87,6 +87,15 @@ var MyWidget = SuperWidget.extend({
         $('#btn-limpar').on('click', () => this.limparTela());
     },
 
+    mascararCpf: function (cpf) {
+        cpf = cpf.replace(/\D/g, '');
+        if (cpf.length !== 11) {
+            return 'CPF inválido';
+        }
+
+        return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '***.$2.***-**');
+    },
+
     buscarFuncionario: function () {
         const funcionario = $('#funcionarioFiltro').val();
 
@@ -145,8 +154,7 @@ var MyWidget = SuperWidget.extend({
     preencherDadosFuncionario: function (dataset, periodoAtual, salarioBruto) {
         $('#dadosFuncionario').html(`
             <h4>Funcionário: ${dataset?.values[0]?.RA_NOME}</h4>
-            <h4>CPF: ${dataset?.values[0]?.RA_CIC}</h4>
-            <h4>Salário Bruto: ${salarioBruto.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</h4>
+            <h4>CPF: ${this.mascararCpf(dataset?.values[0]?.RA_CIC)}</h4>
             <h4>Período Atual: ${periodoAtual}</h4>
         `);
         $('#salario').val(salarioBruto.toFixed(2)); // Salário total
