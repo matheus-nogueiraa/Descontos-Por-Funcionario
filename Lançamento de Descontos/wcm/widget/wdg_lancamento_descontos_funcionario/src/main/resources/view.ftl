@@ -4,6 +4,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://fluig.elcop.eng.br:8443/style-guide/css/fluig-style-guide.min.css">
+
 
     <link rel="stylesheet" href="//cdn.datatables.net/responsive/2.2.9/css/responsive.dataTables.min.css">
     <script src="//cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
@@ -379,19 +381,40 @@
 
                                 <!-- Alternância -->
                                 <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <label>O funcionário recusou assinar?</label>
+                                    <div class="col-md-12">
+                                        <label>Status da Assinatura do Funcionário</label>
                                         <div>
-                                            <label class="mr-3"><input type="radio" name="recusaAssinatura" value="nao"
-                                                    checked onchange="onToggleRecusa()"> Não</label>
-                                            <label class="ml-3"><input type="radio" name="recusaAssinatura" value="sim"
-                                                    onchange="onToggleRecusa()"> Sim</label>
+                                            <label style="margin-right: 30px;">
+                                                <input type="radio" name="recusaAssinatura" value="nao" checked onchange="onToggleRecusa()"> 
+                                                Funcionário concordou em assinar
+                                            </label>
+                                            <label style="margin-right: 30px;">
+                                                <input type="radio" name="recusaAssinatura" value="sim" onchange="onToggleRecusa()"> 
+                                                Funcionário recusou assinar
+                                            </label>
+                                            <label>
+                                                <input type="radio" name="recusaAssinatura" value="distante" onchange="onToggleRecusa()"> 
+                                                Funcionário distante - Supervisor assinará
+                                            </label>
                                         </div>
                                     </div>
-                                    <div class="col-md-6" id="blocoMotivoRecusa" style="display:none;">
+                                </div>
+                                
+                                <!-- Motivo da recusa -->
+                                <div class="row mb-3" id="blocoMotivoRecusa" style="display:none;">
+                                    <div class="col-md-12">
                                         <label for="motivoRecusa">Motivo da recusa</label>
                                         <textarea id="motivoRecusa" class="form-control" rows="2"
                                             placeholder="Descreva brevemente o motivo..."></textarea>
+                                    </div>
+                                </div>
+                                
+                                <!-- Motivo da ausência -->
+                                <div class="row mb-3" id="blocoMotivoAusencia" style="display:none;">
+                                    <div class="col-md-12">
+                                        <label for="motivoAusencia">Motivo da ausência do funcionário</label>
+                                        <textarea id="motivoAusencia" class="form-control" rows="2"
+                                            placeholder="Ex: Funcionário distante, etc... "></textarea>
                                     </div>
                                 </div>
 
@@ -413,6 +436,55 @@
                                         <div class="form-group col-md-12">
                                             <button class="btn btn-danger"
                                                 onclick="clearPad('signature-pad-func')">Limpar Assinatura</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Assinatura do Supervisor (aparece quando funcionário ausente) -->
+                                <div id="blocoAssinaturaSupervisor" style="display:none;">
+                                    <div class="panel panel-warning">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                <strong>Assinatura do Supervisor</strong> - Funcionário Ausente/Distante
+                                            </h4>
+                                            <p class="mb-0"><small>O supervisor assinará em nome do funcionário que não está presente</small></p>
+                                        </div>
+                                        <div class="panel-body">
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <label>Nome do Supervisor</label>
+                                                    <input type="text" id="supervisor_nome" class="form-control" placeholder="Nome completo">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label>Matrícula</label>
+                                                    <input type="text" id="supervisor_matricula" class="form-control" placeholder="Matrícula">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label>Cargo/Setor</label>
+                                                    <input type="text" id="supervisor_cargo" class="form-control" placeholder="Cargo ou Setor">
+                                                </div>
+                                            </div>
+                                            <div class="row mt-3">
+                                                <div class="form-group col-md-12 text-left">
+                                                    <p class="text-warning">
+                                                        <strong>Atenção:</strong> O supervisor está assinando em nome do funcionário ausente, 
+                                                        confirmando ciência dos lançamentos de descontos que serão realizados.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="form-group col-md-12 text-center">
+                                                    <label>Assinatura do Supervisor</label>
+                                                    <canvas id="signature-pad-supervisor"
+                                                        style="border:1px solid #ccc; width:100%; height:150px;"></canvas>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="form-group col-md-12">
+                                                    <button class="btn btn-danger"
+                                                        onclick="clearPad('signature-pad-supervisor')">Limpar Assinatura</button>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

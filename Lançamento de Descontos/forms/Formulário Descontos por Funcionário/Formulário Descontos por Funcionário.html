@@ -45,6 +45,12 @@
 			<input type="hidden" name="assinaturaFuncionario_base64" id="assinaturaFuncionario_base64" value="">
 			<input type="hidden" name="assinaturaTestemunha1_base64" id="assinaturaTestemunha1_base64" value="">
 			<input type="hidden" name="assinaturaTestemunha2_base64" id="assinaturaTestemunha2_base64" value="">
+			<!-- Dados do Supervisor -->
+			<input type="hidden" name="supervisor_nome" id="supervisor_nome" value="">
+			<input type="hidden" name="supervisor_matricula" id="supervisor_matricula" value="">
+			<input type="hidden" name="supervisor_cargo" id="supervisor_cargo" value="">
+			<input type="hidden" name="assinaturaSupervisor_base64" id="assinaturaSupervisor_base64" value="">
+			<input type="hidden" name="confirmacao_motivoAusencia" id="confirmacao_motivoAusencia" value="">
 			<input type="hidden" name="evidencias_json" id="evidencias_json" value="">
 			<!-- opcional: id de anexo gerado (foto/pdf) se quiser rastrear -->
 			<input type="hidden" name="anexo_foto_nome" id="anexo_foto_nome" value="">
@@ -251,6 +257,43 @@
 				</div>
 			</div>
 
+			<!-- Dados do Supervisor (quando funcionário distante) -->
+			<div class="panel panel-default" id="panelSupervisor">
+				<div class="panel-heading">
+					<h5 class="panel-title">Dados do Supervisor</h5>
+				</div>
+				<div class="panel-body">
+					<div class="row">
+						<div class="form-group col-md-4">
+							<label>Nome do Supervisor</label>
+							<input type="text" name="supervisor_nome_view" id="supervisor_nome_view" class="form-control" readonly>
+						</div>
+						<div class="form-group col-md-4">
+							<label>Matrícula</label>
+							<input type="text" name="supervisor_matricula_view" id="supervisor_matricula_view" class="form-control" readonly>
+						</div>
+						<div class="form-group col-md-4">
+							<label>Cargo/Setor</label>
+							<input type="text" name="supervisor_cargo_view" id="supervisor_cargo_view" class="form-control" readonly>
+						</div>
+					</div>
+					<div class="row" style="margin-top:8px;">
+						<div class="col-md-12">
+							<label>Motivo da Ausência do Funcionário</label>
+							<textarea class="form-control" name="motivoAusencia" id="motivoAusencia" rows="2" readonly></textarea>
+						</div>
+					</div>
+					<div class="row" style="margin-top:8px;">
+						<div class="col-md-12">
+							<label>Assinatura do Supervisor</label>
+							<img id="assinaturaSupervisor_img" src="" alt="Assinatura do Supervisor"
+								style="max-width:100%; border:1px solid #ddd;">
+							<small class="text-muted">Campo técnico: <code>assinaturaSupervisor_base64</code></small>
+						</div>
+					</div>
+				</div>
+			</div>
+
 			<!-- Testemunha 1 -->
 			<div class="panel panel-default">
 				<div class="panel-heading">
@@ -440,8 +483,29 @@
 			// espelhos visuais da confirmação
 			const tipo = document.getElementById('confirmacao_tipo')?.value || '';
 			const motivo = document.getElementById('confirmacao_motivoRecusa')?.value || '';
+			const motivoAusencia = document.getElementById('confirmacao_motivoAusencia')?.value || '';
 			if (document.getElementById('confirmacao_tipo_view')) document.getElementById('confirmacao_tipo_view').value = tipo;
 			if (document.getElementById('confirmacao_motivoRecusa_view')) document.getElementById('confirmacao_motivoRecusa_view').value = motivo;
+			if (document.getElementById('motivoAusencia')) document.getElementById('motivoAusencia').value = motivoAusencia;
+
+			// Dados do supervisor
+			const supervisorNome = document.getElementById('supervisor_nome')?.value || '';
+			const supervisorMatricula = document.getElementById('supervisor_matricula')?.value || '';
+			const supervisorCargo = document.getElementById('supervisor_cargo')?.value || '';
+			const supervisorAssinatura = document.getElementById('assinaturaSupervisor_base64')?.value || '';
+			
+			if (document.getElementById('supervisor_nome_view')) document.getElementById('supervisor_nome_view').value = supervisorNome;
+			if (document.getElementById('supervisor_matricula_view')) document.getElementById('supervisor_matricula_view').value = supervisorMatricula;
+			if (document.getElementById('supervisor_cargo_view')) document.getElementById('supervisor_cargo_view').value = supervisorCargo;
+			if (supervisorAssinatura) document.getElementById('assinaturaSupervisor_img').src = 'data:image/png;base64,' + supervisorAssinatura;
+			
+			// Mostrar/ocultar painel do supervisor
+			const recusaAssinatura = document.getElementById('recusaAssinatura')?.value || '';
+			if (recusaAssinatura === 'distante' && supervisorNome) {
+				document.getElementById('panelSupervisor').style.display = 'block';
+			} else {
+				document.getElementById('panelSupervisor').style.display = 'none';
+			}
 
 			// evidências: apenas exibe o JSON para conferência
 			const evid = document.getElementById('evidencias_json')?.value || '';

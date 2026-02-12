@@ -78,6 +78,22 @@ async function iniciarProcesso() {
         $("#loadingOverlay").hide();
         return;
       }
+    } else if (confirmacao.tipoConfirmacao === 'ASSINATURA_SUPERVISOR') {
+      if (!confirmacao.motivoAusencia || !confirmacao.motivoAusencia.trim()) {
+        toastMsg('Atenção', 'Informe o motivo da ausência do funcionário.', 'warning');
+        $("#loadingOverlay").hide();
+        return;
+      }
+      if (!confirmacao.supervisorDados?.nome || !confirmacao.supervisorDados?.matricula) {
+        toastMsg('Atenção', 'Preencha os dados do supervisor (nome e matrícula).', 'warning');
+        $("#loadingOverlay").hide();
+        return;
+      }
+      if (!confirmacao.supervisorDados?.assinaturaBase64) {
+        toastMsg('Atenção', 'Assinatura do supervisor é obrigatória.', 'warning');
+        $("#loadingOverlay").hide();
+        return;
+      }
     } else {
       if (!confirmacao.motivoRecusa) {
         toastMsg('Atenção', 'Informe o motivo da recusa.', 'warning');
@@ -317,7 +333,15 @@ async function montarConstraints({ fotoData, assinaturaData, pdfBase64, parcelas
   constraints.push(DatasetFactory.createConstraint("formField", "parcelas_json", JSON.stringify(parcelas || []), ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("formField", "confirmacao_tipo", confirmacao?.tipoConfirmacao || "", ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("formField", "confirmacao_motivoRecusa", confirmacao?.motivoRecusa || "", ConstraintType.MUST));
+  constraints.push(DatasetFactory.createConstraint("formField", "confirmacao_motivoAusencia", confirmacao?.motivoAusencia || "", ConstraintType.MUST));
   constraints.push(DatasetFactory.createConstraint("formField", "assinaturaFuncionario_base64", (assinaturaData ? (assinaturaData.split(",")[1] || "") : ""), ConstraintType.MUST));
+
+  // Dados do supervisor (quando funcionário ausente)
+  const supervisor = confirmacao?.supervisorDados || {};
+  constraints.push(DatasetFactory.createConstraint("formField", "supervisor_nome", supervisor.nome || "", ConstraintType.MUST));
+  constraints.push(DatasetFactory.createConstraint("formField", "supervisor_matricula", supervisor.matricula || "", ConstraintType.MUST));
+  constraints.push(DatasetFactory.createConstraint("formField", "supervisor_cargo", supervisor.cargo || "", ConstraintType.MUST));
+  constraints.push(DatasetFactory.createConstraint("formField", "assinaturaSupervisor_base64", (supervisor.assinaturaBase64 ? (supervisor.assinaturaBase64.split(",")[1] || "") : ""), ConstraintType.MUST));
 
   const t1 = confirmacao?.testemunhas?.[0] || {};
   const t2 = confirmacao?.testemunhas?.[1] || {};
@@ -346,6 +370,9 @@ async function montarConstraints({ fotoData, assinaturaData, pdfBase64, parcelas
   }
   if (assinaturaData) {
     constraints.push(DatasetFactory.createConstraint("attachment", (assinaturaData.split(",")[1] || ""), "assinatura.png", ConstraintType.MUST));
+  }
+  if (supervisor?.assinaturaBase64) {
+    constraints.push(DatasetFactory.createConstraint("attachment", (supervisor.assinaturaBase64.split(",")[1] || ""), "assinatura_supervisor.png", ConstraintType.MUST));
   }
   if (pdfBase64) {
     constraints.push(DatasetFactory.createConstraint("attachment", pdfBase64, "relatorio_desconto_lancado.pdf", ConstraintType.MUST));
@@ -652,9 +679,12 @@ async function gerarRelatorioPDFBase64(dadosFuncionario) {
     }
   }
 
-  const recusa = document.querySelector('input[name="recusaAssinatura"]:checked')?.value === "sim";
-  if (!recusa) {
-    // Adiciona a assinatura do funcionário apenas se não houver recusa
+  const tipoAssinatura = document.querySelector('input[name="recusaAssinatura"]:checked')?.value || "nao";
+  const recusa = tipoAssinatura === "sim";
+  const supervisor = tipoAssinatura === "distante";
+
+  if (!recusa && !supervisor) {
+    // Funcionário concordou em assinar
     addSignatureBlock("Assinatura do Funcionário", {
       hiddenInputId: "assinaturaFuncionario_base64",
       canvasId: "signature-pad-func",
@@ -662,8 +692,61 @@ async function gerarRelatorioPDFBase64(dadosFuncionario) {
     });
   }
 
+  if (supervisor) {
+    // Funcionário distante - Supervisor assina
+    ensureRoom(50);
+    doc.setFont("helvetica", "bold").setFontSize(13).setTextColor(...primaryColor);
+    doc.text("Assinatura do Supervisor", margin, y);
+    y += lineSpacing;
+    
+    doc.setFont("helvetica", "normal").setFontSize(10).setTextColor(0, 0, 0);
+    const supervisorNome = $('#supervisor_nome').val()?.trim() || "Não informado";
+    const supervisorMatricula = $('#supervisor_matricula').val()?.trim() || "Não informado";
+    const supervisorCargo = $('#supervisor_cargo').val()?.trim() || "Não informado";
+    const motivoAusencia = $('#motivoAusencia').val()?.trim() || "Não informado";
+    
+    addP(`Nome: ${supervisorNome}`);
+    addP(`Matrícula: ${supervisorMatricula}`);
+    addP(`Cargo/Setor: ${supervisorCargo}`);
+    y += 3;
+    addP(`Motivo da ausência do funcionário: ${motivoAusencia}`);
+    y += 5;
+    
+    // Adiciona assinatura do supervisor
+    let imgData = "";
+    const hidden = document.getElementById('assinaturaSupervisor_base64')?.value?.trim();
+    if (hidden) {
+      imgData = `data:image/png;base64,${hidden}`;
+    } else {
+      const canvas = document.getElementById('signature-pad-supervisor');
+      const w = clamp(canvas?.width), h = clamp(canvas?.height);
+      if (canvas && w > 0 && h > 0) {
+        try { imgData = canvas.toDataURL("image/png"); } catch (_) { imgData = ""; }
+      }
+    }
+    
+    if (imgData) {
+      const { usedH } = addImageSafe(imgData, 20);
+      addUnderline(usedH);
+      
+      // Dados do supervisor abaixo da assinatura
+      const currentDateTime = new Date().toLocaleString("pt-BR");
+      doc.setFont("helvetica", "normal").setFontSize(10).setTextColor(0, 0, 0);
+      y += 5;
+      doc.text(`Nome: ${supervisorNome}`, pageWidth / 2, y, { align: "center" });
+      y += lineSpacing;
+      doc.text(`Matrícula: ${supervisorMatricula}`, pageWidth / 2, y, { align: "center" });
+      y += lineSpacing;
+      doc.text(`Data e Hora: ${currentDateTime}`, pageWidth / 2, y, { align: "center" });
+      y += lineSpacing;
+    } else {
+      addP("Assinatura não capturada.");
+      y += lineSpacing;
+    }
+  }
+
   if (recusa) {
-    // Adiciona a assinatura da Testemunha 1
+    // Funcionário recusou - Testemunhas assinam
     var nomeTest1 = $('#test1_nome').val() || "";
     var cpfTest1 = $('#test1_cpf').val() || "";
 

@@ -388,14 +388,18 @@ function getPadBase64(idCanvas) {
   return pad.toDataURL("image/png");
 }
 
-// alternância funcionário x recusa
+// alternância funcionário x recusa x supervisor
 function onToggleRecusa() {
   const v = document.querySelector('input[name="recusaAssinatura"]:checked')?.value || 'nao';
   const showRecusa = v === 'sim';
+  const showSupervisor = v === 'distante';
 
-  $('#blocoAssinaturaFuncionario').toggle(!showRecusa);
+  // Controla a visibilidade dos blocos
+  $('#blocoAssinaturaFuncionario').toggle(!showRecusa && !showSupervisor);
+  $('#blocoAssinaturaSupervisor').toggle(showSupervisor);
   $('#blocoTestemunhas').toggle(showRecusa);
   $('#blocoMotivoRecusa').toggle(showRecusa);
+  $('#blocoMotivoAusencia').toggle(showSupervisor);
 
   if (showRecusa) {
     // Inicializa se ainda não existirem
@@ -406,6 +410,16 @@ function onToggleRecusa() {
     setTimeout(() => {
       resizePadNow('signature-pad-test1');
       resizePadNow('signature-pad-test2');
+    }, 0);
+  }
+
+  if (showSupervisor) {
+    // Inicializa o pad do supervisor se não existir
+    if (!pads['signature-pad-supervisor']) initPad('signature-pad-supervisor');
+    
+    // Recalcula o tamanho do canvas do supervisor
+    setTimeout(() => {
+      resizePadNow('signature-pad-supervisor');
     }, 0);
   }
 }
@@ -432,20 +446,46 @@ function fileToBase64(file) {
 
 // coleta tudo para enviar ao backend
 async function coletarConfirmacao() {
-  const recusa = (document.querySelector('input[name="recusaAssinatura"]:checked')?.value === 'sim');
+  const v = document.querySelector('input[name="recusaAssinatura"]:checked')?.value || 'nao';
+  const recusa = v === 'sim';
+  const supervisor = v === 'distante';
 
-  if (!recusa) {
+  // Caso 1: Funcionário assina normalmente
+  if (!recusa && !supervisor) {
     const assinaturaFunc = getPadBase64('signature-pad-func');
     return {
       tipoConfirmacao: 'ASSINATURA_FUNC',
       motivoRecusa: null,
+      motivoAusencia: null,
       assinaturaFuncionarioBase64: assinaturaFunc, // pode ser null → valide antes de enviar
+      supervisorDados: null,
       testemunhas: [],
       evidenciasExtras: []
     };
   }
 
-  // recusa: validar testemunhas
+  // Caso 2: Supervisor assina (funcionário ausente)
+  if (supervisor) {
+    const assinaturaSupervisor = getPadBase64('signature-pad-supervisor');
+    const supervisorDados = {
+      nome: $('#supervisor_nome').val()?.trim() || '',
+      matricula: $('#supervisor_matricula').val()?.trim() || '',
+      cargo: $('#supervisor_cargo').val()?.trim() || '',
+      assinaturaBase64: assinaturaSupervisor
+    };
+    
+    return {
+      tipoConfirmacao: 'ASSINATURA_SUPERVISOR',
+      motivoRecusa: null,
+      motivoAusencia: ($('#motivoAusencia').val() || '').trim(),
+      assinaturaFuncionarioBase64: null,
+      supervisorDados: supervisorDados,
+      testemunhas: [],
+      evidenciasExtras: []
+    };
+  }
+
+  // Caso 3: Recusa - validar testemunhas
   const t1 = {
     nome: $('#test1_nome').val()?.trim() || '',
     cpf: $('#test1_cpf').val()?.trim() || '',
@@ -471,7 +511,9 @@ async function coletarConfirmacao() {
   return {
     tipoConfirmacao: 'RECUSA_TESTEMUNHAS',
     motivoRecusa: ($('#motivoRecusa').val() || '').trim(),
+    motivoAusencia: null,
     assinaturaFuncionarioBase64: null,
+    supervisorDados: null,
     testemunhas: [t1, t2],
     evidenciasExtras: extras
   };
