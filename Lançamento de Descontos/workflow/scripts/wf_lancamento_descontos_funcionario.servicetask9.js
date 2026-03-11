@@ -189,6 +189,12 @@ function servicetask9(attempt, message) {
         
         if (deveEnviarAberto) {
             var r1 = integracaoProtheusInvoke('/rest/RESTRH/postDescontos', payloadAberto);
+            if (!r1.ok && r1.msg && (r1.msg.indexOf('PERISCLOSE') !== -1 || r1.msg.indexOf('REGNOIS') !== -1)) {
+                var periodoOrigAberto = payloadAberto.periodoRef;
+                payloadAberto = avancarPeriodosPayload(payloadAberto);
+                log.warn('Período fechado (' + periodoOrigAberto + '). Reenvio com: ' + payloadAberto.periodoRef);
+                r1 = integracaoProtheusInvoke('/rest/RESTRH/postDescontos', payloadAberto);
+            }
             okAberto = r1.ok;
             msgAberto = r1.msg;
             hAPI.setCardValue('integ_aberto_status', okAberto ? 'OK' : 'NOK');
@@ -205,6 +211,12 @@ function servicetask9(attempt, message) {
         
         if (deveEnviarFuturo) {
             var r2 = integracaoProtheusInvoke('/rest/RESTRH/descontosFuturos', payloadFuturo);
+            if (!r2.ok && r2.msg && (r2.msg.indexOf('PERISCLOSE') !== -1 || r2.msg.indexOf('REGNOIS') !== -1)) {
+                var periodoOrigFuturo = payloadFuturo.periodoRef;
+                payloadFuturo = avancarPeriodosPayload(payloadFuturo);
+                log.warn('Período fechado (futuros) (' + periodoOrigFuturo + '). Reenvio com: ' + payloadFuturo.periodoRef);
+                r2 = integracaoProtheusInvoke('/rest/RESTRH/descontosFuturos', payloadFuturo);
+            }
             okFuturo = r2.ok;
             msgFuturo = r2.msg;
             hAPI.setCardValue('integ_futuro_status', okFuturo ? 'OK' : 'NOK');
@@ -332,5 +344,33 @@ function parseParcelas(jsonStr) {
 
 function safeJSONStringify(obj) {
     try { return JSON.stringify(obj); } catch (e) { return ''; }
+}
+
+function proximoPeriodo(periodo) {
+    var s = (periodo + '').trim();
+    if (s.length !== 6) return s;
+    var ano = parseInt(s.substring(0, 4), 10);
+    var mes = parseInt(s.substring(4, 6), 10);
+    mes++;
+    if (mes > 12) { mes = 1; ano++; }
+    return String(ano) + (mes < 10 ? '0' : '') + String(mes);
+}
+
+function avancarPeriodosPayload(payload) {
+    var novo = {};
+    for (var k in payload) {
+        if (Object.prototype.hasOwnProperty.call(payload, k)) novo[k] = payload[k];
+    }
+    if (novo.periodoRef) {
+        novo.periodoRef = proximoPeriodo(novo.periodoRef);
+    }
+    if (novo.parcelas && novo.parcelas.length > 0) {
+        var ps = [];
+        for (var i = 0; i < novo.parcelas.length; i++) {
+            ps.push({ periodo: proximoPeriodo(novo.parcelas[i].periodo), valor: novo.parcelas[i].valor });
+        }
+        novo.parcelas = ps;
+    }
+    return novo;
 }
 

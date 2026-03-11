@@ -442,7 +442,7 @@
 
                                 <!-- Assinatura do Supervisor (aparece quando funcionário ausente) -->
                                 <div id="blocoAssinaturaSupervisor" style="display:none;">
-                                    <div class="panel panel-warning">
+                                    <div class="panel panel-default">
                                         <div class="panel-heading">
                                             <h4 class="panel-title">
                                                 <strong>Assinatura do Supervisor</strong> - Funcionário Ausente/Distante

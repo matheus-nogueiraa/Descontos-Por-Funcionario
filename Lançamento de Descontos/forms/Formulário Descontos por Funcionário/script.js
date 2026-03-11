@@ -11,26 +11,26 @@ var beforeSendValidate = function (numState, nextState) {
         msg += 'Este processo deve ser iniciado exclusivamente pela Página Pública de Lançamentos de Descontos. Feche esta tela e utilize a página oficial.';
     }
     else if (numState == ATIVIDADES.APROV_GERENTE) {
-        var isTestEnvironment = window.location.origin.includes(':8443');
-        var metadataid = isTestEnvironment ? "341794" : "486718";
+        // var isTestEnvironment = window.location.origin.includes(':8443');
+        // var metadataid = isTestEnvironment ? "341794" : "486718";
         
-        // Consulta ao dataset antes de aprovar
-        var constraints = [
-            DatasetFactory.createConstraint('metadata#id', metadataid, metadataid, ConstraintType.MUST),
-            DatasetFactory.createConstraint('userSecurityId', 'admin', 'admin', ConstraintType.MUST)
-        ];
-        var dataset = DatasetFactory.getDataset('ds_parametro_aprovacao_descontos', null, constraints, null);
+        // // Consulta ao dataset antes de aprovar
+        // var constraints = [
+        //     DatasetFactory.createConstraint('metadata#id', metadataid, metadataid, ConstraintType.MUST),
+        //     DatasetFactory.createConstraint('userSecurityId', 'admin', 'admin', ConstraintType.MUST)
+        // ];
+        // var dataset = DatasetFactory.getDataset('ds_parametro_aprovacao_descontos', null, constraints, null);
 
-        var permitirAprovacao = false;
-        if (dataset && dataset.values.length > 0) {
-            var valorInicial = dataset.values[ 0 ].permitirAprovacao;
-            permitirAprovacao = valorInicial === true || valorInicial === 'true' || valorInicial === '1' || valorInicial === 1;
-        }
+        // var permitirAprovacao = false;
+        // if (dataset && dataset.values.length > 0) {
+        //     var valorInicial = dataset.values[ 0 ].permitirAprovacao;
+        //     permitirAprovacao = valorInicial === true || valorInicial === 'true' || valorInicial === '1' || valorInicial === 1;
+        // }
 
-        if (!permitirAprovacao) {
-            customMsg('Aprovação não permitida no momento.', 'error');
-            return false;
-        }
+        // if (!permitirAprovacao) {
+        //     customMsg('Aprovação não permitida no momento.', 'error');
+        //     return false;
+        // }
 
         const rdAprovaDescGerente = $('input[name="rdAprovaDescGerente"]:checked')?.val()?.trim() || '';
         const obsAnaliseAprovadorGerente = $('#obsAnaliseAprovadorGerente')?.val()?.trim() || '';

@@ -1,23 +1,23 @@
 function abrirModalAtivos() {
-  var isTestEnvironment = window.location.origin.includes(':8443');
-  var metadataid = isTestEnvironment ? "341794" : "486718";
+  // var isTestEnvironment = window.location.origin.includes(':8443');
+  // var metadataid = isTestEnvironment ? "341794" : "486718";
 
-  var constraintsAprovacao = [
-    DatasetFactory.createConstraint('metadata#id', metadataid, metadataid, ConstraintType.MUST),
-    DatasetFactory.createConstraint('userSecurityId', 'admin', 'admin', ConstraintType.MUST)
-  ];
-  var dataset = DatasetFactory.getDataset('ds_parametro_aprovacao_descontos', null, constraintsAprovacao, null);
+  // var constraintsAprovacao = [
+  //   DatasetFactory.createConstraint('metadata#id', metadataid, metadataid, ConstraintType.MUST),
+  //   DatasetFactory.createConstraint('userSecurityId', 'admin', 'admin', ConstraintType.MUST)
+  // ];
+  // var dataset = DatasetFactory.getDataset('ds_parametro_aprovacao_descontos', null, constraintsAprovacao, null);
 
-  var permitirAprovacao = false;
-  if (dataset && dataset.values.length > 0) {
-    var valorInicial = dataset.values[ 0 ].permitirAprovacao;
-    permitirAprovacao = valorInicial === true || valorInicial === 'true';
-  }
+  // var permitirAprovacao = false;
+  // if (dataset && dataset.values.length > 0) {
+  //   var valorInicial = dataset.values[ 0 ].permitirAprovacao;
+  //   permitirAprovacao = valorInicial === true || valorInicial === 'true';
+  // }
 
-  if (!permitirAprovacao) {   
-    showSweetAlert('Atenção', 'Lançamento de novos descontos não permitida no momento.', 'error');
-    return;
-  }
+  // if (!permitirAprovacao) {   
+  //   showSweetAlert('Atenção', 'Lançamento de novos descontos não permitida no momento.', 'error');
+  //   return;
+  // }
 
   const nomeFuncionario = $('#nomeColaborador')?.val()?.trim() || '';
   const nenhumProcessoAtivo = consultaProcessosDescontosAtivos(nomeFuncionario);

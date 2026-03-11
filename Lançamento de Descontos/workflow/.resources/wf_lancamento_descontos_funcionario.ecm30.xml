@@ -16,7 +16,7 @@
     <baseDay>0</baseDay>
     <baseMonth>0</baseMonth>
     <periodId>Default</periodId>
-    <uniqueCardVersion>false</uniqueCardVersion>
+    <uniqueCardVersion>true</uniqueCardVersion>
     <keyWord></keyWord>
     <complementsLevel>1</complementsLevel>
     <notifyRequisitionerComplements>true</notifyRequisitionerComplements>
@@ -29,7 +29,7 @@
     <processDefinitionVersionPK>
       <companyId>1</companyId>
       <processId>Lançamento de Descontos por Funcionário</processId>
-      <version>25</version>
+      <version>27</version>
     </processDefinitionVersionPK>
     <versionDescription></versionDescription>
     <formId>419542</formId>
@@ -43,7 +43,7 @@
     <bpmnVersion>2</bpmnVersion>
     <processStates/>
     <favorito>false</favorito>
-    <inheritFormSecurity>false</inheritFormSecurity>
+    <inheritFormSecurity>true</inheritFormSecurity>
     <mobileReady>false</mobileReady>
   </ProcessDefinitionVersion>
   <list>
@@ -125,8 +125,8 @@
       <notifyAuthorityFollowUp>true</notifyAuthorityFollowUp>
       <notifyRequisitionerFollowUp>false</notifyRequisitionerFollowUp>
       <automatic>false</automatic>
-      <positionX>776</positionX>
-      <positionY>128</positionY>
+      <positionX>948</positionX>
+      <positionY>126</positionY>
       <forecastedEffortType>0</forecastedEffortType>
       <forecastedEffort>0</forecastedEffort>
       <notifyManagerFollowUp>false</notifyManagerFollowUp>
@@ -177,8 +177,8 @@
       <notifyAuthorityFollowUp>true</notifyAuthorityFollowUp>
       <notifyRequisitionerFollowUp>false</notifyRequisitionerFollowUp>
       <automatic>false</automatic>
-      <positionX>780</positionX>
-      <positionY>281</positionY>
+      <positionX>996</positionX>
+      <positionY>287</positionY>
       <forecastedEffortType>0</forecastedEffortType>
       <forecastedEffort>0</forecastedEffort>
       <notifyManagerFollowUp>false</notifyManagerFollowUp>
@@ -280,8 +280,8 @@
       <notifyAuthorityFollowUp>true</notifyAuthorityFollowUp>
       <notifyRequisitionerFollowUp>false</notifyRequisitionerFollowUp>
       <automatic>false</automatic>
-      <positionX>440</positionX>
-      <positionY>270</positionY>
+      <positionX>443</positionX>
+      <positionY>280</positionY>
       <forecastedEffortType>0</forecastedEffortType>
       <forecastedEffort>0</forecastedEffort>
       <notifyManagerFollowUp>false</notifyManagerFollowUp>
@@ -358,6 +358,58 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <version>1</version>
+        <sequence>44</sequence>
+      </processStatePK>
+      <stateName>Aguardando liberação</stateName>
+      <stateDescription>Aguardando liberação</stateDescription>
+      <instruction></instruction>
+      <deadlineTime>0</deadlineTime>
+      <deadlineFieldName></deadlineFieldName>
+      <joint>false</joint>
+      <agreementPercentage>0</agreementPercentage>
+      <engineAllocationId>Pool Papel</engineAllocationId>
+      <engineAllocationConfiguration>&lt;AssignmentController&gt;&lt;Role&gt;AGUARDANDO_LIBERACAO_LANCAMENTO_DESCONTOS&lt;/Role&gt;&lt;/AssignmentController&gt;</engineAllocationConfiguration>
+      <selectColleague>1</selectColleague>
+      <initialState>false</initialState>
+      <notifyAuthorityDelay>true</notifyAuthorityDelay>
+      <notifyRequisitionerDelay>false</notifyRequisitionerDelay>
+      <allowanceAuthorityTime>3600</allowanceAuthorityTime>
+      <frequenceAuthorityTime>3600</frequenceAuthorityTime>
+      <allowanceRequisitionerTime>0</allowanceRequisitionerTime>
+      <frequenceRequisitionerTime>0</frequenceRequisitionerTime>
+      <transferAttachments>false</transferAttachments>
+      <subProcessId></subProcessId>
+      <formFolder>0</formFolder>
+      <notifyAuthorityFollowUp>true</notifyAuthorityFollowUp>
+      <notifyRequisitionerFollowUp>false</notifyRequisitionerFollowUp>
+      <automatic>false</automatic>
+      <positionX>775</positionX>
+      <positionY>128</positionY>
+      <forecastedEffortType>0</forecastedEffortType>
+      <forecastedEffort>0</forecastedEffort>
+      <notifyManagerFollowUp>false</notifyManagerFollowUp>
+      <notifyManagerDelay>false</notifyManagerDelay>
+      <allowanceManagerTime>0</allowanceManagerTime>
+      <frequenceManagerTime>0</frequenceManagerTime>
+      <inhibitTransfer>false</inhibitTransfer>
+      <periodId>DiasCorridos_24h</periodId>
+      <stateType>0</stateType>
+      <bpmnType>80</bpmnType>
+      <signalId>0</signalId>
+      <counterSign>false</counterSign>
+      <openInstances>0</openInstances>
+      <noticeExpirationAuthorityTime>0</noticeExpirationAuthorityTime>
+      <noticeExpirationRequisitionerTime>0</noticeExpirationRequisitionerTime>
+      <noticeExpirationManagerTime>0</noticeExpirationManagerTime>
+      <destinationStates/>
+      <digitalSignature>false</digitalSignature>
+      <executionType>0</executionType>
+    </ProcessState>
+    <ProcessState>
+      <processStatePK>
+        <companyId>1</companyId>
+        <processId>wf_lancamento_descontos_funcionario</processId>
+        <version>1</version>
         <sequence>14</sequence>
       </processStatePK>
       <stateName>Intermediário</stateName>
@@ -382,8 +434,8 @@
       <notifyAuthorityFollowUp>true</notifyAuthorityFollowUp>
       <notifyRequisitionerFollowUp>false</notifyRequisitionerFollowUp>
       <automatic>false</automatic>
-      <positionX>866</positionX>
-      <positionY>168</positionY>
+      <positionX>1038</positionX>
+      <positionY>166</positionY>
       <forecastedEffortType>0</forecastedEffortType>
       <forecastedEffort>0</forecastedEffort>
       <notifyManagerFollowUp>false</notifyManagerFollowUp>
@@ -415,7 +467,7 @@
       <subProcessId></subProcessId>
       <formFolder>0</formFolder>
       <automatic>true</automatic>
-      <positionX>1024</positionX>
+      <positionX>1120</positionX>
       <positionY>110</positionY>
       <inhibitTransfer>false</inhibitTransfer>
       <stateType>1</stateType>
@@ -440,7 +492,7 @@
       <subProcessId></subProcessId>
       <formFolder>0</formFolder>
       <automatic>true</automatic>
-      <positionX>617</positionX>
+      <positionX>633</positionX>
       <positionY>104</positionY>
       <inhibitTransfer>false</inhibitTransfer>
       <stateType>1</stateType>
@@ -504,8 +556,8 @@
       <notifyAuthorityFollowUp>false</notifyAuthorityFollowUp>
       <notifyRequisitionerFollowUp>false</notifyRequisitionerFollowUp>
       <automatic>false</automatic>
-      <positionX>1217</positionX>
-      <positionY>143</positionY>
+      <positionX>1265</positionX>
+      <positionY>144</positionY>
       <forecastedEffortType>0</forecastedEffortType>
       <forecastedEffort>0</forecastedEffort>
       <notifyManagerFollowUp>false</notifyManagerFollowUp>
@@ -551,8 +603,8 @@
       <notifyAuthorityFollowUp>false</notifyAuthorityFollowUp>
       <notifyRequisitionerFollowUp>false</notifyRequisitionerFollowUp>
       <automatic>false</automatic>
-      <positionX>629</positionX>
-      <positionY>258</positionY>
+      <positionX>645</positionX>
+      <positionY>275</positionY>
       <forecastedEffortType>0</forecastedEffortType>
       <forecastedEffort>0</forecastedEffort>
       <notifyManagerFollowUp>false</notifyManagerFollowUp>
@@ -576,7 +628,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>1</expressionOrder>
-        <version>25</version>
+        <version>27</version>
         <sequence>18</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -588,7 +640,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>2</expressionOrder>
-        <version>25</version>
+        <version>27</version>
         <sequence>18</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -600,11 +652,11 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>1</expressionOrder>
-        <version>25</version>
+        <version>27</version>
         <sequence>24</sequence>
       </conditionProcessStatePK>
       <condition></condition>
-      <destinationSequenceId>9</destinationSequenceId>
+      <destinationSequenceId>44</destinationSequenceId>
       <conditionType>1</conditionType>
     </ConditionProcessState>
     <ConditionProcessState>
@@ -612,7 +664,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>2</expressionOrder>
-        <version>25</version>
+        <version>27</version>
         <sequence>24</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -624,7 +676,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>1</expressionOrder>
-        <version>25</version>
+        <version>27</version>
         <sequence>35</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -636,7 +688,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>2</expressionOrder>
-        <version>25</version>
+        <version>27</version>
         <sequence>35</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -743,23 +795,6 @@
       <finalStateSequence>24</finalStateSequence>
       <returnLabel></returnLabel>
       <name></name>
-      <automaticLink>false</automaticLink>
-      <defaultLink>false</defaultLink>
-      <type>0</type>
-    </ProcessLink>
-    <ProcessLink>
-      <processLinkPK>
-        <companyId>1</companyId>
-        <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>1</version>
-        <linkSequence>26</linkSequence>
-      </processLinkPK>
-      <actionLabel></actionLabel>
-      <returnPermited>false</returnPermited>
-      <initialStateSequence>24</initialStateSequence>
-      <finalStateSequence>9</finalStateSequence>
-      <returnLabel></returnLabel>
-      <name>Aprova Desconto</name>
       <automaticLink>false</automaticLink>
       <defaultLink>false</defaultLink>
       <type>0</type>
@@ -877,6 +912,40 @@
       <returnPermited>false</returnPermited>
       <initialStateSequence>4</initialStateSequence>
       <finalStateSequence>32</finalStateSequence>
+      <returnLabel></returnLabel>
+      <name></name>
+      <automaticLink>false</automaticLink>
+      <defaultLink>false</defaultLink>
+      <type>0</type>
+    </ProcessLink>
+    <ProcessLink>
+      <processLinkPK>
+        <companyId>1</companyId>
+        <processId>wf_lancamento_descontos_funcionario</processId>
+        <version>1</version>
+        <linkSequence>45</linkSequence>
+      </processLinkPK>
+      <actionLabel></actionLabel>
+      <returnPermited>false</returnPermited>
+      <initialStateSequence>24</initialStateSequence>
+      <finalStateSequence>44</finalStateSequence>
+      <returnLabel></returnLabel>
+      <name></name>
+      <automaticLink>false</automaticLink>
+      <defaultLink>false</defaultLink>
+      <type>0</type>
+    </ProcessLink>
+    <ProcessLink>
+      <processLinkPK>
+        <companyId>1</companyId>
+        <processId>wf_lancamento_descontos_funcionario</processId>
+        <version>1</version>
+        <linkSequence>46</linkSequence>
+      </processLinkPK>
+      <actionLabel></actionLabel>
+      <returnPermited>false</returnPermited>
+      <initialStateSequence>44</initialStateSequence>
+      <finalStateSequence>9</finalStateSequence>
       <returnLabel></returnLabel>
       <name></name>
       <automaticLink>false</automaticLink>
@@ -1176,6 +1245,12 @@ function getCurrentTime() {&#xd;
         &#xd;
         if (deveEnviarAberto) {&#xd;
             var r1 = integracaoProtheusInvoke(&apos;/rest/RESTRH/postDescontos&apos;, payloadAberto);&#xd;
+            if (!r1.ok &amp;&amp; r1.msg &amp;&amp; (r1.msg.indexOf(&apos;PERISCLOSE&apos;) !== -1 || r1.msg.indexOf(&apos;REGNOIS&apos;) !== -1)) {&#xd;
+                var periodoOrigAberto = payloadAberto.periodoRef;&#xd;
+                payloadAberto = avancarPeriodosPayload(payloadAberto);&#xd;
+                log.warn(&apos;Período fechado (&apos; + periodoOrigAberto + &apos;). Reenvio com: &apos; + payloadAberto.periodoRef);&#xd;
+                r1 = integracaoProtheusInvoke(&apos;/rest/RESTRH/postDescontos&apos;, payloadAberto);&#xd;
+            }&#xd;
             okAberto = r1.ok;&#xd;
             msgAberto = r1.msg;&#xd;
             hAPI.setCardValue(&apos;integ_aberto_status&apos;, okAberto ? &apos;OK&apos; : &apos;NOK&apos;);&#xd;
@@ -1192,6 +1267,12 @@ function getCurrentTime() {&#xd;
         &#xd;
         if (deveEnviarFuturo) {&#xd;
             var r2 = integracaoProtheusInvoke(&apos;/rest/RESTRH/descontosFuturos&apos;, payloadFuturo);&#xd;
+            if (!r2.ok &amp;&amp; r2.msg &amp;&amp; (r2.msg.indexOf(&apos;PERISCLOSE&apos;) !== -1 || r2.msg.indexOf(&apos;REGNOIS&apos;) !== -1)) {&#xd;
+                var periodoOrigFuturo = payloadFuturo.periodoRef;&#xd;
+                payloadFuturo = avancarPeriodosPayload(payloadFuturo);&#xd;
+                log.warn(&apos;Período fechado (futuros) (&apos; + periodoOrigFuturo + &apos;). Reenvio com: &apos; + payloadFuturo.periodoRef);&#xd;
+                r2 = integracaoProtheusInvoke(&apos;/rest/RESTRH/descontosFuturos&apos;, payloadFuturo);&#xd;
+            }&#xd;
             okFuturo = r2.ok;&#xd;
             msgFuturo = r2.msg;&#xd;
             hAPI.setCardValue(&apos;integ_futuro_status&apos;, okFuturo ? &apos;OK&apos; : &apos;NOK&apos;);&#xd;
@@ -1319,6 +1400,34 @@ function parseParcelas(jsonStr) {&#xd;
 &#xd;
 function safeJSONStringify(obj) {&#xd;
     try { return JSON.stringify(obj); } catch (e) { return &apos;&apos;; }&#xd;
+}&#xd;
+&#xd;
+function proximoPeriodo(periodo) {&#xd;
+    var s = (periodo + &apos;&apos;).trim();&#xd;
+    if (s.length !== 6) return s;&#xd;
+    var ano = parseInt(s.substring(0, 4), 10);&#xd;
+    var mes = parseInt(s.substring(4, 6), 10);&#xd;
+    mes++;&#xd;
+    if (mes &gt; 12) { mes = 1; ano++; }&#xd;
+    return String(ano) + (mes &lt; 10 ? &apos;0&apos; : &apos;&apos;) + String(mes);&#xd;
+}&#xd;
+&#xd;
+function avancarPeriodosPayload(payload) {&#xd;
+    var novo = {};&#xd;
+    for (var k in payload) {&#xd;
+        if (Object.prototype.hasOwnProperty.call(payload, k)) novo[k] = payload[k];&#xd;
+    }&#xd;
+    if (novo.periodoRef) {&#xd;
+        novo.periodoRef = proximoPeriodo(novo.periodoRef);&#xd;
+    }&#xd;
+    if (novo.parcelas &amp;&amp; novo.parcelas.length &gt; 0) {&#xd;
+        var ps = [];&#xd;
+        for (var i = 0; i &lt; novo.parcelas.length; i++) {&#xd;
+            ps.push({ periodo: proximoPeriodo(novo.parcelas[i].periodo), valor: novo.parcelas[i].valor });&#xd;
+        }&#xd;
+        novo.parcelas = ps;&#xd;
+    }&#xd;
+    return novo;&#xd;
 }&#xd;
 &#xd;
 </eventDescription>
@@ -1587,7 +1696,7 @@ function getEmailDiretor(grupoAprovadorCC) {&#xd;
     <SwimLane>
       <color>FFFFFF</color>
       <height>371</height>
-      <width>1251</width>
+      <width>1301</width>
       <positionX>10</positionX>
       <positionY>10</positionY>
       <stateName>Processo</stateName>
@@ -1603,7 +1712,7 @@ function getEmailDiretor(grupoAprovadorCC) {&#xd;
     <SwimLane>
       <color>9F9F9F</color>
       <height>371</height>
-      <width>1221</width>
+      <width>1271</width>
       <positionX>40</positionX>
       <positionY>10</positionY>
       <stateName>Lançamento de Descontos</stateName>
@@ -1648,18 +1757,51 @@ function getEmailDiretor(grupoAprovadorCC) {&#xd;
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>25</version>
-        <linkSequence>31</linkSequence>
+        <version>27</version>
+        <linkSequence>17</linkSequence>
         <bendSequence>1</bendSequence>
       </processLinkBendPK>
-      <positionX>573</positionX>
-      <positionY>304</positionY>
+      <positionX>1000</positionX>
+      <positionY>258</positionY>
     </ProcessLinkBend>
     <ProcessLinkBend>
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>25</version>
+        <version>27</version>
+        <linkSequence>21</linkSequence>
+        <bendSequence>1</bendSequence>
+      </processLinkBendPK>
+      <positionX>1117</positionX>
+      <positionY>265</positionY>
+    </ProcessLinkBend>
+    <ProcessLinkBend>
+      <processLinkBendPK>
+        <companyId>1</companyId>
+        <processId>wf_lancamento_descontos_funcionario</processId>
+        <version>27</version>
+        <linkSequence>30</linkSequence>
+        <bendSequence>1</bendSequence>
+      </processLinkBendPK>
+      <positionX>456</positionX>
+      <positionY>242</positionY>
+    </ProcessLinkBend>
+    <ProcessLinkBend>
+      <processLinkBendPK>
+        <companyId>1</companyId>
+        <processId>wf_lancamento_descontos_funcionario</processId>
+        <version>27</version>
+        <linkSequence>31</linkSequence>
+        <bendSequence>1</bendSequence>
+      </processLinkBendPK>
+      <positionX>547</positionX>
+      <positionY>241</positionY>
+    </ProcessLinkBend>
+    <ProcessLinkBend>
+      <processLinkBendPK>
+        <companyId>1</companyId>
+        <processId>wf_lancamento_descontos_funcionario</processId>
+        <version>27</version>
         <linkSequence>37</linkSequence>
         <bendSequence>1</bendSequence>
       </processLinkBendPK>
@@ -1670,11 +1812,11 @@ function getEmailDiretor(grupoAprovadorCC) {&#xd;
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>25</version>
+        <version>27</version>
         <linkSequence>37</linkSequence>
         <bendSequence>2</bendSequence>
       </processLinkBendPK>
-      <positionX>825</positionX>
+      <positionX>1001</positionX>
       <positionY>61</positionY>
     </ProcessLinkBend>
   </list>
