@@ -69,6 +69,20 @@ function mudaVerbasNovoDesconto(tipoDesconto) {
   // Mostra o campo de foto por padrão quando muda o tipo de desconto
   $('#cameraContainer').parent().parent().show();
 
+  // Mostra/esconde o campo de material para almoxarifado
+  if (tipoDesconto === 'almoxarifado') {
+    $('#containerMaterialAlmox').show();
+    if (window['materialAlmoxarifado']) {
+      try { window['materialAlmoxarifado'].removeAll(); } catch (_) {}
+    }
+  } else {
+    $('#containerMaterialAlmox').hide();
+    setInputValue('#codigoMaterialAlmox', '');
+    if (window['materialAlmoxarifado']) {
+      try { window['materialAlmoxarifado'].removeAll(); } catch (_) {}
+    }
+  }
+
   // Esconde o campo centro de custo se for tipo DP
   if (tipoDesconto === 'dp') {
     $(`#centroCustoDesconto`).hide();

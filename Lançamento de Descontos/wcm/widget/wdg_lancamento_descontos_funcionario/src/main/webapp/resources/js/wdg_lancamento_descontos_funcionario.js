@@ -75,6 +75,7 @@ var MyWidget = SuperWidget.extend({
 
     setupInputs: function () {
         getFuncionarios('funcionarioFiltro');
+        getMateriais('materialAlmoxarifado');
         //getFilias('codFilial');
         if (window.MaskEvent && typeof MaskEvent.init === 'function') {
             MaskEvent.init();

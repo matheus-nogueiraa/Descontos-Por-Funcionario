@@ -151,7 +151,7 @@ function getFluigUser() {
 async function openModalAssinatura() {
   const nomeUsuario = await getFluigUser();
   
-  const descricao = $('#descricao').val().trim();
+  const descricao = getDescricaoFinal();
   const valor = parseMoney($('#valorEpi').val());
   const rdTipoDesconto = $('input[name="rdTipoDesconto"]:checked').val();
   const centroCustoDesconto = $('#centroCustoDesconto').val();
@@ -173,6 +173,7 @@ async function openModalAssinatura() {
   
   if (!centroCustoDesconto && rdTipoDesconto !== 'dp') { toastMsg('Atenção', 'Preencha o campo Centro de Custo antes de prosseguir para a assinatura.', 'warning'); return; }
   if (!verbaNovoDesconto) { toastMsg('Atenção', 'Preencha o campo Verba antes de prosseguir para a assinatura.', 'warning'); return; }
+  if (rdTipoDesconto === 'almoxarifado' && !$('#codigoMaterialAlmox').val().trim()) { toastMsg('Atenção', 'Selecione o material do almoxarifado antes de prosseguir.', 'warning'); return; }
   if (!descricao) { toastMsg('Atenção', 'Preencha o campo descrição antes de prosseguir para a assinatura.', 'warning'); return; }
   if (!valor || valor <= 0) { toastMsg('Atenção', 'Preencha o campo Valor total do desconto com um valor maior que zero.', 'warning'); return; }
 

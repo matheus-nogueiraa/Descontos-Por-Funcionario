@@ -238,7 +238,7 @@ async function montarConstraints({ fotoData, assinaturaData, pdfBase64, parcelas
   const codFilial = document.getElementById("codFilial").value || "";
   const nomeColaborador = (document.getElementById("nomeColaborador")?.value || document.getElementById("funcionarioFiltro")?.value || "");
   const matriculaColaborador = document.getElementById("matriculaFunc").value || "";
-  const descricao = document.getElementById("descricao").value || "";
+  const descricao = getDescricaoFinal();
   const valorEpi = parseMoney(document.getElementById("valorEpi").value || "0");
   const codVerba = $('#verbaNovoDesconto').val() || "";
   const tipoVerba = $('#tipoVerba').val() || $('#tipVerbaoNovoDesconto').val();
@@ -595,7 +595,7 @@ async function gerarRelatorioPDFBase64(dadosFuncionario) {
   const filial = (document.getElementById("codFilial")?.value || "").trim();
   const funcionario = (document.getElementById("nomeColaborador")?.value
     || document.getElementById("funcionarioFiltro")?.value || "").trim();
-  const descricaoDesc = (document.getElementById("descricao")?.value || "").trim();
+  const descricaoDesc = getDescricaoFinal();
   const valorEpi = pm((document.getElementById("valorEpi")?.value || "0").trim());
 
   const quinzeTxt = (document.getElementById("valQuinzePorCentroSalario")?.value

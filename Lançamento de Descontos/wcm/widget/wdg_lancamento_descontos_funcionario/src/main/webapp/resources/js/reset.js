@@ -54,6 +54,13 @@ function resetCamposNovosDesconto() {
   $("#revisaoEpis").empty();
   $("#revisaoTipoDesconto").empty();
 
+  // Limpa o campo de material do almoxarifado
+  $('#codigoMaterialAlmox').val('');
+  $('#containerMaterialAlmox').hide();
+  if (window['materialAlmoxarifado']) {
+    try { window['materialAlmoxarifado'].removeAll(); } catch (_) {}
+  }
+
   // teto/15% se for preenchido em algum lugar “de revisão”
   $("#quinzePorCentroSalario").text("");
   $("#valorParcelaMensalResumo").text("");

@@ -69,6 +69,92 @@ async function getFuncionarios(inputId) {
 }
 
 /**
+ * Retorna a descrição final combinando material (almoxarifado) + descrição livre.
+ */
+function getDescricaoFinal() {
+  const tipo = ($('input[name="rdTipoDesconto"]:checked').val() || '').trim();
+  const descBase = ($('#descricao').val() || '').trim();
+  if (tipo === 'almoxarifado') {
+    const mat = ($('#codigoMaterialAlmox').val() || '').trim();
+    if (mat) {
+      return descBase ? `${mat} | ${descBase}` : mat;
+    }
+  }
+  return descBase;
+}
+
+/**
+ * Obtém a lista de materiais do almoxarifado e inicializa o autocomplete.
+ * @param {string} inputId - ID do campo de input para o autocomplete preencher.
+ */
+async function getMateriais(inputId) {
+  const novoArrayMateriais = [];
+  const requestData = {
+    url: `${WCMAPI.serverURL}/api/public/ecm/dataset/datasets`,
+    method: 'POST',
+  };
+  const data = {
+    name: 'dsConsultaProduto',
+    fields: [],
+    constraints: [
+      {
+        _field: 'CDESCRICAO',
+        _initialValue: 'ALL',
+        _finalValue: 'ALL',
+        _type: 0,
+        _likeSearch: true,
+      },
+      {
+        _field: 'TIPOPRD',
+        _initialValue: 'M1;M2;M3',
+        _finalValue: 'M1;M2;M3',
+        _type: 0,
+        _likeSearch: true,
+      },
+    ],
+    order: [],
+  };
+
+  try {
+    const response = await $.ajax({
+      url: requestData.url,
+      contentType: 'application/json',
+      crossDomain: true,
+      type: requestData.method,
+      data: JSON.stringify(data),
+    });
+
+    const jsonParse = JSON.parse(JSON.stringify(response));
+    if (jsonParse.content.values.length > 0) {
+      jsonParse.content.values.forEach((element) => {
+        const listaMateriais = `${element.CCODIGO?.trim()} - ${element.CDESCRICAO?.trim()}`;
+        novoArrayMateriais.push(listaMateriais);
+      });
+    } else {
+      console.error('Lista de materiais retornou vazia!');
+    }
+  } catch (error) {
+    console.error('Erro ao obter lista de materiais:', error);
+  }
+
+  initAutoComplete({
+    name: inputId,
+    source: novoArrayMateriais,
+    search: ['CCODIGO', 'CDESCRICAO'],
+    onSelect: async (autocomplete, item) => {
+      const material = item.description;
+      console.log('--initAutoComplete-- material:', material);
+      setInputValue(`#${inputId}`, material);
+      setInputValue('#codigoMaterialAlmox', material);
+    },
+    onRemove: (autocomplete, item) => {
+      setInputValue(`#${inputId}`, '');
+      setInputValue('#codigoMaterialAlmox', '');
+    },
+  }, 'tagAutocomplete');
+}
+
+/**
  * Inicializa o autocomplete com as opções fornecidas.
  * @param {Object} options - Opções de configuração do autocomplete.
  * @param {string} options.name - Nome do campo de autocomplete.

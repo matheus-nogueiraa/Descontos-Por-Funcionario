@@ -276,7 +276,14 @@
                             <div class="panel-body">
                                 <div class="row">
                                     <div class="col-md-6">
+                                        <div id="containerMaterialAlmox" style="display:none; margin-bottom:8px;">
+                                            <label for="materialAlmoxarifado">Material do Almoxarifado</label>
+                                            <input type="text" name="materialAlmoxarifado" id="materialAlmoxarifado" class="form-control">
+                                            <small>* Digite o código ou nome do material...</small>
+                                            <input type="hidden" id="codigoMaterialAlmox" value="">
+                                        </div>
                                         <label for="descricao">Descrição do desconto</label>
+                                        <small>* Digite a descrição do desconto(dano, perda, roubo)</small>
                                         <input type="text" class="form-control" id="descricao"
                                             placeholder="Digite a descrição do desconto">
                                     </div>
@@ -294,12 +301,23 @@
                         </div>
                         <div class="panel panel-default">
                             <div class="panel-heading">
-                                <h3 class="panel-title">Caputura de Foto</h3>
+                                <h3 class="panel-title">Captura de Foto</h3>
+                                <p class="mb-0"><small>Capture uma foto do material danificado.</small></p>
+                                <p class="mb-0">
+                                    <small>
+                                        <span class="label label-warning" style="font-size:11px; padding: 2px 6px;">
+                                            <i class="fluigicon fluigicon-camera"></i>
+                                            Somente imagens
+                                        </span>
+                                        &nbsp;Formatos aceitos: <strong>PNG, JPG, JPEG e BMP</strong>.
+                                        <strong class="text-danger">PDF não é aceito neste campo.</strong>
+                                    </small>
+                                </p>
                             </div>
                             <div class="panel-body">
                                 <div class="row" id="cameraContainer">
                                     <div class="form-group col-md-10">
-                                        <input type="file" accept=".png, .jpg, .jpeg, .bmp, .pdf" capture="user"
+                                        <input type="file" accept=".png,.jpg,.jpeg,.bmp" capture="user"
                                             id="cameraInputPhotoEPI"
                                             class="form-control btn btndanger button_attachments"
                                             onchange="reloadPreview()">
@@ -312,6 +330,29 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Evidências gerais -->
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">Evidências Complementares</h4>
+                                <p class="mb-0"><small>Adicione evidências adicionais relacionadas ao desconto.</small></p>
+                                <p class="mb-0">
+                                    <small>
+                                        <span class="label label-info" style="font-size:11px; padding: 2px 6px;">
+                                            <i class="fluigicon fluigicon-attachment"></i>
+                                            Imagens e PDF
+                                        </span>
+                                        &nbsp;Formatos aceitos: <strong>PNG, JPG, JPEG, BMP e PDF</strong>.
+                                    </small>
+                                </p>
+                            </div>
+                            <div class="panel-body">
+                                <input type="file" id="evidenciasExtras" class="form-control" multiple
+                                    accept=".png,.jpg,.jpeg,.bmp,.pdf">
+                                <small class="text-muted">Fotos do ativo, conversas, documentos, etc.</small>
+                            </div>
+                        </div>
+
                         <div class="row">
                             <div class="form-group col-md-12">
                                 <button class="btn btn-success widthFull" id="btnVincularEpiXFuncionario"
@@ -560,17 +601,7 @@
                                         </div>
                                     </div>
 
-                                    <!-- Evidências gerais -->
-                                    <div class="panel panel-default">
-                                        <div class="panel-heading">
-                                            <h4 class="panel-title">Evidências Complementares</h4>
-                                        </div>
-                                        <div class="panel-body">
-                                            <input type="file" id="evidenciasExtras" class="form-control" multiple
-                                                accept=".png,.jpg,.jpeg,.bmp,.pdf">
-                                            <small class="text-muted">Fotos do ativo, conversas, documentos etc.</small>
-                                        </div>
-                                    </div>
+                                   
 
                                 </div>
                             </div>
