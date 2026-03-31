@@ -1,4 +1,16 @@
 eclipse.preferences.version=1
+encoding//wcm/widget/wdg_consulta_descontos_projeto/src/main/resources/application.info=utf8
+encoding//wcm/widget/wdg_consulta_descontos_projeto/src/main/resources/edit.ftl=utf8
+encoding//wcm/widget/wdg_consulta_descontos_projeto/src/main/resources/view.ftl=utf8
+encoding//wcm/widget/wdg_consulta_descontos_projeto/src/main/resources/wdg_consulta_descontos_projeto.properties=utf8
+encoding//wcm/widget/wdg_consulta_descontos_projeto/src/main/resources/wdg_consulta_descontos_projeto_en_US.properties=utf8
+encoding//wcm/widget/wdg_consulta_descontos_projeto/src/main/resources/wdg_consulta_descontos_projeto_es.properties=utf8
+encoding//wcm/widget/wdg_consulta_descontos_projeto/src/main/resources/wdg_consulta_descontos_projeto_pt_BR.properties=utf8
+encoding//wcm/widget/wdg_consulta_descontos_projeto/src/main/webapp/WEB-INF/jboss-web.xml=utf8
+encoding//wcm/widget/wdg_consulta_descontos_projeto/src/main/webapp/WEB-INF/web.xml=utf8
+encoding//wcm/widget/wdg_consulta_descontos_projeto/src/main/webapp/resources/css/wdg_consulta_descontos_projeto.css=utf8
+encoding//wcm/widget/wdg_consulta_descontos_projeto/src/main/webapp/resources/images/icon.png=utf8
+encoding//wcm/widget/wdg_consulta_descontos_projeto/src/main/webapp/resources/js/wdg_consulta_descontos_projeto.js=utf8
 encoding//wcm/widget/wdg_lancamento_descontos_funcionario/src/main/resources/application.info=utf8
 encoding//wcm/widget/wdg_lancamento_descontos_funcionario/src/main/resources/edit.ftl=utf8
 encoding//wcm/widget/wdg_lancamento_descontos_funcionario/src/main/resources/view.ftl=utf8
