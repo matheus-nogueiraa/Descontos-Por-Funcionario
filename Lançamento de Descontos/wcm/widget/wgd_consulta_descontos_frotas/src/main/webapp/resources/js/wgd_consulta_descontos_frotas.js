@@ -63,8 +63,8 @@ async function loadTable() {
         ? matriculaSelecionada.split(' - ')[1]?.trim()
         : matriculaSelecionada;
     const statusAtualProcesso = $('#statusAtualProcesso')?.val();
-    const dataDe = isoParaFluig($('#dataDe').val());
-    const dataAte = isoParaFluig($('#dataAte').val());
+    const dataDe = $('#dataDe').val(); // yyyy-mm-dd
+    const dataAte = $('#dataAte').val(); // yyyy-mm-dd
 
     try {
         //comando para apagar datatable, caso tenha conteudo    
@@ -102,9 +102,9 @@ async function loadTable() {
             constraints.push(DatasetFactory.createConstraint('atividadeAtual', "10", "10", ConstraintType.MUST_NOT));
         }
 
-        if (dataDe || dataAte) {
-            constraints.push(DatasetFactory.createConstraint('dataSolicitacao', dataDe, dataAte, ConstraintType.MUST));
-        }
+        // Filtro de data feito client-side: dataSolicitacao no formulário está em dd/mm/yyyy
+        const dataDeParsed = dataDe ? new Date(dataDe + 'T00:00:00') : null;
+        const dataAteParsed = dataAte ? new Date(dataAte + 'T23:59:59') : null;
 
         DatasetFactory.getDataset('ds_form_lancamento_desconto_funcionario', null, constraints, null, {
             success: function (dataset) {
@@ -122,6 +122,17 @@ async function loadTable() {
                 }
 
                 dataset.values.forEach(element => {
+                    // Filtra por data client-side (dataSolicitacao = dd/mm/yyyy)
+                    if (dataDeParsed || dataAteParsed) {
+                        const partes = (element.dataSolicitacao || '').split('/');
+                        if (partes.length === 3) {
+                            const dataElemento = new Date(partes[2] + '-' + partes[1] + '-' + partes[0] + 'T00:00:00');
+                            if (dataDeParsed && dataElemento < dataDeParsed) return;
+                            if (dataAteParsed && dataElemento > dataAteParsed) return;
+                        } else {
+                            return; // data inválida, ignora
+                        }
+                    }
 
                     const ARQUIVO_SENSIVEL = 'relatorio_desconto_lancado';
                     const constraintsAnexos = [
@@ -146,6 +157,9 @@ async function loadTable() {
                         element.matriculaColaborador,
                         element.grupoAprovadorCC?.split(':')?.slice(2)?.join(' - ')?.trim() || '',
                         element.nomeColaborador?.split(' - ')?.slice(2)?.join(' - ')?.trim() || '',
+                        element.codVerba || '',
+                        element.tipoDesconto || '',
+                        element.valorEpi || '',
                         getStatusProcesso(element.atividadeAtual),
                         icones || '<span class="text-muted">-</span>'
                     ]);
@@ -158,6 +172,9 @@ async function loadTable() {
                     { 'title': 'Matrícula' },
                     { 'title': 'Centro de Custo' },
                     { 'title': 'Colaborador' },
+                    { 'title': 'Verba' },
+                    { 'title': 'Tipo' },
+                    { 'title': 'Desconto Total' },
                     { 'title': 'Status Processo' },
                     { 'title': 'Documentos' }
                 ]

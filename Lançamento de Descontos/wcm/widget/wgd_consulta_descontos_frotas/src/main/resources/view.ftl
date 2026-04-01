@@ -51,7 +51,7 @@
         <div class="row">
           <div class="form-group col-md-2">
             <label for="codFilialFiltro">Filial: </label>
-            <input type="text" name="codFilialFiltro" id="codFilialFiltro" class="form-control">
+            <select name="codFilialFiltro" id="codFilialFiltro" class="form-control"></select>
           </div>
           <div class="form-group col-md-2">
             <label for="dataDe">Data de: </label>
