@@ -451,6 +451,13 @@ async function coletarConfirmacao() {
   const recusa = v === 'sim';
   const supervisor = v === 'distante';
 
+  // Lê as evidências extras (campo fica no primeiro modal, vale para todos os casos)
+  const extras = [];
+  const files = document.getElementById('evidenciasExtras')?.files || [];
+  for (let i = 0; i < files.length; i++) {
+    extras.push(await fileToBase64(files[i]));
+  }
+
   // Caso 1: Funcionário assina normalmente
   if (!recusa && !supervisor) {
     const assinaturaFunc = getPadBase64('signature-pad-func');
@@ -461,7 +468,7 @@ async function coletarConfirmacao() {
       assinaturaFuncionarioBase64: assinaturaFunc, // pode ser null → valide antes de enviar
       supervisorDados: null,
       testemunhas: [],
-      evidenciasExtras: []
+      evidenciasExtras: extras
     };
   }
 
@@ -482,7 +489,7 @@ async function coletarConfirmacao() {
       assinaturaFuncionarioBase64: null,
       supervisorDados: supervisorDados,
       testemunhas: [],
-      evidenciasExtras: []
+      evidenciasExtras: extras
     };
   }
 
@@ -501,13 +508,6 @@ async function coletarConfirmacao() {
     assinaturaBase64: getPadBase64('signature-pad-test2'),
     fotoBase64: await fileToBase64(document.getElementById('test2_foto')?.files?.[0] || null)
   };
-
-  // evidências extras (múltiplos)
-  const extras = [];
-  const files = document.getElementById('evidenciasExtras')?.files || [];
-  for (let i = 0; i < files.length; i++) {
-    extras.push(await fileToBase64(files[i]));
-  }
 
   return {
     tipoConfirmacao: 'RECUSA_TESTEMUNHAS',

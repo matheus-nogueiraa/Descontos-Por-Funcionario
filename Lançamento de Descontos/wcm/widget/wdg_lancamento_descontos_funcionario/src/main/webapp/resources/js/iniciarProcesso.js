@@ -120,9 +120,21 @@ async function iniciarProcesso() {
       return;
     }
 
+    // Lê evidências extras diretamente do DOM (independente do tipo de confirmação)
+    const evidenciasExtrasEl = document.getElementById('evidenciasExtras');
+    const evidenciasExtrasFiles = evidenciasExtrasEl?.files ? Array.from(evidenciasExtrasEl.files) : [];
+    const evidenciasExtrasDataUrls = await Promise.all(
+      evidenciasExtrasFiles.map(f => new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => resolve(null);
+        reader.readAsDataURL(f);
+      }))
+    );
+
     const evidenciasBase64 = [
       ...(confirmacao.testemunhas || []).map(t => t?.fotoBase64).filter(Boolean),
-      ...((confirmacao.evidenciasExtras || []).filter(Boolean))
+      ...evidenciasExtrasDataUrls.filter(Boolean)
     ];
 
     const parcelas = lerParcelasDoDOM('#revisaoParcelas');
