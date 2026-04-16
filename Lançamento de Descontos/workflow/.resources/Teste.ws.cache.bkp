@@ -10,23 +10,6 @@
    </array>
   </void>
   <void method="put">
-   <string>expediente</string>
-   <array class="java.lang.String" length="4">
-    <void index="0">
-     <string>Default</string>
-    </void>
-    <void index="1">
-     <string>DiasCorridos_24h</string>
-    </void>
-    <void index="2">
-     <string>PedidoCompra</string>
-    </void>
-    <void index="3">
-     <string>SolicitacaoServicosFrota</string>
-    </void>
-   </array>
-  </void>
-  <void method="put">
    <string>mecanismo</string>
    <array class="[Ljava.lang.Object;" length="10">
     <void index="0">

@@ -118,17 +118,12 @@ var MyWidget = SuperWidget.extend({
         const dataset = DatasetFactory.getDataset("ds_consultaFuncionarioCompleto", null, constraints, null);
 
         if (dataset?.values?.length) {
-            const constraintsPeriodoAtual = new Array();
-            constraintsPeriodoAtual.push(DatasetFactory.createConstraint("filial", filial, filial, ConstraintType.MUST));
-            constraintsPeriodoAtual.push(DatasetFactory.createConstraint("matricula", matricula, matricula, ConstraintType.MUST));
-
-            const datasetPeriodoAtual = DatasetFactory.getDataset('ds_consultaPeriodoAbertoFuncionarioProtheus', null, constraintsPeriodoAtual, null);
-
             const dataAtual = new Date();
             const anoAtual = String(dataAtual.getFullYear());
             const mesAtual = String(dataAtual.getMonth() + 1).padStart(2, '0');
 
-            const periodoAtual = datasetPeriodoAtual?.values[0]?.RFQ_PERIOD || `${anoAtual?.trim()}${mesAtual?.trim()}`
+            // periodoAtual = mês calendário atual (YYYYMM), sem depender de dataset do Protheus
+            const periodoAtual = `${anoAtual}${mesAtual}`;
 
             preencheListaCentroCusto(dataset?.values[0]?.RA_CC?.trim() || '');
 
@@ -142,8 +137,25 @@ var MyWidget = SuperWidget.extend({
             const salarioBruto = possuiPericulosidade == '2' ? (salarioBase + (salarioBase * 0.30)) : salarioBase
 
             this.preencherDadosFuncionario(dataset, periodoAtual, salarioBruto);
-            this.processDataTableActive(filial, matricula, salarioBruto, periodoAtual);
-            this.processDataTableFuture(filial, matricula, periodoAtual);
+
+            // Busca todos os lançamentos (mês atual + futuros) em um único dataset
+            var constraintsSRK = [];
+            constraintsSRK.push(DatasetFactory.createConstraint("filial", filial, filial, ConstraintType.MUST));
+            constraintsSRK.push(DatasetFactory.createConstraint("matricula", matricula, matricula, ConstraintType.MUST));
+            constraintsSRK.push(DatasetFactory.createConstraint("periodoAtual", periodoAtual, periodoAtual, ConstraintType.MUST));
+            var datasetSRK = DatasetFactory.getDataset("ds_consultaLancFuturosFuncionario", null, constraintsSRK, null);
+            var todosSRK = (datasetSRK && datasetSRK.values) ? datasetSRK.values : [];
+
+            // Separa pelo mês calendário: dtVencimento YYYYMMDD → primeiros 6 dígitos = YYYYMM
+            var rowsAtual = todosSRK.filter(function(r) {
+                return ((r.dtVencimento || '').substring(0, 6)) === periodoAtual;
+            });
+            var rowsFuturos = todosSRK.filter(function(r) {
+                return ((r.dtVencimento || '').substring(0, 6)) > periodoAtual;
+            });
+
+            this.processDataTableActive(salarioBruto, periodoAtual, rowsAtual, todosSRK);
+            this.processDataTableFuture(rowsFuturos, todosSRK);
             $('#btn-limpar').show();
             $('#painelFuncionario').show();
         } else {
@@ -178,133 +190,117 @@ var MyWidget = SuperWidget.extend({
         $('#nomeColaborador').val('');
     },
 
-    processDataTableActive: function (filial, matricula, salario, periodoAtual) {
-        const constraintsIncidencias = [];
+    processDataTableActive: function (salario, periodoAtual, rows, todosRows) {
+        // rows  = lançamentos cujo dtVencimento pertence ao mês atual (YYYYMM == periodoAtual)
+        // todosRows = todos os lançamentos (usado para calcular valorTotal no resumo)
+        function fmtData(m) {
+            if (!m || m.length !== 8) return m || '';
+            return m.substring(6, 8) + '/' + m.substring(4, 6) + '/' + m.substring(0, 4);
+        }
 
-        constraintsIncidencias.push(DatasetFactory.createConstraint("filial", filial, filial, ConstraintType.MUST));
-        constraintsIncidencias.push(DatasetFactory.createConstraint("matricula", matricula, matricula, ConstraintType.MUST));
-        constraintsIncidencias.push(DatasetFactory.createConstraint("periodoAtual", periodoAtual, periodoAtual, ConstraintType.MUST));
+        var dados = [];
+        var valorPeriodo = 0; // soma dos lançamentos do mês atual (excluindo verbas DP)
+        var valorTotal = 0;   // soma de todos os lançamentos (mês atual + futuros)
 
-        const datasetIncidencias = DatasetFactory.getDataset("ds_consultaIncidenciasFuncionario", null, constraintsIncidencias, null);
+        (rows || []).forEach(function(el) {
+            var verbaStr = ((el.codVerba || '') + '').trim();
+            var descStr  = ((el.descVerba || '') + '').trim();
+            var verbaFmt = verbaStr ? (verbaStr + (descStr ? (' - ' + descStr) : '')) : descStr;
+            var bruto = parseFloat(el.valor || 0) || 0;
 
-        const produtosComParcelas = [];
-        let valorTotal = 0;
-        let valorPeriodo = 0;
-
-        datasetIncidencias?.values?.forEach(element => {
-            produtosComParcelas.push({
-                codFilial: element.codFilial,
-                codProcesso: element.codProcesso,
-                codPeriodo: element.codPeriodo,
-                nroPagamento: element.nroPagamento,
-                roteiro: element.roteiro,
-                verba: `${element.codVerba} - ${element.descVerba?.trim() || ""}`,
-                horas: element.horas,
-                valor: element.valor,
-                dtReferencia: element.dtReferencia,
-                centroCusto: element.centroCusto,
-                nroParcela: element.nroParcela,
-                seqVerba: element.seqVerba
+            dados.push({
+                codFilial:    (el.codFilial    || '') + '',
+                codProcesso:  (el.codProcesso  || '') + '',
+                verba:        verbaFmt,
+                dtVencimento: fmtData(el.dtVencimento),
+                dtVencimentoSort: el.dtVencimento || '',
+                valor: bruto.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
             });
 
-            valorTotal += parseFloat(element.valor)
-            const isDP = DP_CODES.has(String(element.codVerba));
-
-            if (element?.codPeriodo?.trim() == periodoAtual && !isDP) {
-                valorPeriodo += parseFloat(element.valor)
+            var isDP = DP_CODES.has(String(el.codVerba));
+            if (!isDP) {
+                valorPeriodo += bruto;
             }
         });
 
-        const columns = [
-            { title: 'Filial', data: 'codFilial' },
+        // Calcula o total geral incluindo registros futuros
+        (todosRows || []).forEach(function(el) {
+            valorTotal += parseFloat(el.valor || 0) || 0;
+        });
+
+        var columns = [
+            { title: 'Filial',   data: 'codFilial' },
             { title: 'Processo', data: 'codProcesso' },
-            { title: 'Período', data: 'codPeriodo' },
-            { title: 'Pagamento', data: 'nroPagamento' },
-            { title: 'Roteiro', data: 'roteiro' },
-            { title: 'Verba', data: 'verba' },
-            { title: 'Horas', data: 'horas' },
-            { title: 'Valor', data: 'valor' },
-            { title: 'Data Ref', data: 'dtReferencia' },
-            { title: 'C. Custos', data: 'centroCusto' },
-            { title: 'Parcela', data: 'nroParcela' },
-            { title: 'Sequência', data: 'seqVerba' },
+            { title: 'Verba',    data: 'verba' },
+            {
+                title: 'Data Vencimento',
+                data: 'dtVencimento',
+                render: function(data, type, row) {
+                    if (type === 'sort' || type === 'type') return row.dtVencimentoSort || '';
+                    return data;
+                }
+            },
+            { title: 'Valor', data: 'valor', className: 'text-right' }
         ];
 
         var table = $('#tabelaDescontos').DataTable({
             destroy: true,
             paging: false,
             searching: false,
-            ordering: false,
+            ordering: true,
             info: false,
             autoWidth: false,
             columns: columns,
-            data: produtosComParcelas
+            data: dados,
+            order: [[3, 'asc']]
         });
 
         // Calcular limite de 15% do salário
-        const quinzePorCentroSalario = salario * 0.15;
+        var quinzePorCentroSalario = salario * 0.15;
         $('#valQuinzePorCentroSalario').val(quinzePorCentroSalario);
 
-        // Verificar se há descontos ativos
-        var totalRegistros = table.rows().count();
-        var temDescontoAtivo = totalRegistros > 0;
-        
-        // Verificar se o valor dos descontos ativos ultrapassa 15% do salário
-        var ultrapassaLimite = valorPeriodo > quinzePorCentroSalario;
-        
-        // Calcular quanto ainda pode ser lançado dentro do limite de 15%
-        var margemDisponivel = quinzePorCentroSalario - valorPeriodo;
-        margemDisponivel = margemDisponivel > 0 ? margemDisponivel : 0;
-        
-        // Armazenar informações para controle
+        var temDescontoAtivo   = table.rows().count() > 0;
+        var ultrapassaLimite   = valorPeriodo > quinzePorCentroSalario;
+        var margemDisponivel   = Math.max(quinzePorCentroSalario - valorPeriodo, 0);
+
         $('#descontoAtivo').val(temDescontoAtivo ? 'true' : 'false');
         $('#ultrapassaLimite').val(ultrapassaLimite ? 'true' : 'false');
         $('#margemDisponivel').val(margemDisponivel.toFixed(2));
         $('#valorDescontosAtivos').val(valorPeriodo.toFixed(2));
 
-        // Preenche a tabela de resumo geral
         $('#valorTotalResumo').text(valorTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
         $('#valorParcelaMensalResumo').text(valorPeriodo.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
         $('#quinzePorCentroSalario').text(quinzePorCentroSalario.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
     },
 
-    processDataTableFuture: function (filial, matricula, periodoAtual) {
-        var constraintsLancFuturo = [];
-
-        constraintsLancFuturo.push(DatasetFactory.createConstraint("filial", filial, filial, ConstraintType.MUST));
-        constraintsLancFuturo.push(DatasetFactory.createConstraint("matricula", matricula, matricula, ConstraintType.MUST));
-        constraintsLancFuturo.push(DatasetFactory.createConstraint("periodoAtual", periodoAtual, periodoAtual, ConstraintType.MUST));
-
-        var datasetLancFuturos = DatasetFactory.getDataset("ds_consultaLancFuturosFuncionario", null, constraintsLancFuturo, null);
-
-        var rows = (datasetLancFuturos && datasetLancFuturos.values) ? datasetLancFuturos.values : [];
-        var dados = [];
-        var total = 0;
-
-        // helper p/ formatar YYYYMMDD -> DD/MM/YYYY
+    processDataTableFuture: function (rows, todosRows) {
+        // rows = lançamentos cujo dtVencimento é posterior ao mês atual (pré-filtrados)
+        // todosRows = todos os lançamentos (para atualizar futuros_json com dataset completo)
         function fmtMesDissidio(m) {
-            if (!m || m.length !== 8) return m;
+            if (!m || m.length !== 8) return m || '';
             return m.substring(6, 8) + '/' + m.substring(4, 6) + '/' + m.substring(0, 4);
         }
 
-        // monta linhas normalizadas para a tabela
+        var dados = [];
+        var total = 0;
+
         for (var i = 0; i < rows.length; i++) {
             var el = rows[i] || {};
 
             var verbaStr = ((el.codVerba || '') + '').trim();
-            var descStr = ((el.descVerba || '') + '').trim();
+            var descStr  = ((el.descVerba || '') + '').trim();
             var verbaFmt = verbaStr ? (verbaStr + (descStr ? (' - ' + descStr) : '')) : descStr;
 
-            var bruto = parseFloat(el.valor || el.RK_VALORTO || 0) || 0;
+            var bruto = parseFloat(el.valor || 0) || 0;
             total += bruto;
 
             dados.push({
-                codFilial: (el.codFilial || '') + '',
-                codProcesso: (el.codProcesso || '') + '',
-                verba: verbaFmt,
-                dtVencimento: fmtMesDissidio(el.dtVencimento || el.RK_DTVENC),
-                dtVencimentoSort: el.dtVencimento || el.RK_DTVENC, // Valor original para ordenação
-                valorNum: bruto,
+                codFilial:        (el.codFilial    || '') + '',
+                codProcesso:      (el.codProcesso  || '') + '',
+                verba:            verbaFmt,
+                dtVencimento:     fmtMesDissidio(el.dtVencimento),
+                dtVencimentoSort: el.dtVencimento || '',
+                valorNum:         bruto,
                 valor: bruto.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
             });
         }
@@ -312,7 +308,7 @@ var MyWidget = SuperWidget.extend({
         // atualiza totalizadores e campos auxiliares
         $('#tabelaFuturos_total').text('R$ ' + total.toFixed(2).replace('.', ','));
         $('#totalFuturosValor').text('R$ ' + total.toFixed(2).replace('.', ','));
-        $('#futuros_json').val(JSON.stringify(rows || []));
+        $('#futuros_json').val(JSON.stringify(todosRows || [])); // armazena todos os lançamentos
         $('#futurosVazio').toggle(dados.length === 0);
 
         // (re)inicializa DataTable no mesmo padrão visual dos ativos

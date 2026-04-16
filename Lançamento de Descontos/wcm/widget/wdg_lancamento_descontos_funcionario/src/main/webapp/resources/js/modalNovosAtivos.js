@@ -22,9 +22,9 @@ function abrirModalAtivos() {
   // }
 
   const nomeFuncionario = $('#nomeColaborador')?.val()?.trim() || '';
-  const nenhumProcessoAtivo = consultaProcessosDescontosAtivos(nomeFuncionario);
+  // const nenhumProcessoAtivo = consultaProcessosDescontosAtivos(nomeFuncionario);
 
-  if (nenhumProcessoAtivo) {
+  // if (nenhumProcessoAtivo) {
     $('#modalAtivos').show();
 
     const filial = $('#codFilial').val();
@@ -39,7 +39,7 @@ function abrirModalAtivos() {
     $('#codFuncionarioModal').text(funcionario);
     $('#salarioModal').text(salario);
     $('#15salarioModal').text(salario15);
-  }
+  // }
 }
 
 function fecharModalAtivos() {

@@ -72,6 +72,7 @@ function createDataset(fields, constraints, sortFields) {
                     Arr[i - 1] = "null";
                 }
             }
+            log.info('ds_LancFuturos row: ' + Arr.join(' | '));
             newDataset.addRow(Arr);
         }
     } catch (e) {

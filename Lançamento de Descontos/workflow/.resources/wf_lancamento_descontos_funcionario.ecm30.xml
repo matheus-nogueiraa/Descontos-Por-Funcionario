@@ -29,10 +29,10 @@
     <processDefinitionVersionPK>
       <companyId>1</companyId>
       <processId>Lançamento de Descontos por Funcionário</processId>
-      <version>28</version>
+      <version>85</version>
     </processDefinitionVersionPK>
     <versionDescription></versionDescription>
-    <formId>419542</formId>
+    <formId>0</formId>
     <editionMode>true</editionMode>
     <updateAttachmentsVersion>false</updateAttachmentsVersion>
     <controlsAttachmentsSecurity>false</controlsAttachmentsSecurity>
@@ -603,8 +603,55 @@
       <notifyAuthorityFollowUp>false</notifyAuthorityFollowUp>
       <notifyRequisitionerFollowUp>false</notifyRequisitionerFollowUp>
       <automatic>false</automatic>
-      <positionX>645</positionX>
-      <positionY>275</positionY>
+      <positionX>588</positionX>
+      <positionY>272</positionY>
+      <forecastedEffortType>0</forecastedEffortType>
+      <forecastedEffort>0</forecastedEffort>
+      <notifyManagerFollowUp>false</notifyManagerFollowUp>
+      <notifyManagerDelay>false</notifyManagerDelay>
+      <allowanceManagerTime>0</allowanceManagerTime>
+      <frequenceManagerTime>0</frequenceManagerTime>
+      <inhibitTransfer>false</inhibitTransfer>
+      <periodId></periodId>
+      <stateType>6</stateType>
+      <bpmnType>60</bpmnType>
+      <signalId>0</signalId>
+      <counterSign>false</counterSign>
+      <openInstances>0</openInstances>
+      <destinationStates/>
+      <digitalSignature>false</digitalSignature>
+    </ProcessState>
+    <ProcessState>
+      <processStatePK>
+        <companyId>1</companyId>
+        <processId>wf_lancamento_descontos_funcionario</processId>
+        <version>1</version>
+        <sequence>47</sequence>
+      </processStatePK>
+      <stateName>Fim</stateName>
+      <stateDescription>Fim</stateDescription>
+      <instruction>Atividade final do processo</instruction>
+      <deadlineTime>0</deadlineTime>
+      <joint>false</joint>
+      <agreementPercentage>0</agreementPercentage>
+      <engineAllocationId></engineAllocationId>
+      <engineAllocationConfiguration></engineAllocationConfiguration>
+      <selectColleague>0</selectColleague>
+      <initialState>false</initialState>
+      <notifyAuthorityDelay>true</notifyAuthorityDelay>
+      <notifyRequisitionerDelay>false</notifyRequisitionerDelay>
+      <allowanceAuthorityTime>0</allowanceAuthorityTime>
+      <frequenceAuthorityTime>1</frequenceAuthorityTime>
+      <allowanceRequisitionerTime>0</allowanceRequisitionerTime>
+      <frequenceRequisitionerTime>0</frequenceRequisitionerTime>
+      <transferAttachments>false</transferAttachments>
+      <subProcessId></subProcessId>
+      <formFolder>0</formFolder>
+      <notifyAuthorityFollowUp>false</notifyAuthorityFollowUp>
+      <notifyRequisitionerFollowUp>false</notifyRequisitionerFollowUp>
+      <automatic>false</automatic>
+      <positionX>710</positionX>
+      <positionY>270</positionY>
       <forecastedEffortType>0</forecastedEffortType>
       <forecastedEffort>0</forecastedEffort>
       <notifyManagerFollowUp>false</notifyManagerFollowUp>
@@ -628,7 +675,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>1</expressionOrder>
-        <version>28</version>
+        <version>85</version>
         <sequence>18</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -640,7 +687,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>2</expressionOrder>
-        <version>28</version>
+        <version>85</version>
         <sequence>18</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -652,7 +699,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>1</expressionOrder>
-        <version>28</version>
+        <version>85</version>
         <sequence>24</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -664,7 +711,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>2</expressionOrder>
-        <version>28</version>
+        <version>85</version>
         <sequence>24</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -675,8 +722,20 @@
       <conditionProcessStatePK>
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
+        <expressionOrder>3</expressionOrder>
+        <version>85</version>
+        <sequence>24</sequence>
+      </conditionProcessStatePK>
+      <condition></condition>
+      <destinationSequenceId>47</destinationSequenceId>
+      <conditionType>1</conditionType>
+    </ConditionProcessState>
+    <ConditionProcessState>
+      <conditionProcessStatePK>
+        <companyId>1</companyId>
+        <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>1</expressionOrder>
-        <version>28</version>
+        <version>85</version>
         <sequence>35</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -688,7 +747,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>2</expressionOrder>
-        <version>28</version>
+        <version>85</version>
         <sequence>35</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -952,6 +1011,23 @@
       <defaultLink>false</defaultLink>
       <type>0</type>
     </ProcessLink>
+    <ProcessLink>
+      <processLinkPK>
+        <companyId>1</companyId>
+        <processId>wf_lancamento_descontos_funcionario</processId>
+        <version>1</version>
+        <linkSequence>48</linkSequence>
+      </processLinkPK>
+      <actionLabel></actionLabel>
+      <returnPermited>false</returnPermited>
+      <initialStateSequence>24</initialStateSequence>
+      <finalStateSequence>47</finalStateSequence>
+      <returnLabel></returnLabel>
+      <name>Cancela</name>
+      <automaticLink>false</automaticLink>
+      <defaultLink>false</defaultLink>
+      <type>0</type>
+    </ProcessLink>
   </list>
   <list/>
   <list>
@@ -1058,245 +1134,91 @@ function getCurrentTime() {&#xd;
     try {&#xd;
         log.info(&apos;INTEGRAÇÃO PROTHEUS - Lançamento de Descontos&apos;);&#xd;
 &#xd;
-        var codFilial = (hAPI.getCardValue(&apos;codFilial&apos;) + &apos;&apos;).trim();&#xd;
-        var empresa = obterEmpresa(codFilial);&#xd;
-        var matricula = (hAPI.getCardValue(&apos;matriculaColaborador&apos;) + &apos;&apos;).trim();&#xd;
-        var roteiro = valorOuPadrao(hAPI.getCardValue(&apos;roteiro&apos;), &apos;FOL&apos;);&#xd;
-        var numpagto = valorOuPadrao(hAPI.getCardValue(&apos;numpagto&apos;), &apos;01&apos;);&#xd;
-        var codVerba = (hAPI.getCardValue(&apos;codVerba&apos;) + &apos;&apos;).trim();&#xd;
-        var tipoVerba = (hAPI.getCardValue(&apos;tipoVerba&apos;) + &apos;&apos;).split(&apos; - &apos;)[0].trim();&#xd;
-        var tipo1 = &apos;D&apos;;&#xd;
-        var periodoForm = (hAPI.getCardValue(&apos;periodoAtual&apos;) + &apos;&apos;).trim();&#xd;
-        var parcelas = parseParcelas((hAPI.getCardValue(&apos;parcelas_json&apos;) + &apos;&apos;).trim());&#xd;
+        // --- 1. Dados do processo ---&#xd;
+        var codFilial    = (hAPI.getCardValue(&apos;codFilial&apos;) + &apos;&apos;).trim();&#xd;
+        var empresa      = obterEmpresa(codFilial);&#xd;
+        var matricula    = (hAPI.getCardValue(&apos;matriculaColaborador&apos;) + &apos;&apos;).trim();&#xd;
+        var codVerba     = (hAPI.getCardValue(&apos;codVerba&apos;) + &apos;&apos;).trim();&#xd;
+        var tipoVerba    = (hAPI.getCardValue(&apos;tipoVerba&apos;) + &apos;&apos;).split(&apos; - &apos;)[0].trim();&#xd;
+        var anoAtual = new Date().getFullYear();&#xd;
+        var mesAtual = new Date().getMonth() + 1;&#xd;
+        var periodoAtual = String(anoAtual) + (mesAtual &lt; 10 ? &apos;0&apos; : &apos;&apos;) + mesAtual; // &quot;202604&quot;      &#xd;
         &#xd;
-        var margemDisponivelRaw = (hAPI.getCardValue(&apos;margemDisponivel&apos;) + &apos;&apos;).trim();&#xd;
-        var valorDescontosAtivosRaw = (hAPI.getCardValue(&apos;valorDescontosAtivos&apos;) + &apos;&apos;).trim();&#xd;
-        var salarioRaw = (hAPI.getCardValue(&apos;salario&apos;) + &apos;&apos;).trim();&#xd;
-        var salario15Raw = (hAPI.getCardValue(&apos;salario15&apos;) + &apos;&apos;).trim();&#xd;
-        &#xd;
-        var margemDisponivel = parseMoney(margemDisponivelRaw);&#xd;
-        var valorDescontosAtivos = parseMoney(valorDescontosAtivosRaw);&#xd;
-        &#xd;
-        // Fallback: calcula margem a partir do salário se não vier do front&#xd;
-        if (margemDisponivelRaw === &apos;null&apos; || margemDisponivelRaw === &apos;&apos; || margemDisponivel === 0) {&#xd;
-            var salario = parseMoney(salarioRaw);&#xd;
-            var salario15 = parseMoney(salario15Raw);&#xd;
-            &#xd;
-            if (salario15 &gt; 0) {&#xd;
-                margemDisponivel = salario15 - valorDescontosAtivos;&#xd;
-            } else if (salario &gt; 0) {&#xd;
-                margemDisponivel = (salario * 0.15) - valorDescontosAtivos;&#xd;
-            }&#xd;
-            &#xd;
-            if (margemDisponivel &lt; 0) margemDisponivel = 0;&#xd;
-            log.warn(&apos;Margem calculada via fallback: &apos; + margemDisponivel);&#xd;
-        }&#xd;
+        log.info(&apos;periodoAtual: &apos; + periodoAtual);&#xd;
 &#xd;
-        if (!parcelas || parcelas.length === 0) {&#xd;
-            throw new Error(&apos;Não há parcelas a enviar.&apos;);&#xd;
-        }&#xd;
+        // Valor total do desconto — distribuirParcelas vai dividir pelos meses&#xd;
+        // automaticamente consultando o SRK010 e respeitando o limite de 15%.&#xd;
+        var valorEpi = parseMoney(hAPI.getCardValue(&apos;valorEpi&apos;));&#xd;
+        if (valorEpi &lt;= 0) throw new Error(&apos;Valor do desconto não informado (valorEpi=0).&apos;);&#xd;
+        var parcelas = [{ periodo: periodoAtual, valor: valorEpi }];&#xd;
+        log.info(&apos;Valor total a distribuir: R$&apos; + valorEpi.toFixed(2) + &apos; a partir do periodo &apos; + periodoAtual);&#xd;
 &#xd;
-        var totalLancamento = 0;&#xd;
-        for (var i = 0; i &lt; parcelas.length; i++) {&#xd;
-            var p = parcelas[i] || {};&#xd;
-            var val = parseMoney(p.valor);&#xd;
-            if (isFinite(val) &amp;&amp; val &gt; 0) {&#xd;
-                totalLancamento += val;&#xd;
-            }&#xd;
+        // --- 2. Limite de 15% do salário ---&#xd;
+        var salario15 = parseMoney(hAPI.getCardValue(&apos;salario15&apos;));&#xd;
+        if (salario15 &lt;= 0) salario15 = parseMoney(hAPI.getCardValue(&apos;salario&apos;)) * 0.15;&#xd;
+        if (salario15 &lt;= 0) {&#xd;
+            // Fallback: reconstrói a partir dos campos gravados pelo formulário antigo&#xd;
+            // salario15 = margemDisponivel + valorDescontosAtivos&#xd;
+            var margem       = parseMoney(hAPI.getCardValue(&apos;margemDisponivel&apos;));&#xd;
+            var descsAtivos  = parseMoney(hAPI.getCardValue(&apos;valorDescontosAtivos&apos;));&#xd;
+            salario15 = margem + descsAtivos;&#xd;
+            if (salario15 &gt; 0) log.info(&apos;salario15 recalculado via margem+descontos: &apos; + salario15);&#xd;
         }&#xd;
-        &#xd;
-        log.info(&apos;Total: &apos; + totalLancamento + &apos; | Margem: &apos; + margemDisponivel);&#xd;
+        if (salario15 &lt;= 0) throw new Error(&#xd;
+            &apos;Salário não informado. Impossível calcular o limite de 15%.&apos; +&#xd;
+            &apos; [salario15=&apos; + hAPI.getCardValue(&apos;salario15&apos;) +&#xd;
+            &apos;, salario=&apos; + hAPI.getCardValue(&apos;salario&apos;) +&#xd;
+            &apos;, margemDisponivel=&apos; + hAPI.getCardValue(&apos;margemDisponivel&apos;) +&#xd;
+            &apos;, valorDescontosAtivos=&apos; + hAPI.getCardValue(&apos;valorDescontosAtivos&apos;) + &apos;]&apos;&#xd;
+        );&#xd;
 &#xd;
-        // Divisão baseada na margem de 15% do salário&#xd;
-        var payloadAberto = null;&#xd;
+        // --- 3. Distribuir parcelas respeitando o limite de 15% por mês ---&#xd;
+        var dist = distribuirParcelas(parcelas, salario15, codFilial, matricula, periodoAtual);&#xd;
+        log.info(&apos;Períodos futuros (inclui período atual): &apos; + safeJSONStringify(dist.futuro));&#xd;
+&#xd;
+        // --- 4. Montar o payload (tudo vai para a tabela de futuros) ---&#xd;
+        // Para verbas de DP: periodoRef preenchido (roteado para tabela de atuais pelo REST).&#xd;
+        // Para demais (frotas, TI, almoxarifado): periodoRef vazio → REST salva em futuros.&#xd;
+        var ehDP = tipoVerba === &apos;DP&apos;;&#xd;
         var payloadFuturo = null;&#xd;
-        var valorParaAtual = 0;&#xd;
-        var valorParaFuturos = 0;&#xd;
-        &#xd;
-        if (margemDisponivel &gt;= totalLancamento) {&#xd;
-            valorParaAtual = totalLancamento;&#xd;
-            valorParaFuturos = 0;&#xd;
-        } else if (margemDisponivel &gt; 0) {&#xd;
-            valorParaAtual = margemDisponivel;&#xd;
-            valorParaFuturos = totalLancamento - margemDisponivel;&#xd;
-        } else {&#xd;
-            valorParaAtual = 0;&#xd;
-            valorParaFuturos = totalLancamento;&#xd;
+        if (dist.futuro.length) {&#xd;
+            payloadFuturo = {&#xd;
+                empresa: empresa, filial: codFilial, matricula: matricula,&#xd;
+                periodoRef: ehDP ? periodoAtual : &apos;&apos;,&#xd;
+                verba: codVerba, tipoVerba: tipoVerba,&#xd;
+                documento: (getValue(&apos;WKNumProces&apos;) + &apos;&apos;),&#xd;
+                // numFluig: (getValue(&apos;WKNumProces&apos;) + &apos;&apos;),&#xd;
+                parcelas: dist.futuro&#xd;
+            };&#xd;
         }&#xd;
-        &#xd;
-        log.info(&apos;Divisão -&gt; Atual: &apos; + valorParaAtual + &apos; | Futuros: &apos; + valorParaFuturos);&#xd;
-        &#xd;
-        // Construir payload para período atual&#xd;
-        if (valorParaAtual &gt; 0) {&#xd;
-            var primeiraParcela = parcelas[0];&#xd;
-            var periodoRefAberto = (primeiraParcela &amp;&amp; primeiraParcela.periodo) ? (primeiraParcela.periodo + &apos;&apos;).trim() : (periodoForm || &apos;&apos;);&#xd;
-            if (!periodoRefAberto) {&#xd;
-                throw new Error(&apos;Período da primeira parcela não informado.&apos;);&#xd;
-            }&#xd;
-&#xd;
-            if (valorParaFuturos === 0) {&#xd;
-                var todasParcelasAtual = [];&#xd;
-                for (var i = 0; i &lt; parcelas.length; i++) {&#xd;
-                    var p = parcelas[i] || {};&#xd;
-                    var per = (p.periodo + &apos;&apos;).trim();&#xd;
-                    var val = parseMoney(p.valor);&#xd;
-                    if (per &amp;&amp; isFinite(val) &amp;&amp; val &gt; 0) {&#xd;
-                        todasParcelasAtual.push({&#xd;
-                            periodo: per,&#xd;
-                            valor: Number(val.toFixed(2))&#xd;
-                        });&#xd;
-                    }&#xd;
-                }&#xd;
-                &#xd;
-                payloadAberto = {&#xd;
-                    empresa: empresa,&#xd;
-                    filial: codFilial,&#xd;
-                    matricula: matricula,&#xd;
-                    roteiro: roteiro,&#xd;
-                    numpagto: numpagto,&#xd;
-                    periodoRef: periodoRefAberto,&#xd;
-                    verba: codVerba,&#xd;
-                    tipoVerba: tipoVerba,&#xd;
-                    tipo1: tipo1,&#xd;
-                    parcelas: todasParcelasAtual&#xd;
-                };&#xd;
-            } else {&#xd;
-                payloadAberto = {&#xd;
-                    empresa: empresa,&#xd;
-                    filial: codFilial,&#xd;
-                    matricula: matricula,&#xd;
-                    roteiro: roteiro,&#xd;
-                    numpagto: numpagto,&#xd;
-                    periodoRef: periodoRefAberto,&#xd;
-                    verba: codVerba,&#xd;
-                    tipoVerba: tipoVerba,&#xd;
-                    tipo1: tipo1,&#xd;
-                    parcelas: [{&#xd;
-                        periodo: periodoRefAberto,&#xd;
-                        valor: Number(valorParaAtual.toFixed(2))&#xd;
-                    }]&#xd;
-                };&#xd;
-            }&#xd;
-        }&#xd;
-&#xd;
-        // Construir payload para períodos futuros&#xd;
-        if (valorParaFuturos &gt; 0) {&#xd;
-            var parcelasFuturas = [];&#xd;
-            var primeiraParcela = parcelas[0];&#xd;
-            var valorPrimeiraOriginal = parseMoney(primeiraParcela.valor);&#xd;
-            var periodoRefAberto = (primeiraParcela &amp;&amp; primeiraParcela.periodo) ? (primeiraParcela.periodo + &apos;&apos;).trim() : (periodoForm || &apos;&apos;);&#xd;
-            &#xd;
-            if (valorParaAtual === 0) {&#xd;
-                for (var i = 0; i &lt; parcelas.length; i++) {&#xd;
-                    var p = parcelas[i] || {};&#xd;
-                    var per = (p.periodo + &apos;&apos;).trim();&#xd;
-                    var val = parseMoney(p.valor);&#xd;
-                    if (per &amp;&amp; isFinite(val) &amp;&amp; val &gt; 0) {&#xd;
-                        parcelasFuturas.push({&#xd;
-                            periodo: per,&#xd;
-                            valor: Number(val.toFixed(2))&#xd;
-                        });&#xd;
-                    }&#xd;
-                }&#xd;
-            } else {&#xd;
-                var restoPrimeira = valorPrimeiraOriginal - valorParaAtual;&#xd;
-                if (restoPrimeira &gt; 0) {&#xd;
-                    parcelasFuturas.push({&#xd;
-                        periodo: periodoRefAberto,&#xd;
-                        valor: Number(restoPrimeira.toFixed(2))&#xd;
-                    });&#xd;
-                }&#xd;
-                &#xd;
-                for (var i = 1; i &lt; parcelas.length; i++) {&#xd;
-                    var p = parcelas[i] || {};&#xd;
-                    var per = (p.periodo + &apos;&apos;).trim();&#xd;
-                    var val = parseMoney(p.valor);&#xd;
-                    if (per &amp;&amp; isFinite(val) &amp;&amp; val &gt; 0) {&#xd;
-                        parcelasFuturas.push({&#xd;
-                            periodo: per,&#xd;
-                            valor: Number(val.toFixed(2))&#xd;
-                        });&#xd;
-                    }&#xd;
-                }&#xd;
-            }&#xd;
-            &#xd;
-            if (parcelasFuturas.length &gt; 0) {&#xd;
-                payloadFuturo = {&#xd;
-                    empresa: empresa,&#xd;
-                    filial: codFilial,&#xd;
-                    matricula: matricula,&#xd;
-                    periodoRef: periodoForm,&#xd;
-                    verba: codVerba,&#xd;
-                    tipoVerba: tipoVerba,&#xd;
-                    documento: (getValue(&apos;WKNumProces&apos;) + &apos;&apos;),&#xd;
-                    parcelas: parcelasFuturas&#xd;
-                };&#xd;
-            }&#xd;
-        }&#xd;
-&#xd;
-        // Idempotência&#xd;
-        var stAberto = (hAPI.getCardValue(&apos;integ_aberto_status&apos;) + &apos;&apos;).trim();&#xd;
-        var stFuturo = (hAPI.getCardValue(&apos;integ_futuro_status&apos;) + &apos;&apos;).trim();&#xd;
-        var deveEnviarAberto = (!!payloadAberto &amp;&amp; stAberto !== &apos;OK&apos;);&#xd;
-        var deveEnviarFuturo = (!!payloadFuturo &amp;&amp; stFuturo !== &apos;OK&apos;);&#xd;
-&#xd;
-        var okAberto = false;&#xd;
-        var msgAberto = &apos;&apos;;&#xd;
-        &#xd;
-        if (deveEnviarAberto) {&#xd;
-            var r1 = integracaoProtheusInvoke(&apos;/rest/RESTRH/postDescontos&apos;, payloadAberto);&#xd;
-            if (!r1.ok &amp;&amp; r1.msg &amp;&amp; (r1.msg.indexOf(&apos;PERISCLOSE&apos;) !== -1 || r1.msg.indexOf(&apos;REGNOIS&apos;) !== -1)) {&#xd;
-                var periodoOrigAberto = payloadAberto.periodoRef;&#xd;
-                payloadAberto = avancarPeriodosPayload(payloadAberto);&#xd;
-                log.warn(&apos;Período fechado (&apos; + periodoOrigAberto + &apos;). Reenvio com: &apos; + payloadAberto.periodoRef);&#xd;
-                r1 = integracaoProtheusInvoke(&apos;/rest/RESTRH/postDescontos&apos;, payloadAberto);&#xd;
-            }&#xd;
-            okAberto = r1.ok;&#xd;
-            msgAberto = r1.msg;&#xd;
-            hAPI.setCardValue(&apos;integ_aberto_status&apos;, okAberto ? &apos;OK&apos; : &apos;NOK&apos;);&#xd;
-            hAPI.setCardValue(&apos;integ_aberto_msg&apos;, msgAberto);&#xd;
-            hAPI.setCardValue(&apos;integ_aberto_payload&apos;, safeJSONStringify(payloadAberto));&#xd;
-            hAPI.setTaskComments(getValue(&apos;WKUser&apos;), getValue(&apos;WKNumProces&apos;), 0, &#xd;
-                &apos;Período Atual (GPEA580): &apos; + (okAberto ? &apos;OK&apos; : &apos;FALHA&apos;) + &apos;. &apos; + msgAberto);&#xd;
-        } else {&#xd;
-            okAberto = true;&#xd;
-        }&#xd;
-&#xd;
-        var okFuturo = false;&#xd;
-        var msgFuturo = &apos;&apos;;&#xd;
-        &#xd;
-        if (deveEnviarFuturo) {&#xd;
+       &#xd;
+        var okFuturo = true;&#xd;
+        if (payloadFuturo) {&#xd;
             var r2 = integracaoProtheusInvoke(&apos;/rest/RESTRH/descontosFuturos&apos;, payloadFuturo);&#xd;
-            if (!r2.ok &amp;&amp; r2.msg &amp;&amp; (r2.msg.indexOf(&apos;PERISCLOSE&apos;) !== -1 || r2.msg.indexOf(&apos;REGNOIS&apos;) !== -1)) {&#xd;
-                var periodoOrigFuturo = payloadFuturo.periodoRef;&#xd;
+            if (!r2.ok &amp;&amp; periodoFechado(r2.msg)) {&#xd;
                 payloadFuturo = avancarPeriodosPayload(payloadFuturo);&#xd;
-                log.warn(&apos;Período fechado (futuros) (&apos; + periodoOrigFuturo + &apos;). Reenvio com: &apos; + payloadFuturo.periodoRef);&#xd;
+                log.warn(&apos;Período fechado (futuros). Reenviando com período avançado.&apos;);&#xd;
                 r2 = integracaoProtheusInvoke(&apos;/rest/RESTRH/descontosFuturos&apos;, payloadFuturo);&#xd;
             }&#xd;
             okFuturo = r2.ok;&#xd;
-            msgFuturo = r2.msg;&#xd;
             hAPI.setCardValue(&apos;integ_futuro_status&apos;, okFuturo ? &apos;OK&apos; : &apos;NOK&apos;);&#xd;
-            hAPI.setCardValue(&apos;integ_futuro_msg&apos;, msgFuturo);&#xd;
+            hAPI.setCardValue(&apos;integ_futuro_msg&apos;, r2.msg);&#xd;
             hAPI.setCardValue(&apos;integ_futuro_payload&apos;, safeJSONStringify(payloadFuturo));&#xd;
-            hAPI.setTaskComments(getValue(&apos;WKUser&apos;), getValue(&apos;WKNumProces&apos;), 0, &#xd;
-                &apos;Períodos Futuros (GPEA110): &apos; + (okFuturo ? &apos;OK&apos; : &apos;FALHA&apos;) + &apos;. &apos; + msgFuturo);&#xd;
+            hAPI.setTaskComments(getValue(&apos;WKUser&apos;), getValue(&apos;WKNumProces&apos;), 0,&#xd;
+                &apos;Períodos Futuros: &apos; + (okFuturo ? &apos;OK&apos; : &apos;FALHA&apos;) + &apos;. &apos; + r2.msg);&#xd;
         }&#xd;
 &#xd;
-        var statusGeralOK = payloadFuturo &#xd;
-            ? ((stAberto === &apos;OK&apos; || okAberto) &amp;&amp; (stFuturo === &apos;OK&apos; || okFuturo)) &#xd;
-            : (stAberto === &apos;OK&apos; || okAberto);&#xd;
-        &#xd;
-        hAPI.setCardValue(&apos;statusIntegracao&apos;, statusGeralOK ? &apos;OK&apos; : &apos;NOK&apos;);&#xd;
+        var tudo = payloadFuturo ? okFuturo : true;&#xd;
+        hAPI.setCardValue(&apos;statusIntegracao&apos;, tudo ? &apos;OK&apos; : &apos;NOK&apos;);&#xd;
 &#xd;
     } catch (error) {&#xd;
         hAPI.setCardValue(&apos;statusIntegracao&apos;, &apos;NOK&apos;);&#xd;
-        log.warn(&apos;servicetask9 error: &apos; + error);&#xd;
-        log.warn(&apos;servicetask9 error.message: &apos; + error.message);&#xd;
-        log.warn(&apos;servicetask9 error.lineNumber: &apos; + error.lineNumber);&#xd;
+        log.warn(&apos;servicetask9 error: &apos; + error.message + &apos; (linha &apos; + error.lineNumber + &apos;)&apos;);&#xd;
         hAPI.setTaskComments(getValue(&apos;WKUser&apos;), getValue(&apos;WKNumProces&apos;), 0, &apos;Erro na integração: &apos; + error.message);&#xd;
     }&#xd;
 }&#xd;
 &#xd;
+// --- 5. Integração com o Protheus ---&#xd;
 function integracaoProtheusInvoke(endpointPath, jsonData) {&#xd;
     var result = { ok: false, msg: &apos;&apos; };&#xd;
     try {&#xd;
@@ -1342,6 +1264,7 @@ function integracaoProtheusInvoke(endpointPath, jsonData) {&#xd;
     }&#xd;
 }&#xd;
 &#xd;
+// --- 6. Funções auxiliares ---&#xd;
 function resolveServiceCode(envName) {&#xd;
     if (envName === &apos;PRODUCAO&apos;) return &apos;API_RESTRH&apos;;&#xd;
     if (envName === &apos;TESTE&apos;) return &apos;REST_PROTHEUS_TST&apos;;&#xd;
@@ -1430,6 +1353,111 @@ function avancarPeriodosPayload(payload) {&#xd;
     return novo;&#xd;
 }&#xd;
 &#xd;
+// ================================================================&#xd;
+//  REGRA DOS 15%&#xd;
+//&#xd;
+//  O desconto de um funcionário em um mês não pode ultrapassar&#xd;
+//  15% do salário. Se o mês estiver cheio, o excedente é jogado&#xd;
+//  automaticamente para o mês seguinte, e assim por diante.&#xd;
+// ================================================================&#xd;
+&#xd;
+// Verbas do DP que ficam fora do limite de 15% (faltas, DSR, etc.)&#xd;
+var VERBAS_FORA_LIMITE = { &apos;440&apos;: 1, &apos;445&apos;: 1, &apos;520&apos;: 1, &apos;518&apos;: 1, &apos;521&apos;: 1, &apos;570&apos;: 1, &apos;571&apos;: 1 };&#xd;
+&#xd;
+// ----------------------------------------------------------------&#xd;
+//  distribuirParcelas&#xd;
+//&#xd;
+//  Recebe as parcelas solicitadas e as distribui respeitando o&#xd;
+//  limite de 15% por mês. TODOS os itens vão para a lista &quot;futuro&quot;&#xd;
+//  (inclusive o período atual), pois o envio é feito sempre via&#xd;
+//&#xd;
+//  Se o período atual atingir 15%, o excedente é parcelado&#xd;
+//  automaticamente para o mês seguinte, e assim por diante.&#xd;
+//&#xd;
+//  Consulta RGB010 e SRK010 em tempo real ANTES de montar o&#xd;
+//  payload — garantia de que o estado real do Protheus é usado,&#xd;
+//  mesmo quando dois chamados são abertos antes de qualquer envio.&#xd;
+// ----------------------------------------------------------------&#xd;
+function distribuirParcelas(parcelas, salario15, filial, matricula, periodoAtual) {&#xd;
+    var ocupado = carregarOcupacaoPorPeriodo(filial, matricula, periodoAtual);&#xd;
+    var futuro  = [];&#xd;
+&#xd;
+    for (var i = 0; i &lt; parcelas.length; i++) {&#xd;
+        var restante  = parcelas[i].valor;&#xd;
+        var periodo   = parcelas[i].periodo;&#xd;
+        var seguranca = 60; // máximo 60 meses de avanço (evita loop infinito)&#xd;
+&#xd;
+        while (restante &gt; 0.005 &amp;&amp; seguranca-- &gt; 0) {&#xd;
+            var disponivel = Math.max(0, salario15 - (ocupado[periodo] || 0));&#xd;
+            var aEnviar    = Math.min(restante, disponivel);&#xd;
+&#xd;
+            if (aEnviar &gt; 0.005) {&#xd;
+                var item = { periodo: periodo, valor: Number(aEnviar.toFixed(2)) };&#xd;
+                futuro.push(item);&#xd;
+                ocupado[periodo] = (ocupado[periodo] || 0) + aEnviar;&#xd;
+                restante = Number((restante - aEnviar).toFixed(2));&#xd;
+            }&#xd;
+&#xd;
+            if (restante &gt; 0.005) periodo = proximoPeriodo(periodo);&#xd;
+        }&#xd;
+    }&#xd;
+&#xd;
+    return { aberto: [], futuro: futuro };&#xd;
+}&#xd;
+&#xd;
+// ----------------------------------------------------------------&#xd;
+//  carregarOcupacaoPorPeriodo&#xd;
+//&#xd;
+//  Retorna { &quot;YYYYMM&quot;: totalJáOcupado, ... } consultando o SRK010&#xd;
+//  via DatasetFactory.&#xd;
+//&#xd;
+//  ds_consultaLancFuturosFuncionario retorna colunas nesta ordem:&#xd;
+//    0: codFilial   1: codProcesso   2: matricula   3: codVerba&#xd;
+//    4: descVerba   5: dtVencimento  6: valor&#xd;
+//&#xd;
+//  No Fluig (Rhino), ds.values[j] é java.lang.Object[] → acesso&#xd;
+//  obrigatório por índice numérico + &apos;&apos; + para converter para JS string.&#xd;
+// ----------------------------------------------------------------&#xd;
+function carregarOcupacaoPorPeriodo(filial, matricula, periodoAtual) {&#xd;
+    var ocupado = {};&#xd;
+    try {&#xd;
+        var c = [&#xd;
+            DatasetFactory.createConstraint(&apos;filial&apos;,       filial,       filial,       ConstraintType.MUST),&#xd;
+            DatasetFactory.createConstraint(&apos;matricula&apos;,    matricula,    matricula,    ConstraintType.MUST),&#xd;
+            DatasetFactory.createConstraint(&apos;periodoAtual&apos;, periodoAtual, periodoAtual, ConstraintType.MUST)&#xd;
+        ];&#xd;
+        var ds = DatasetFactory.getDataset(&apos;ds_consultaLancFuturosFuncionario&apos;, null, c, null);&#xd;
+&#xd;
+        var rowCount = (ds &amp;&amp; ds.values) ? ds.values.length : 0;&#xd;
+        log.info(&apos;[SRK010] rowCount=&apos; + rowCount);&#xd;
+&#xd;
+        for (var j = 0; j &lt; rowCount; j++) {&#xd;
+            var row    = ds.values[j];&#xd;
+            // Índices fixos pela ordem das colunas do SELECT no dataset&#xd;
+            var verba  = (&apos;&apos; + row[3]).trim(); // codVerba  (RK_PD)&#xd;
+            var dtVenc = (&apos;&apos; + row[5]).trim(); // dtVencimento (RK_DTVENC)&#xd;
+            var vValor = (&apos;&apos; + row[6]).trim(); // valor (RK_VALORTO)&#xd;
+&#xd;
+            log.info(&apos;[SRK010] row[&apos; + j + &apos;] verba=&apos; + verba + &apos; dtVenc=&apos; + dtVenc + &apos; valor=&apos; + vValor);&#xd;
+&#xd;
+            if (dtVenc.length &gt;= 6 &amp;&amp; !VERBAS_FORA_LIMITE[verba]) {&#xd;
+                var per = &apos;&apos; + dtVenc.substring(0, 6);&#xd;
+                ocupado[per] = (ocupado[per] || 0) + parseMoney(vValor);&#xd;
+                log.info(&apos;[SRK010] ocupado[&apos; + per + &apos;] = &apos; + ocupado[per]);&#xd;
+            }&#xd;
+        }&#xd;
+    } catch (e) {&#xd;
+        log.warn(&apos;carregarOcupacaoPorPeriodo: &apos; + e.message);&#xd;
+    }&#xd;
+&#xd;
+    log.info(&apos;[ocupado por periodo] &apos; + safeJSONStringify(ocupado));&#xd;
+    return ocupado;&#xd;
+}&#xd;
+&#xd;
+// Retorna true se o Protheus recusou por período já fechado&#xd;
+function periodoFechado(msg) {&#xd;
+    return msg &amp;&amp; (msg.indexOf(&apos;PERISCLOSE&apos;) !== -1 || msg.indexOf(&apos;REGNOIS&apos;) !== -1);&#xd;
+}&#xd;
 </eventDescription>
     </WorkflowProcessEvent>
     <WorkflowProcessEvent>
@@ -1757,7 +1785,7 @@ function getEmailDiretor(grupoAprovadorCC) {&#xd;
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>28</version>
+        <version>85</version>
         <linkSequence>17</linkSequence>
         <bendSequence>1</bendSequence>
       </processLinkBendPK>
@@ -1768,7 +1796,7 @@ function getEmailDiretor(grupoAprovadorCC) {&#xd;
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>28</version>
+        <version>85</version>
         <linkSequence>21</linkSequence>
         <bendSequence>1</bendSequence>
       </processLinkBendPK>
@@ -1779,7 +1807,7 @@ function getEmailDiretor(grupoAprovadorCC) {&#xd;
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>28</version>
+        <version>85</version>
         <linkSequence>30</linkSequence>
         <bendSequence>1</bendSequence>
       </processLinkBendPK>
@@ -1790,7 +1818,7 @@ function getEmailDiretor(grupoAprovadorCC) {&#xd;
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>28</version>
+        <version>85</version>
         <linkSequence>31</linkSequence>
         <bendSequence>1</bendSequence>
       </processLinkBendPK>
@@ -1801,7 +1829,7 @@ function getEmailDiretor(grupoAprovadorCC) {&#xd;
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>28</version>
+        <version>85</version>
         <linkSequence>37</linkSequence>
         <bendSequence>1</bendSequence>
       </processLinkBendPK>
@@ -1812,7 +1840,7 @@ function getEmailDiretor(grupoAprovadorCC) {&#xd;
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>28</version>
+        <version>85</version>
         <linkSequence>37</linkSequence>
         <bendSequence>2</bendSequence>
       </processLinkBendPK>
@@ -1895,6 +1923,15 @@ function getEmailDiretor(grupoAprovadorCC) {&#xd;
       <ruleOrder>1</ruleOrder>
       <field>rdAprovaDescGerente</field>
       <value>abonar</value>
+      <operator>1</operator>
+      <valueType>1</valueType>
+    </ConditionProcessAutomaticRules>
+    <ConditionProcessAutomaticRules>
+      <sequence>24</sequence>
+      <expressionOrder>3</expressionOrder>
+      <ruleOrder>1</ruleOrder>
+      <field>rdAprovaDescGerente</field>
+      <value>cancelar</value>
       <operator>1</operator>
       <valueType>1</valueType>
     </ConditionProcessAutomaticRules>
