@@ -29,7 +29,7 @@
     <processDefinitionVersionPK>
       <companyId>1</companyId>
       <processId>Lançamento de Descontos por Funcionário</processId>
-      <version>85</version>
+      <version>95</version>
     </processDefinitionVersionPK>
     <versionDescription></versionDescription>
     <formId>0</formId>
@@ -675,7 +675,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>1</expressionOrder>
-        <version>85</version>
+        <version>95</version>
         <sequence>18</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -687,7 +687,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>2</expressionOrder>
-        <version>85</version>
+        <version>95</version>
         <sequence>18</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -699,7 +699,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>1</expressionOrder>
-        <version>85</version>
+        <version>95</version>
         <sequence>24</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -711,7 +711,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>2</expressionOrder>
-        <version>85</version>
+        <version>95</version>
         <sequence>24</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -723,7 +723,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>3</expressionOrder>
-        <version>85</version>
+        <version>95</version>
         <sequence>24</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -735,7 +735,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>1</expressionOrder>
-        <version>85</version>
+        <version>95</version>
         <sequence>35</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -747,7 +747,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>2</expressionOrder>
-        <version>85</version>
+        <version>95</version>
         <sequence>35</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -1139,6 +1139,7 @@ function getCurrentTime() {&#xd;
         var empresa      = obterEmpresa(codFilial);&#xd;
         var matricula    = (hAPI.getCardValue(&apos;matriculaColaborador&apos;) + &apos;&apos;).trim();&#xd;
         var codVerba     = (hAPI.getCardValue(&apos;codVerba&apos;) + &apos;&apos;).trim();&#xd;
+        var tipoDesconto = (hAPI.getCardValue(&apos;tipoDesconto&apos;) + &apos;&apos;).split(&apos; - &apos;)[0].trim();&#xd;
         var tipoVerba    = (hAPI.getCardValue(&apos;tipoVerba&apos;) + &apos;&apos;).split(&apos; - &apos;)[0].trim();&#xd;
         var anoAtual = new Date().getFullYear();&#xd;
         var mesAtual = new Date().getMonth() + 1;&#xd;
@@ -1176,40 +1177,49 @@ function getCurrentTime() {&#xd;
         var dist = distribuirParcelas(parcelas, salario15, codFilial, matricula, periodoAtual);&#xd;
         log.info(&apos;Períodos futuros (inclui período atual): &apos; + safeJSONStringify(dist.futuro));&#xd;
 &#xd;
-        // --- 4. Montar o payload (tudo vai para a tabela de futuros) ---&#xd;
-        // Para verbas de DP: periodoRef preenchido (roteado para tabela de atuais pelo REST).&#xd;
-        // Para demais (frotas, TI, almoxarifado): periodoRef vazio → REST salva em futuros.&#xd;
-        var ehDP = tipoVerba === &apos;DP&apos;;&#xd;
-        var payloadFuturo = null;&#xd;
+        // --- 4. Roteamento por tipo de verba ---&#xd;
+        // DP  → postDescontos (período atual/aberto)&#xd;
+        // Demais (frotas, TI, almoxarifado) → descontosFuturos&#xd;
+        var ehDP = tipoDesconto.toLowerCase() === &apos;dp&apos;;&#xd;
+        var statusOk = true;&#xd;
+&#xd;
         if (dist.futuro.length) {&#xd;
-            payloadFuturo = {&#xd;
+            var basePayload = {&#xd;
                 empresa: empresa, filial: codFilial, matricula: matricula,&#xd;
-                periodoRef: ehDP ? periodoAtual : &apos;&apos;,&#xd;
                 verba: codVerba, tipoVerba: tipoVerba,&#xd;
                 documento: (getValue(&apos;WKNumProces&apos;) + &apos;&apos;),&#xd;
-                // numFluig: (getValue(&apos;WKNumProces&apos;) + &apos;&apos;),&#xd;
+                numFluig: (hAPI.getCardValue(&apos;solicitacao_fluig&apos;) + &apos;&apos;).trim(),&#xd;
                 parcelas: dist.futuro&#xd;
             };&#xd;
-        }&#xd;
-       &#xd;
-        var okFuturo = true;&#xd;
-        if (payloadFuturo) {&#xd;
-            var r2 = integracaoProtheusInvoke(&apos;/rest/RESTRH/descontosFuturos&apos;, payloadFuturo);&#xd;
-            if (!r2.ok &amp;&amp; periodoFechado(r2.msg)) {&#xd;
-                payloadFuturo = avancarPeriodosPayload(payloadFuturo);&#xd;
-                log.warn(&apos;Período fechado (futuros). Reenviando com período avançado.&apos;);&#xd;
-                r2 = integracaoProtheusInvoke(&apos;/rest/RESTRH/descontosFuturos&apos;, payloadFuturo);&#xd;
+&#xd;
+            if (ehDP) {&#xd;
+                // DP: envia para postDescontos&#xd;
+                var r1 = integracaoProtheusInvoke(&apos;/rest/RESTRH/postDescontos&apos;, basePayload);&#xd;
+                statusOk = r1.ok;&#xd;
+                hAPI.setCardValue(&apos;integ_aberto_status&apos;, statusOk ? &apos;OK&apos; : &apos;NOK&apos;);&#xd;
+                hAPI.setCardValue(&apos;integ_aberto_msg&apos;, r1.msg);&#xd;
+                hAPI.setCardValue(&apos;integ_aberto_payload&apos;, safeJSONStringify(basePayload));&#xd;
+                hAPI.setTaskComments(getValue(&apos;WKUser&apos;), getValue(&apos;WKNumProces&apos;), 0,&#xd;
+                    &apos;DP - postDescontos: &apos; + (statusOk ? &apos;OK&apos; : &apos;FALHA&apos;) + &apos;. &apos; + r1.msg);&#xd;
+            } else {&#xd;
+                // Demais: envia para descontosFuturos&#xd;
+                basePayload.periodoRef = &apos;&apos;;&#xd;
+                var r2 = integracaoProtheusInvoke(&apos;/rest/RESTRH/descontosFuturos&apos;, basePayload);&#xd;
+                if (!r2.ok &amp;&amp; periodoFechado(r2.msg)) {&#xd;
+                    basePayload = avancarPeriodosPayload(basePayload);&#xd;
+                    log.warn(&apos;Período fechado (futuros). Reenviando com período avançado.&apos;);&#xd;
+                    r2 = integracaoProtheusInvoke(&apos;/rest/RESTRH/descontosFuturos&apos;, basePayload);&#xd;
+                }&#xd;
+                statusOk = r2.ok;&#xd;
+                hAPI.setCardValue(&apos;integ_futuro_status&apos;, statusOk ? &apos;OK&apos; : &apos;NOK&apos;);&#xd;
+                hAPI.setCardValue(&apos;integ_futuro_msg&apos;, r2.msg);&#xd;
+                hAPI.setCardValue(&apos;integ_futuro_payload&apos;, safeJSONStringify(basePayload));&#xd;
+                hAPI.setTaskComments(getValue(&apos;WKUser&apos;), getValue(&apos;WKNumProces&apos;), 0,&#xd;
+                    &apos;Períodos Futuros: &apos; + (statusOk ? &apos;OK&apos; : &apos;FALHA&apos;) + &apos;. &apos; + r2.msg);&#xd;
             }&#xd;
-            okFuturo = r2.ok;&#xd;
-            hAPI.setCardValue(&apos;integ_futuro_status&apos;, okFuturo ? &apos;OK&apos; : &apos;NOK&apos;);&#xd;
-            hAPI.setCardValue(&apos;integ_futuro_msg&apos;, r2.msg);&#xd;
-            hAPI.setCardValue(&apos;integ_futuro_payload&apos;, safeJSONStringify(payloadFuturo));&#xd;
-            hAPI.setTaskComments(getValue(&apos;WKUser&apos;), getValue(&apos;WKNumProces&apos;), 0,&#xd;
-                &apos;Períodos Futuros: &apos; + (okFuturo ? &apos;OK&apos; : &apos;FALHA&apos;) + &apos;. &apos; + r2.msg);&#xd;
         }&#xd;
 &#xd;
-        var tudo = payloadFuturo ? okFuturo : true;&#xd;
-        hAPI.setCardValue(&apos;statusIntegracao&apos;, tudo ? &apos;OK&apos; : &apos;NOK&apos;);&#xd;
+        hAPI.setCardValue(&apos;statusIntegracao&apos;, statusOk ? &apos;OK&apos; : &apos;NOK&apos;);&#xd;
 &#xd;
     } catch (error) {&#xd;
         hAPI.setCardValue(&apos;statusIntegracao&apos;, &apos;NOK&apos;);&#xd;
@@ -1785,7 +1795,7 @@ function getEmailDiretor(grupoAprovadorCC) {&#xd;
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>85</version>
+        <version>95</version>
         <linkSequence>17</linkSequence>
         <bendSequence>1</bendSequence>
       </processLinkBendPK>
@@ -1796,7 +1806,7 @@ function getEmailDiretor(grupoAprovadorCC) {&#xd;
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>85</version>
+        <version>95</version>
         <linkSequence>21</linkSequence>
         <bendSequence>1</bendSequence>
       </processLinkBendPK>
@@ -1807,7 +1817,7 @@ function getEmailDiretor(grupoAprovadorCC) {&#xd;
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>85</version>
+        <version>95</version>
         <linkSequence>30</linkSequence>
         <bendSequence>1</bendSequence>
       </processLinkBendPK>
@@ -1818,7 +1828,7 @@ function getEmailDiretor(grupoAprovadorCC) {&#xd;
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>85</version>
+        <version>95</version>
         <linkSequence>31</linkSequence>
         <bendSequence>1</bendSequence>
       </processLinkBendPK>
@@ -1829,7 +1839,7 @@ function getEmailDiretor(grupoAprovadorCC) {&#xd;
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>85</version>
+        <version>95</version>
         <linkSequence>37</linkSequence>
         <bendSequence>1</bendSequence>
       </processLinkBendPK>
@@ -1840,7 +1850,7 @@ function getEmailDiretor(grupoAprovadorCC) {&#xd;
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>85</version>
+        <version>95</version>
         <linkSequence>37</linkSequence>
         <bendSequence>2</bendSequence>
       </processLinkBendPK>

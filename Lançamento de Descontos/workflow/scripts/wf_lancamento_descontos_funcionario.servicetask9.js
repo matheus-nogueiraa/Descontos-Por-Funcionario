@@ -7,6 +7,7 @@ function servicetask9(attempt, message) {
         var empresa      = obterEmpresa(codFilial);
         var matricula    = (hAPI.getCardValue('matriculaColaborador') + '').trim();
         var codVerba     = (hAPI.getCardValue('codVerba') + '').trim();
+        var tipoDesconto = (hAPI.getCardValue('tipoDesconto') + '').split(' - ')[0].trim();
         var tipoVerba    = (hAPI.getCardValue('tipoVerba') + '').split(' - ')[0].trim();
         var anoAtual = new Date().getFullYear();
         var mesAtual = new Date().getMonth() + 1;
@@ -44,40 +45,50 @@ function servicetask9(attempt, message) {
         var dist = distribuirParcelas(parcelas, salario15, codFilial, matricula, periodoAtual);
         log.info('Períodos futuros (inclui período atual): ' + safeJSONStringify(dist.futuro));
 
-        // --- 4. Montar o payload (tudo vai para a tabela de futuros) ---
-        // Para verbas de DP: periodoRef preenchido (roteado para tabela de atuais pelo REST).
-        // Para demais (frotas, TI, almoxarifado): periodoRef vazio → REST salva em futuros.
-        var ehDP = tipoVerba === 'DP';
-        var payloadFuturo = null;
+        // --- 4. Roteamento por tipo de verba ---
+        // DP  → postDescontos (período atual/aberto)
+        // Demais (frotas, TI, almoxarifado) → descontosFuturos
+        var ehDP = tipoDesconto.toLowerCase() === 'dp';
+        var statusOk = true;
+
         if (dist.futuro.length) {
-            payloadFuturo = {
+            var basePayload = {
                 empresa: empresa, filial: codFilial, matricula: matricula,
-                periodoRef: ehDP ? periodoAtual : '',
                 verba: codVerba, tipoVerba: tipoVerba,
                 documento: (getValue('WKNumProces') + ''),
-                numFluig: hAPI.getCardValue('solicitacao_fluig') || '',
-                parcelas: dist.futuro
+                numFluig: (hAPI.getCardValue('solicitacao_fluig') + '').trim(),
+                parcelas: dist.futuro,
+                periodoRef: periodoAtual 
             };
-        }
-       
-        var okFuturo = true;
-        if (payloadFuturo) {
-            var r2 = integracaoProtheusInvoke('/rest/RESTRH/descontosFuturos', payloadFuturo);
-            if (!r2.ok && periodoFechado(r2.msg)) {
-                payloadFuturo = avancarPeriodosPayload(payloadFuturo);
-                log.warn('Período fechado (futuros). Reenviando com período avançado.');
-                r2 = integracaoProtheusInvoke('/rest/RESTRH/descontosFuturos', payloadFuturo);
+
+            if (ehDP) {
+                // DP: envia para postDescontos
+                var r1 = integracaoProtheusInvoke('/rest/RESTRH/postDescontos', basePayload);
+                statusOk = r1.ok;
+                hAPI.setCardValue('integ_aberto_status', statusOk ? 'OK' : 'NOK');
+                hAPI.setCardValue('integ_aberto_msg', r1.msg);
+                hAPI.setCardValue('integ_aberto_payload', safeJSONStringify(basePayload));
+                hAPI.setTaskComments(getValue('WKUser'), getValue('WKNumProces'), 0,
+                    'DP - postDescontos: ' + (statusOk ? 'OK' : 'FALHA') + '. ' + r1.msg);
+            } else {
+                // Demais: envia para descontosFuturos
+                basePayload.periodoRef = '';
+                var r2 = integracaoProtheusInvoke('/rest/RESTRH/descontosFuturos', basePayload);
+                if (!r2.ok && periodoFechado(r2.msg)) {
+                    basePayload = avancarPeriodosPayload(basePayload);
+                    log.warn('Período fechado (futuros). Reenviando com período avançado.');
+                    r2 = integracaoProtheusInvoke('/rest/RESTRH/descontosFuturos', basePayload);
+                }
+                statusOk = r2.ok;
+                hAPI.setCardValue('integ_futuro_status', statusOk ? 'OK' : 'NOK');
+                hAPI.setCardValue('integ_futuro_msg', r2.msg);
+                hAPI.setCardValue('integ_futuro_payload', safeJSONStringify(basePayload));
+                hAPI.setTaskComments(getValue('WKUser'), getValue('WKNumProces'), 0,
+                    'Períodos Futuros: ' + (statusOk ? 'OK' : 'FALHA') + '. ' + r2.msg);
             }
-            okFuturo = r2.ok;
-            hAPI.setCardValue('integ_futuro_status', okFuturo ? 'OK' : 'NOK');
-            hAPI.setCardValue('integ_futuro_msg', r2.msg);
-            hAPI.setCardValue('integ_futuro_payload', safeJSONStringify(payloadFuturo));
-            hAPI.setTaskComments(getValue('WKUser'), getValue('WKNumProces'), 0,
-                'Períodos Futuros: ' + (okFuturo ? 'OK' : 'FALHA') + '. ' + r2.msg);
         }
 
-        var tudo = payloadFuturo ? okFuturo : true;
-        hAPI.setCardValue('statusIntegracao', tudo ? 'OK' : 'NOK');
+        hAPI.setCardValue('statusIntegracao', statusOk ? 'OK' : 'NOK');
 
     } catch (error) {
         hAPI.setCardValue('statusIntegracao', 'NOK');
