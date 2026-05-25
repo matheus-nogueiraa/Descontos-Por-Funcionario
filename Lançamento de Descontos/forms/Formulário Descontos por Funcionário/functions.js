@@ -1,5 +1,7 @@
 $(document).ready(function () {
-  setValueTest2()
+  // Testemunha 1 = usuário logado (preenchido sempre que o formulário abre).
+  // Testemunha 2 = valor gravado pela widget na criação do processo; nunca sobrescrito aqui.
+  setValueTest1();
   initPad('signature-pad-test2');
   const rescusaAssinatura = $('#recusaAssinatura').val();
   if (rescusaAssinatura === 'sim') {
@@ -28,9 +30,9 @@ async function getFluigUser() {
   });
 }
 
-async function setValueTest2() {
+async function setValueTest1() {
   const nomeUsuario = await getFluigUser();
-  $('#test2_nome').val(nomeUsuario).prop('readonly', true);
+  $('#test1_nome').val(nomeUsuario).prop('readonly', true);
 }
 
 const pads = {};

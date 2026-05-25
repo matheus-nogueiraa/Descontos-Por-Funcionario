@@ -4,14 +4,20 @@ function servicetask9(attempt, message) {
 
         // --- 1. Dados do processo ---
         var codFilial    = (hAPI.getCardValue('codFilial') + '').trim();
-        var empresa      = obterEmpresa(codFilial);
+        var empresa         = obterEmpresa(codFilial);
         var matricula    = (hAPI.getCardValue('matriculaColaborador') + '').trim();
         var codVerba     = (hAPI.getCardValue('codVerba') + '').trim();
         var tipoDesconto = (hAPI.getCardValue('tipoDesconto') + '').split(' - ')[0].trim();
         var tipoVerba    = (hAPI.getCardValue('tipoVerba') + '').split(' - ')[0].trim();
-        var anoAtual = new Date().getFullYear();
-        var mesAtual = new Date().getMonth() + 1;
-        var periodoAtual = String(anoAtual) + (mesAtual < 10 ? '0' : '') + mesAtual; // "202604"      
+        // Lê o período salvo pela widget (ds_consultaPeriodoAbertoFuncionarioProtheus → RFQ_PERIOD).
+        // Fallback para new Date() caso o campo não exista em processos antigos.
+        var periodoAtual = (hAPI.getCardValue('periodoAtual') + '').trim();
+        if (!periodoAtual || periodoAtual.length !== 6) {
+            var _ano = new Date().getFullYear();
+            var _mes = new Date().getMonth() + 1;
+            periodoAtual = String(_ano) + (_mes < 10 ? '0' : '') + _mes;
+            log.warn('periodoAtual não encontrado no processo — usando new Date(): ' + periodoAtual);
+        }
         
         log.info('periodoAtual: ' + periodoAtual);
 
@@ -102,7 +108,7 @@ function integracaoProtheusInvoke(endpointPath, jsonData) {
     var result = { ok: false, msg: '' };
     try {
         log.info('POST ' + endpointPath);
-        log.dir(jsonData);
+        log.info('payload: ' + safeJSONStringify(jsonData));
 
         var clientService = fluigAPI.getAuthorizeClientService();
         var envName = (fluigAPI.getTenantService().getTenantData(['envName']).get('envName') + '').trim();
@@ -132,7 +138,15 @@ function integracaoProtheusInvoke(endpointPath, jsonData) {
 
         var ok = parsed && parsed.status === 'success';
         result.ok = ok;
-        result.msg = parsed && parsed.msg ? parsed.msg : (ok ? 'OK' : 'Falha ao integrar.');
+        if (parsed && parsed.msg) {
+            result.msg = parsed.msg;
+        } else if (ok) {
+            result.msg = 'OK';
+        } else {
+            var primeiraLinha = (resultStr || 'Sem resposta').split(/\r?\n/)[0].trim();
+            result.msg = 'Falha ao integrar. ' + primeiraLinha;
+            log.warn('integracaoProtheusInvoke resposta completa: ' + resultStr);
+        }
 
         return result;
     } catch (e) {
@@ -299,19 +313,21 @@ function distribuirParcelas(parcelas, salario15, filial, matricula, periodoAtual
 // ----------------------------------------------------------------
 function carregarOcupacaoPorPeriodo(filial, matricula, periodoAtual) {
     var ocupado = {};
+
+    // --- SRK010: lançamentos futuros ---
     try {
-        var c = [
+        var cFut = [
             DatasetFactory.createConstraint('filial',       filial,       filial,       ConstraintType.MUST),
             DatasetFactory.createConstraint('matricula',    matricula,    matricula,    ConstraintType.MUST),
             DatasetFactory.createConstraint('periodoAtual', periodoAtual, periodoAtual, ConstraintType.MUST)
         ];
-        var ds = DatasetFactory.getDataset('ds_consultaLancFuturosFuncionario', null, c, null);
+        var dsFut = DatasetFactory.getDataset('ds_consultaLancFuturosFuncionario', null, cFut, null);
 
-        var rowCount = (ds && ds.values) ? ds.values.length : 0;
-        log.info('[SRK010] rowCount=' + rowCount);
+        var rowCountFut = (dsFut && dsFut.values) ? dsFut.values.length : 0;
+        log.info('[SRK010] rowCount=' + rowCountFut);
 
-        for (var j = 0; j < rowCount; j++) {
-            var row    = ds.values[j];
+        for (var j = 0; j < rowCountFut; j++) {
+            var row    = dsFut.values[j];
             // Índices fixos pela ordem das colunas do SELECT no dataset
             var verba  = ('' + row[3]).trim(); // codVerba  (RK_PD)
             var dtVenc = ('' + row[5]).trim(); // dtVencimento (RK_DTVENC)
@@ -326,7 +342,40 @@ function carregarOcupacaoPorPeriodo(filial, matricula, periodoAtual) {
             }
         }
     } catch (e) {
-        log.warn('carregarOcupacaoPorPeriodo: ' + e.message);
+        log.warn('carregarOcupacaoPorPeriodo SRK010: ' + e.message);
+    }
+
+    // --- RGB010: incidências do mês atual (já lançadas no período corrente) ---
+    // Necessário para não ultrapassar o limite de 15% considerando o que já
+    // existe na folha atual, antes de lançar nos futuros.
+    try {
+        var cAtual = [
+            DatasetFactory.createConstraint('filial',       filial,       filial,       ConstraintType.MUST),
+            DatasetFactory.createConstraint('matricula',    matricula,    matricula,    ConstraintType.MUST),
+            DatasetFactory.createConstraint('periodoAtual', periodoAtual, periodoAtual, ConstraintType.MUST)
+        ];
+        var dsAtual = DatasetFactory.getDataset('ds_consultaIncidenciasFuncionario', null, cAtual, null);
+
+        var rowCountAtual = (dsAtual && dsAtual.values) ? dsAtual.values.length : 0;
+        log.info('[RGB010] rowCount=' + rowCountAtual);
+
+        for (var k = 0; k < rowCountAtual; k++) {
+            var rowA   = dsAtual.values[k];
+            // Colunas: 0=codFilial 1=codProcesso 2=codPeriodo 3=nroPagamento 4=roteiro
+            //          5=matricula 6=codVerba 7=descVerba 8=horas 9=valor ...
+            var verba2  = ('' + rowA[6]).trim();  // codVerba (RGB_PD)
+            var periodo = ('' + rowA[2]).trim();  // codPeriodo (RGB_PERIOD) formato YYYYMM
+            var valor2  = ('' + rowA[9]).trim();  // valor (RGB_VALOR)
+
+            log.info('[RGB010] row[' + k + '] verba=' + verba2 + ' periodo=' + periodo + ' valor=' + valor2);
+
+            if (periodo.length === 6 && !VERBAS_FORA_LIMITE[verba2]) {
+                ocupado[periodo] = (ocupado[periodo] || 0) + parseMoney(valor2);
+                log.info('[RGB010] ocupado[' + periodo + '] = ' + ocupado[periodo]);
+            }
+        }
+    } catch (e) {
+        log.warn('carregarOcupacaoPorPeriodo RGB010: ' + e.message);
     }
 
     log.info('[ocupado por periodo] ' + safeJSONStringify(ocupado));
