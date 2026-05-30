@@ -21,7 +21,7 @@
                     </svg>
                 </div>
                 <div class="wgd-header-titles">
-                    <h1>Consulta de Lançamentos de Descontos - TI</h1>
+                    <h1>Consulta de Lançamentos de Descontos - Tecnologia da Informação</h1>
                     <p>Gestão Administrativa, Auditoria e Controle de Verbas de Desconto</p>
                 </div>
             </div>
