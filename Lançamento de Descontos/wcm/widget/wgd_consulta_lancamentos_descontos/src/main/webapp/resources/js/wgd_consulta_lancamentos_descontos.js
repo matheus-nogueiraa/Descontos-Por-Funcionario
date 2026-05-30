@@ -298,7 +298,23 @@ var MyWidget = SuperWidget.extend({
         }
 
         if (isInitialLoad) {
-            $("#filter-status-" + self.instanceId).val("0"); // "Em Andamento" por padrão
+            $("#filter-status-" + self.instanceId).val(""); // "Todos" por padrão
+            
+            var hoje = new Date();
+            var trintaDiasAtras = new Date();
+            trintaDiasAtras.setDate(hoje.getDate() - 30);
+            
+            var formatarDataInput = function(dateObj) {
+                var yyyy = dateObj.getFullYear();
+                var mm = dateObj.getMonth() + 1;
+                if (mm < 10) mm = '0' + mm;
+                var dd = dateObj.getDate();
+                if (dd < 10) dd = '0' + dd;
+                return yyyy + '-' + mm + '-' + dd;
+            };
+            
+            $("#filter-dataDe-" + self.instanceId).val(formatarDataInput(trintaDiasAtras));
+            $("#filter-dataAte-" + self.instanceId).val(formatarDataInput(hoje));
         }
 
         self.mostrarLoader();

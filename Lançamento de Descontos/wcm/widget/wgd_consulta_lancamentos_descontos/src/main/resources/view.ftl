@@ -25,10 +25,6 @@
                     <p>Gestão Administrativa, Auditoria e Controle de Verbas de Desconto</p>
                 </div>
             </div>
-            
-            <div class="wgd-header-right">
-                <span class="wgd-badge-live">Live Data</span>
-            </div>
         </header>
 
         <!-- Dashboard Section Grid -->
@@ -162,8 +158,8 @@
                     <div class="col-xs-12 col-sm-6 col-md-3 form-group">
                         <label class="control-label" for="filter-status-${instanceId}">Status</label>
                         <select id="filter-status-${instanceId}" name="status" class="form-control premium-input">
-                            <option value="">Todos</option>
-                            <option value="0" selected>Em Andamento</option>
+                            <option value="" selected>Todos</option>
+                            <option value="0">Em Andamento</option>
                             <option value="2">Concluído</option>
                             <option value="1">Cancelado</option>
                         </select>
