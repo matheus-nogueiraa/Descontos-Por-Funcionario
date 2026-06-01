@@ -29,7 +29,7 @@
     <processDefinitionVersionPK>
       <companyId>1</companyId>
       <processId>Lançamento de Descontos por Funcionário</processId>
-      <version>95</version>
+      <version>99</version>
     </processDefinitionVersionPK>
     <versionDescription></versionDescription>
     <formId>0</formId>
@@ -675,7 +675,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>1</expressionOrder>
-        <version>95</version>
+        <version>99</version>
         <sequence>18</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -687,7 +687,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>2</expressionOrder>
-        <version>95</version>
+        <version>99</version>
         <sequence>18</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -699,7 +699,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>1</expressionOrder>
-        <version>95</version>
+        <version>99</version>
         <sequence>24</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -711,7 +711,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>2</expressionOrder>
-        <version>95</version>
+        <version>99</version>
         <sequence>24</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -723,7 +723,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>3</expressionOrder>
-        <version>95</version>
+        <version>99</version>
         <sequence>24</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -735,7 +735,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>1</expressionOrder>
-        <version>95</version>
+        <version>99</version>
         <sequence>35</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -747,7 +747,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>2</expressionOrder>
-        <version>95</version>
+        <version>99</version>
         <sequence>35</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -1189,7 +1189,8 @@ function getCurrentTime() {&#xd;
                 verba: codVerba, tipoVerba: tipoVerba,&#xd;
                 documento: (getValue(&apos;WKNumProces&apos;) + &apos;&apos;),&#xd;
                 numFluig: (hAPI.getCardValue(&apos;solicitacao_fluig&apos;) + &apos;&apos;).trim(),&#xd;
-                parcelas: dist.futuro&#xd;
+                parcelas: dist.futuro,&#xd;
+                periodoRef: periodoAtual &#xd;
             };&#xd;
 &#xd;
             if (ehDP) {&#xd;
@@ -1233,7 +1234,7 @@ function integracaoProtheusInvoke(endpointPath, jsonData) {&#xd;
     var result = { ok: false, msg: &apos;&apos; };&#xd;
     try {&#xd;
         log.info(&apos;POST &apos; + endpointPath);&#xd;
-        log.dir(jsonData);&#xd;
+        log.info(&apos;payload: &apos; + safeJSONStringify(jsonData));&#xd;
 &#xd;
         var clientService = fluigAPI.getAuthorizeClientService();&#xd;
         var envName = (fluigAPI.getTenantService().getTenantData([&apos;envName&apos;]).get(&apos;envName&apos;) + &apos;&apos;).trim();&#xd;
@@ -1263,7 +1264,15 @@ function integracaoProtheusInvoke(endpointPath, jsonData) {&#xd;
 &#xd;
         var ok = parsed &amp;&amp; parsed.status === &apos;success&apos;;&#xd;
         result.ok = ok;&#xd;
-        result.msg = parsed &amp;&amp; parsed.msg ? parsed.msg : (ok ? &apos;OK&apos; : &apos;Falha ao integrar.&apos;);&#xd;
+        if (parsed &amp;&amp; parsed.msg) {&#xd;
+            result.msg = parsed.msg;&#xd;
+        } else if (ok) {&#xd;
+            result.msg = &apos;OK&apos;;&#xd;
+        } else {&#xd;
+            var primeiraLinha = (resultStr || &apos;Sem resposta&apos;).split(/\r?\n/)[0].trim();&#xd;
+            result.msg = &apos;Falha ao integrar. &apos; + primeiraLinha;&#xd;
+            log.warn(&apos;integracaoProtheusInvoke resposta completa: &apos; + resultStr);&#xd;
+        }&#xd;
 &#xd;
         return result;&#xd;
     } catch (e) {&#xd;
@@ -1430,19 +1439,21 @@ function distribuirParcelas(parcelas, salario15, filial, matricula, periodoAtual
 // ----------------------------------------------------------------&#xd;
 function carregarOcupacaoPorPeriodo(filial, matricula, periodoAtual) {&#xd;
     var ocupado = {};&#xd;
+&#xd;
+    // --- SRK010: lançamentos futuros ---&#xd;
     try {&#xd;
-        var c = [&#xd;
+        var cFut = [&#xd;
             DatasetFactory.createConstraint(&apos;filial&apos;,       filial,       filial,       ConstraintType.MUST),&#xd;
             DatasetFactory.createConstraint(&apos;matricula&apos;,    matricula,    matricula,    ConstraintType.MUST),&#xd;
             DatasetFactory.createConstraint(&apos;periodoAtual&apos;, periodoAtual, periodoAtual, ConstraintType.MUST)&#xd;
         ];&#xd;
-        var ds = DatasetFactory.getDataset(&apos;ds_consultaLancFuturosFuncionario&apos;, null, c, null);&#xd;
+        var dsFut = DatasetFactory.getDataset(&apos;ds_consultaLancFuturosFuncionario&apos;, null, cFut, null);&#xd;
 &#xd;
-        var rowCount = (ds &amp;&amp; ds.values) ? ds.values.length : 0;&#xd;
-        log.info(&apos;[SRK010] rowCount=&apos; + rowCount);&#xd;
+        var rowCountFut = (dsFut &amp;&amp; dsFut.values) ? dsFut.values.length : 0;&#xd;
+        log.info(&apos;[SRK010] rowCount=&apos; + rowCountFut);&#xd;
 &#xd;
-        for (var j = 0; j &lt; rowCount; j++) {&#xd;
-            var row    = ds.values[j];&#xd;
+        for (var j = 0; j &lt; rowCountFut; j++) {&#xd;
+            var row    = dsFut.values[j];&#xd;
             // Índices fixos pela ordem das colunas do SELECT no dataset&#xd;
             var verba  = (&apos;&apos; + row[3]).trim(); // codVerba  (RK_PD)&#xd;
             var dtVenc = (&apos;&apos; + row[5]).trim(); // dtVencimento (RK_DTVENC)&#xd;
@@ -1457,7 +1468,40 @@ function carregarOcupacaoPorPeriodo(filial, matricula, periodoAtual) {&#xd;
             }&#xd;
         }&#xd;
     } catch (e) {&#xd;
-        log.warn(&apos;carregarOcupacaoPorPeriodo: &apos; + e.message);&#xd;
+        log.warn(&apos;carregarOcupacaoPorPeriodo SRK010: &apos; + e.message);&#xd;
+    }&#xd;
+&#xd;
+    // --- RGB010: incidências do mês atual (já lançadas no período corrente) ---&#xd;
+    // Necessário para não ultrapassar o limite de 15% considerando o que já&#xd;
+    // existe na folha atual, antes de lançar nos futuros.&#xd;
+    try {&#xd;
+        var cAtual = [&#xd;
+            DatasetFactory.createConstraint(&apos;filial&apos;,       filial,       filial,       ConstraintType.MUST),&#xd;
+            DatasetFactory.createConstraint(&apos;matricula&apos;,    matricula,    matricula,    ConstraintType.MUST),&#xd;
+            DatasetFactory.createConstraint(&apos;periodoAtual&apos;, periodoAtual, periodoAtual, ConstraintType.MUST)&#xd;
+        ];&#xd;
+        var dsAtual = DatasetFactory.getDataset(&apos;ds_consultaIncidenciasFuncionario&apos;, null, cAtual, null);&#xd;
+&#xd;
+        var rowCountAtual = (dsAtual &amp;&amp; dsAtual.values) ? dsAtual.values.length : 0;&#xd;
+        log.info(&apos;[RGB010] rowCount=&apos; + rowCountAtual);&#xd;
+&#xd;
+        for (var k = 0; k &lt; rowCountAtual; k++) {&#xd;
+            var rowA   = dsAtual.values[k];&#xd;
+            // Colunas: 0=codFilial 1=codProcesso 2=codPeriodo 3=nroPagamento 4=roteiro&#xd;
+            //          5=matricula 6=codVerba 7=descVerba 8=horas 9=valor ...&#xd;
+            var verba2  = (&apos;&apos; + rowA[6]).trim();  // codVerba (RGB_PD)&#xd;
+            var periodo = (&apos;&apos; + rowA[2]).trim();  // codPeriodo (RGB_PERIOD) formato YYYYMM&#xd;
+            var valor2  = (&apos;&apos; + rowA[9]).trim();  // valor (RGB_VALOR)&#xd;
+&#xd;
+            log.info(&apos;[RGB010] row[&apos; + k + &apos;] verba=&apos; + verba2 + &apos; periodo=&apos; + periodo + &apos; valor=&apos; + valor2);&#xd;
+&#xd;
+            if (periodo.length === 6 &amp;&amp; !VERBAS_FORA_LIMITE[verba2]) {&#xd;
+                ocupado[periodo] = (ocupado[periodo] || 0) + parseMoney(valor2);&#xd;
+                log.info(&apos;[RGB010] ocupado[&apos; + periodo + &apos;] = &apos; + ocupado[periodo]);&#xd;
+            }&#xd;
+        }&#xd;
+    } catch (e) {&#xd;
+        log.warn(&apos;carregarOcupacaoPorPeriodo RGB010: &apos; + e.message);&#xd;
     }&#xd;
 &#xd;
     log.info(&apos;[ocupado por periodo] &apos; + safeJSONStringify(ocupado));&#xd;
@@ -1795,7 +1839,7 @@ function getEmailDiretor(grupoAprovadorCC) {&#xd;
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>95</version>
+        <version>99</version>
         <linkSequence>17</linkSequence>
         <bendSequence>1</bendSequence>
       </processLinkBendPK>
@@ -1806,7 +1850,7 @@ function getEmailDiretor(grupoAprovadorCC) {&#xd;
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>95</version>
+        <version>99</version>
         <linkSequence>21</linkSequence>
         <bendSequence>1</bendSequence>
       </processLinkBendPK>
@@ -1817,7 +1861,7 @@ function getEmailDiretor(grupoAprovadorCC) {&#xd;
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>95</version>
+        <version>99</version>
         <linkSequence>30</linkSequence>
         <bendSequence>1</bendSequence>
       </processLinkBendPK>
@@ -1828,7 +1872,7 @@ function getEmailDiretor(grupoAprovadorCC) {&#xd;
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>95</version>
+        <version>99</version>
         <linkSequence>31</linkSequence>
         <bendSequence>1</bendSequence>
       </processLinkBendPK>
@@ -1839,7 +1883,7 @@ function getEmailDiretor(grupoAprovadorCC) {&#xd;
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>95</version>
+        <version>99</version>
         <linkSequence>37</linkSequence>
         <bendSequence>1</bendSequence>
       </processLinkBendPK>
@@ -1850,7 +1894,7 @@ function getEmailDiretor(grupoAprovadorCC) {&#xd;
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>95</version>
+        <version>99</version>
         <linkSequence>37</linkSequence>
         <bendSequence>2</bendSequence>
       </processLinkBendPK>
