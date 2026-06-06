@@ -1,7 +1,8 @@
 const ATIVIDADES = {
     ZERO: '0',
     INICIO: '4',
-    APROV_GERENTE: '22'
+    APROV_GERENTE: '22',
+    DIRETORIA_ABONO: '49'
 }
 
 var beforeSendValidate = function (numState, nextState) {
@@ -38,8 +39,19 @@ var beforeSendValidate = function (numState, nextState) {
         if (!rdAprovaDescGerente) {
             msg += 'Aprovar Desconto?';
         }
-        else if (rdAprovaDescGerente == 'abonar' && !obsAnaliseAprovadorGerente) {
+        else if ((rdAprovaDescGerente == 'abonar' || rdAprovaDescGerente == 'cancelar') && !obsAnaliseAprovadorGerente) {
             msg += 'Observação do Aprovador';
+        }
+    }
+    else if (numState == ATIVIDADES.DIRETORIA_ABONO) {
+        const rdAprovaDescDiretor = $('input[name="rdAprovaDescDiretor"]:checked')?.val()?.trim() || '';
+        const obsAnaliseAprovadorDiretor = $('#obsAnaliseAprovadorDiretor')?.val()?.trim() || '';
+
+        if (!rdAprovaDescDiretor) {
+            msg += 'Aceitar Abono?';
+        }
+        else if (rdAprovaDescDiretor == 'nao' && !obsAnaliseAprovadorDiretor) {
+            msg += 'Observação do Aprovador Diretoria';
         }
     }
 

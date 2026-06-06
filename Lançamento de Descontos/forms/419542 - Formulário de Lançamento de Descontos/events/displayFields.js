@@ -75,4 +75,38 @@ function displayFields(form, customHTML) {
     } else {
         try { customHTML.append("<script>window._ORIGIN_ALLOWED=true;</script>"); } catch (e) { }
     }
+
+    // --- Lógica de Visibilidade e Bloqueio de Aprovações ---
+    var APROV_GERENTE = "22";
+    var DIRETORIA_ABONO = "49";
+
+    // Oculta por padrão
+    form.setVisibleById("aba_aprovacao_gerente", false);
+    form.setVisibleById("aba_aprovacao_diretoria", false);
+
+    if (numState === APROV_GERENTE) {
+        form.setVisibleById("aba_aprovacao_gerente", true);
+    } else if (numState === DIRETORIA_ABONO) {
+        form.setVisibleById("aba_aprovacao_gerente", true);
+        form.setVisibleById("aba_aprovacao_diretoria", true);
+        
+        // Bloqueia campos do gerente no passo da diretoria
+        form.setEnabled("rdAprovaDescGerente", false);
+        form.setEnabled("obsAnaliseAprovadorGerente", false);
+    } else {
+        // Outros passos: exibe como leitura se já tiverem sido preenchidos
+        var valorAprovGerente = form.getValue("rdAprovaDescGerente");
+        var valorAprovDiretor = form.getValue("rdAprovaDescDiretor");
+
+        if (valorAprovGerente && valorAprovGerente !== "") {
+            form.setVisibleById("aba_aprovacao_gerente", true);
+            form.setEnabled("rdAprovaDescGerente", false);
+            form.setEnabled("obsAnaliseAprovadorGerente", false);
+        }
+        if (valorAprovDiretor && valorAprovDiretor !== "") {
+            form.setVisibleById("aba_aprovacao_diretoria", true);
+            form.setEnabled("rdAprovaDescDiretor", false);
+            form.setEnabled("obsAnaliseAprovadorDiretor", false);
+        }
+    }
 }
