@@ -55,7 +55,12 @@ function createDataset(fields, constraints, sortFields) {
     myQuery += "     pw.STATUS status, ";
     myQuery += "     SRK.RK_PERINI AS periodoPrimeiraParcela, ";
     myQuery += "     SRK.totalParcelas, ";
-    myQuery += "     STRING_AGG(ep.NOM_ESTADO, ';') AS nomeAtividade ";
+    myQuery += "     CASE ";
+    myQuery += "     	WHEN formDescontos.atividadeAtual = '56' THEN 'Rejeitado pelo Gestor' ";
+    myQuery += "     	WHEN formDescontos.atividadeAtual = '53' THEN 'Desconto Abonado' ";
+    myQuery += "     	WHEN formDescontos.atividadeAtual = '10' THEN 'Desconto Confirmado' ";
+    myQuery += "     	ELSE STRING_AGG(ep.NOM_ESTADO, ';') ";
+    myQuery += "     END AS nomeAtividade  ";
     myQuery += " FROM PROCES_WORKFLOW pw ";
     myQuery += " INNER JOIN ML001215 formDescontos ";
     myQuery += "     ON formDescontos.companyid = pw.COD_EMPRESA ";
@@ -75,7 +80,7 @@ function createDataset(fields, constraints, sortFields) {
     myQuery += " LEFT JOIN ESTADO_PROCES ep ";
     myQuery += " ON ep.COD_DEF_PROCES = 'wf_lancamento_descontos_funcionario' ";
     myQuery += " AND ep.NUM_VERS = pw.NUM_VERS ";
-    myQuery += " AND ep.NUM_SEQ = hp.NUM_SEQ_ESTADO ";
+    myQuery += " AND ep.NUM_SEQ = COALESCE(hp.NUM_SEQ_ESTADO, formDescontos.atividadeAtual) ";
     myQuery += " AND ep.COD_EMPRESA = pw.COD_EMPRESA ";
     myQuery += " OUTER APPLY ( ";
     myQuery += "     SELECT ";
@@ -143,7 +148,8 @@ function createDataset(fields, constraints, sortFields) {
     myQuery += "     formDescontos.valorEpi, ";
     myQuery += "     SRK.RK_PERINI, ";
     myQuery += "     SRK.totalParcelas, ";
-    myQuery += "     pw.STATUS ";
+    myQuery += "     pw.STATUS, ";
+    myQuery += "     formDescontos.atividadeAtual ";
     myQuery += " ORDER BY pw.NUM_PROCES DESC; ";
 
     try {

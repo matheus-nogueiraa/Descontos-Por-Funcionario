@@ -819,7 +819,7 @@ var MyWidget = SuperWidget.extend({
         
         var v = "";
         if (rows && rows.length > 0) {
-            var ultimoRegistro = rows[rows.length - 1];
+            var ultimoRegistro = rows[0];
             v = self.getProp(ultimoRegistro, "versao", "") || self.getProp(ultimoRegistro, "NUM_VERS", "") || self.getProp(ultimoRegistro, "num_vers", "") || self.getProp(ultimoRegistro, "numVers", "");
         }
         
@@ -854,8 +854,9 @@ var MyWidget = SuperWidget.extend({
         
         var c1 = DatasetFactory.createConstraint("processStatePK.processId", "wf_lancamento_descontos_funcionario", "wf_lancamento_descontos_funcionario", ConstraintType.MUST);
         var c2 = DatasetFactory.createConstraint("processStatePK.version", versao, versao, ConstraintType.MUST);
+        var c3 = DatasetFactory.createConstraint("bpmnType", '80', '80', ConstraintType.MUST);
         
-        self.consultarDataset("processState", null, [c1, c2], null, {
+        self.consultarDataset("processState", null, [c1, c2, c3], null, {
             success: function(dataset) {
                 var rows = [];
                 if (dataset) {
