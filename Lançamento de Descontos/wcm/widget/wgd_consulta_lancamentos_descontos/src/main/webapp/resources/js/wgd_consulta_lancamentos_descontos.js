@@ -125,6 +125,12 @@ var MyWidget = SuperWidget.extend({
             e.preventDefault();
             self.limparFiltros();
         });
+
+        // Exportar Excel
+        $("#btn-exportar-excel-" + self.instanceId).off("click").on("click", function(e) {
+            e.preventDefault();
+            self.exportarExcel();
+        });
     },
 
     // Coleta propriedades case-insensitively
@@ -957,6 +963,169 @@ var MyWidget = SuperWidget.extend({
                 console.error("Widget Lançamento Descontos: Erro ao carregar atividades do workflow:", err);
             }
         });
+    },
+
+    exportarExcel: function() {
+        var self = this;
+        var rows = self.registrosFiltrados;
+
+        if (!rows || rows.length === 0) {
+            if (window.FLUIGC && window.FLUIGC.toast) {
+                FLUIGC.toast({ title: 'Aviso: ', message: 'Não há registros para exportar.', type: 'warning' });
+            }
+            return;
+        }
+
+        if (window.FLUIGC && window.FLUIGC.toast) {
+            FLUIGC.toast({ title: 'Excel: ', message: 'Gerando arquivo, aguarde...', type: 'info' });
+        }
+
+        var esc = function(val) {
+            return String(val == null ? "" : val)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;");
+        };
+
+        var cabecalhos = [
+            'Nº Processo', 'Data Solicitação', 'Colaborador', 'Filial', 'Matrícula',
+            'Centro de Custo', 'Verba', 'Tipo de Desconto', 'Valor (R$)',
+            '1ª Parcela', 'Total Parcelas', 'Status', 'Atividade'
+        ];
+
+        var html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" ' +
+            'xmlns:x="urn:schemas-microsoft-com:office:excel" ' +
+            'xmlns="http://www.w3.org/TR/REC-html40">' +
+            '<head><meta charset="UTF-8"></head><body><table border="1">';
+
+        html += '<thead><tr>';
+        for (var h = 0; h < cabecalhos.length; h++) {
+            html += '<th style="background:#217346;color:#fff;font-weight:bold;">' + cabecalhos[h] + '</th>';
+        }
+        html += '</tr></thead><tbody>';
+
+        for (var i = 0; i < rows.length; i++) {
+            var row = rows[i];
+
+            var numFluig = self.getProp(row, "numFluig", "");
+            var dataSolicitacao = self.formatarData(self.getProp(row, "dataSolicitacao", ""));
+
+            var nomeColaborador = String(self.getProp(row, "nomeColaborador", "") || "");
+            var nomeLimpo = nomeColaborador;
+            if (nomeColaborador.indexOf(" - ") !== -1) {
+                var partes = nomeColaborador.split(" - ");
+                nomeLimpo = partes.length >= 3 ? partes.slice(2).join(" - ") : partes[partes.length - 1];
+            }
+            nomeLimpo = nomeLimpo.trim();
+
+            var codFilial = String(self.getProp(row, "codFilial", "") || "").trim() || "-";
+
+            var matricula = String(self.getProp(row, "matriculaColaborador", "") || "").trim();
+            if (!matricula && nomeColaborador.indexOf(" - ") !== -1) {
+                var partesM = nomeColaborador.split(" - ");
+                if (partesM.length >= 2) matricula = partesM[1].trim();
+            }
+            if (!matricula) matricula = "-";
+
+            var grupoCC = String(self.getProp(row, "grupoAprovadorCC", "") || "");
+            var ccLimpo = grupoCC.indexOf("_") !== -1 ? grupoCC.split("_").pop() : (grupoCC || "-");
+
+            var valorNum = parseFloat(String(self.getProp(row, "valorEpi", "0")).replace(",", "."));
+            var valorFormatado = isNaN(valorNum) ? "0,00" : valorNum.toFixed(2).replace(".", ",");
+
+            var periodoRaw = String(self.getProp(row, "periodoPrimeiraParcela", "") || "").trim();
+            var periodo = "-";
+            if (periodoRaw.length === 6 && !isNaN(periodoRaw)) {
+                periodo = periodoRaw.substring(4, 6) + "/" + periodoRaw.substring(0, 4);
+            } else if (periodoRaw && periodoRaw !== "null" && periodoRaw !== "undefined") {
+                periodo = periodoRaw;
+            }
+
+            var totalParcelas = String(self.getProp(row, "totalParcelas", "") || "").trim();
+            if (!totalParcelas || totalParcelas === "0" || totalParcelas === "null" || totalParcelas === "undefined") totalParcelas = "-";
+
+            var statusTexto = self.deParaStatus[String(self.getProp(row, "status", "0"))] || "Em Andamento";
+
+            var nomeAtividade = String(self.getProp(row, "nomeAtividade", "") || "");
+            var atividadeTexto = nomeAtividade.replace(/;/g, ", ").trim() || "-";
+
+            html += '<tr>' +
+                '<td>' + esc(numFluig) + '</td>' +
+                '<td>' + esc(dataSolicitacao) + '</td>' +
+                '<td>' + esc(nomeLimpo) + '</td>' +
+                '<td>' + esc(codFilial) + '</td>' +
+                '<td>' + esc(matricula) + '</td>' +
+                '<td>' + esc(ccLimpo) + '</td>' +
+                '<td>' + esc(self.getProp(row, "codVerba", "-")) + '</td>' +
+                '<td>' + esc(self.getProp(row, "tipoDesconto", "-")) + '</td>' +
+                '<td>' + esc(valorFormatado) + '</td>' +
+                '<td>' + esc(periodo) + '</td>' +
+                '<td>' + esc(totalParcelas) + '</td>' +
+                '<td>' + esc(statusTexto) + '</td>' +
+                '<td>' + esc(atividadeTexto) + '</td>' +
+                '</tr>';
+        }
+
+        html += '</tbody></table></body></html>';
+
+        var hoje = new Date();
+        var mm = (hoje.getMonth() + 1) < 10 ? '0' + (hoje.getMonth() + 1) : String(hoje.getMonth() + 1);
+        var dd = hoje.getDate() < 10 ? '0' + hoje.getDate() : String(hoje.getDate());
+        var fileName = 'lancamentos_descontos_' + hoje.getFullYear() + mm + dd + '.xls';
+
+        // Método 1: Blob + createObjectURL
+        var baixado = false;
+        if (!baixado && typeof Blob !== 'undefined' && typeof URL !== 'undefined' && typeof URL.createObjectURL === 'function') {
+            try {
+                var blob = new Blob([html], { type: 'application/vnd.ms-excel;charset=utf-8' });
+                var blobUrl = URL.createObjectURL(blob);
+                var link1 = document.createElement('a');
+                link1.href = blobUrl;
+                link1.setAttribute('download', fileName);
+                link1.style.cssText = 'position:fixed;top:-999px;left:-999px;opacity:0;';
+                document.body.appendChild(link1);
+                link1.click();
+                setTimeout(function() {
+                    if (link1.parentNode) link1.parentNode.removeChild(link1);
+                    URL.revokeObjectURL(blobUrl);
+                }, 500);
+                baixado = true;
+            } catch (e1) {
+                console.warn('Blob download falhou:', e1);
+            }
+        }
+
+        // Método 2: data URI + atributo download
+        if (!baixado) {
+            try {
+                var dataUri = 'data:application/vnd.ms-excel;charset=utf-8,' + encodeURIComponent('﻿' + html);
+                var link2 = document.createElement('a');
+                link2.href = dataUri;
+                link2.setAttribute('download', fileName);
+                link2.style.cssText = 'position:fixed;top:-999px;left:-999px;opacity:0;';
+                document.body.appendChild(link2);
+                link2.click();
+                setTimeout(function() { if (link2.parentNode) link2.parentNode.removeChild(link2); }, 500);
+                baixado = true;
+            } catch (e2) {
+                console.warn('data URI download falhou:', e2);
+            }
+        }
+
+        // Método 3: window.open (abre nova aba — último recurso)
+        if (!baixado) {
+            try {
+                var openUri = 'data:application/vnd.ms-excel;charset=utf-8,' + encodeURIComponent('﻿' + html);
+                window.open(openUri, '_blank');
+                baixado = true;
+            } catch (e3) {
+                console.error('Todos os métodos de download falharam:', e3);
+            }
+        }
+
+        if (!baixado && window.FLUIGC && window.FLUIGC.toast) {
+            FLUIGC.toast({ title: 'Erro: ', message: 'Não foi possível gerar o arquivo Excel.', type: 'danger' });
+        }
     },
 
     popularDropdownAtividade: function(uniqueObj) {
