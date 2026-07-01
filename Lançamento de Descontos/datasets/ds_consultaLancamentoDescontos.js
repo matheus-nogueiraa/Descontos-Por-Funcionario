@@ -86,7 +86,7 @@ function createDataset(fields, constraints, sortFields) {
     myQuery += "     SELECT ";
     myQuery += "         MIN(SRK.RK_PERINI) AS RK_PERINI, ";
     myQuery += "         COUNT(*) AS totalParcelas ";
-    myQuery += "     FROM SIGAOFC.dbo.SRK010 SRK ";
+    myQuery += "     FROM sigaofc.dbo.SRK010 SRK ";
     myQuery += "     WHERE SRK.D_E_L_E_T_ = ' ' ";
     myQuery += "     AND SRK.RK_MAT COLLATE Latin1_General_CI_AS = ";
     myQuery += "         LTRIM(RTRIM( ";
