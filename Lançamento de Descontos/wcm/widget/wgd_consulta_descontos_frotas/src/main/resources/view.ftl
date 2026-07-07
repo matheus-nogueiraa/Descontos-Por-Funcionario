@@ -219,6 +219,11 @@
 
             <!-- Tabela de Dados -->
             <div id="wgd-table-wrapper-${instanceId}" class="wgd-table-responsive">
+                <div style="text-align:right; padding: 10px 0 8px;">
+                    <button type="button" id="btn-exportar-excel-${instanceId}" style="padding:7px 16px; background:#217346; color:#fff; border:none; border-radius:6px; font-size:12.5px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 2px 6px rgba(33,115,70,0.22);">
+                        <i class="fluigicon fluigicon-download icon-sm" aria-hidden="true"></i>&nbsp;Exportar Excel
+                    </button>
+                </div>
                 <table class="table custom-premium-table">
                     <thead>
                         <tr>
