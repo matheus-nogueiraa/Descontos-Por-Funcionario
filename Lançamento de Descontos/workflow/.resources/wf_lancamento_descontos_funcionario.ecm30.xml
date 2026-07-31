@@ -29,7 +29,7 @@
     <processDefinitionVersionPK>
       <companyId>1</companyId>
       <processId>Lançamento de Descontos por Funcionário</processId>
-      <version>30</version>
+      <version>31</version>
     </processDefinitionVersionPK>
     <versionDescription></versionDescription>
     <formId>419542</formId>
@@ -752,7 +752,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>1</expressionOrder>
-        <version>30</version>
+        <version>31</version>
         <sequence>18</sequence>
       </conditionProcessStatePK>
       <condition>false</condition>
@@ -764,7 +764,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>2</expressionOrder>
-        <version>30</version>
+        <version>31</version>
         <sequence>18</sequence>
       </conditionProcessStatePK>
       <condition>false</condition>
@@ -776,7 +776,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>1</expressionOrder>
-        <version>30</version>
+        <version>31</version>
         <sequence>24</sequence>
       </conditionProcessStatePK>
       <condition>false</condition>
@@ -788,7 +788,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>2</expressionOrder>
-        <version>30</version>
+        <version>31</version>
         <sequence>24</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -800,7 +800,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>3</expressionOrder>
-        <version>30</version>
+        <version>31</version>
         <sequence>24</sequence>
       </conditionProcessStatePK>
       <condition></condition>
@@ -812,7 +812,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>1</expressionOrder>
-        <version>30</version>
+        <version>31</version>
         <sequence>35</sequence>
       </conditionProcessStatePK>
       <condition>false</condition>
@@ -824,7 +824,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>2</expressionOrder>
-        <version>30</version>
+        <version>31</version>
         <sequence>35</sequence>
       </conditionProcessStatePK>
       <condition>false</condition>
@@ -836,7 +836,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>1</expressionOrder>
-        <version>30</version>
+        <version>31</version>
         <sequence>51</sequence>
       </conditionProcessStatePK>
       <condition>hAPI.getCardValue(&apos;rdAprovaDescDiretor&apos;) == &apos;nao&apos;</condition>
@@ -848,7 +848,7 @@
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
         <expressionOrder>2</expressionOrder>
-        <version>30</version>
+        <version>31</version>
         <sequence>51</sequence>
       </conditionProcessStatePK>
       <condition>hAPI.getCardValue(&apos;rdAprovaDescDiretor&apos;) == &apos;sim&apos;</condition>
@@ -1343,7 +1343,7 @@ function getCurrentTime() {&#xd;
                 numFluig: (hAPI.getCardValue(&apos;solicitacao_fluig&apos;) + &apos;&apos;).trim(),&#xd;
                 parcelas: dist.futuro,&#xd;
                 periodoRef: periodoAtual &#xd;
-            };&#xd;
+            };  &#xd;
 &#xd;
             if (ehDP) {&#xd;
                 // DP: envia para postDescontos&#xd;
@@ -1399,6 +1399,10 @@ function integracaoProtheusInvoke(endpointPath, jsonData) {&#xd;
             method: &apos;POST&apos;,&#xd;
             timeoutService: &apos;1000&apos;,&#xd;
             params: jsonData,&#xd;
+            headers: {&#xd;
+				tenantid: jsonData.empresa + &quot;,&quot; + jsonData.filial,&#xd;
+				&quot;x-erp-module&quot;: &quot;GPE&quot;&#xd;
+			},&#xd;
             options: {&#xd;
                 encoding: &apos;UTF-8&apos;,&#xd;
                 mediaType: &apos;application/json&apos;,&#xd;
@@ -1948,7 +1952,7 @@ function getEmailDiretor(grupoAprovadorCC) {&#xd;
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>30</version>
+        <version>31</version>
         <linkSequence>17</linkSequence>
         <bendSequence>1</bendSequence>
       </processLinkBendPK>
@@ -1959,7 +1963,7 @@ function getEmailDiretor(grupoAprovadorCC) {&#xd;
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>30</version>
+        <version>31</version>
         <linkSequence>30</linkSequence>
         <bendSequence>1</bendSequence>
       </processLinkBendPK>
@@ -1970,7 +1974,7 @@ function getEmailDiretor(grupoAprovadorCC) {&#xd;
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>30</version>
+        <version>31</version>
         <linkSequence>31</linkSequence>
         <bendSequence>1</bendSequence>
       </processLinkBendPK>
@@ -1981,7 +1985,7 @@ function getEmailDiretor(grupoAprovadorCC) {&#xd;
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>30</version>
+        <version>31</version>
         <linkSequence>37</linkSequence>
         <bendSequence>1</bendSequence>
       </processLinkBendPK>
@@ -1992,7 +1996,7 @@ function getEmailDiretor(grupoAprovadorCC) {&#xd;
       <processLinkBendPK>
         <companyId>1</companyId>
         <processId>wf_lancamento_descontos_funcionario</processId>
-        <version>30</version>
+        <version>31</version>
         <linkSequence>37</linkSequence>
         <bendSequence>2</bendSequence>
       </processLinkBendPK>

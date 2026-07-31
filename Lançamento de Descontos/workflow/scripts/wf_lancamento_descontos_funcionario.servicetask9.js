@@ -59,7 +59,7 @@ function servicetask9(attempt, message) {
                 numFluig: (hAPI.getCardValue('solicitacao_fluig') + '').trim(),
                 parcelas: dist.futuro,
                 periodoRef: periodoAtual 
-            };
+            };  
 
             if (ehDP) {
                 // DP: envia para postDescontos
@@ -115,6 +115,10 @@ function integracaoProtheusInvoke(endpointPath, jsonData) {
             method: 'POST',
             timeoutService: '1000',
             params: jsonData,
+            headers: {
+				tenantid: jsonData.empresa + "," + jsonData.filial,
+				"x-erp-module": "GPE"
+			},
             options: {
                 encoding: 'UTF-8',
                 mediaType: 'application/json',
