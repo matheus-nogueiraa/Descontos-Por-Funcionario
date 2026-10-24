@@ -14,6 +14,8 @@
     <link rel="stylesheet" href="../webapp/resources/css/wdg_lancamento_descontos_funcionario.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
     <link rel="stylesheet" href="../webapp/resources/css/wgd_descontos_por_funcionario.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="/wdg_lancamento_descontos_funcionario/resources/css/lancamento-ui.css">
     <link type="text/css" rel="stylesheet" href="//cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
     <script src="/portal/resources/js/jquery/jquery.js"></script>
     <script src="/portal/resources/js/jquery/jquery-ui.min.js"></script>
@@ -41,7 +43,7 @@
 </head>
 
 <body>
-    <div id="MyWidget_${instanceId}" class="super-widget wcm-widget-class fluig-style-guide"
+    <div id="MyWidget_${instanceId}" class="super-widget wcm-widget-class fluig-style-guide wdg-descontos"
         data-params="MyWidget.instance()">
 
         <div class="loading-overlay" id="loadingOverlay" style="display: none;">
@@ -107,7 +109,7 @@
                     </div>
                     <div class="panel-body">
                         <div style="margin-bottom: 1rem;">
-                            <button class="btn btn-default" onclick="abrirModalAtivos()">Cadastrar novos ativos</button>
+                            <button class="btn btn-default" onclick="abrirModalAtivos()">Cadastrar novo desconto</button>
                         </div>
                         <div id="dadosFuncionario" style="margin-bottom: 1rem;"></div>
                         <input type="hidden" name="codFilial" id="codFilial" value="">
@@ -283,9 +285,9 @@
                                             <input type="hidden" id="codigoMaterialAlmox" value="">
                                         </div>
                                         <label for="descricao">Descrição do desconto</label>
-                                        <small>* Digite a descrição do desconto(dano, perda, roubo)</small>
                                         <input type="text" class="form-control" id="descricao"
                                             placeholder="Digite a descrição do desconto">
+                                        <small>* Digite a descrição do desconto (dano, perda, roubo)</small>
                                     </div>
                                     <div class="col-md-2">
                                         <label for="tipoVerba">Tipo Verba</label>
@@ -357,6 +359,8 @@
                             <div class="form-group col-md-12">
                                 <button class="btn btn-success widthFull" id="btnVincularEpiXFuncionario"
                                     onclick="openModalAssinatura()">Solicitar Assinatura</button>
+                                <button type="button" class="btn btn-default widthFull ui-btn-cancelar"
+                                    onclick="fecharModalAtivos()">Cancelar</button>
                             </div>
                         </div>
                     </div>
@@ -435,7 +439,7 @@
                                             </label>
                                             <label>
                                                 <input type="radio" name="recusaAssinatura" value="distante" onchange="onToggleRecusa()"> 
-                                                Funcionário distante - Supervisor assinará
+                                                Funcionário distante
                                             </label>
                                         </div>
                                     </div>
@@ -486,14 +490,14 @@
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
                                             <h4 class="panel-title">
-                                                <strong>Assinatura do Supervisor</strong> - Funcionário Ausente/Distante
+                                                <strong>Assinatura</strong> - Funcionário Ausente/Distante
                                             </h4>
-                                            <p class="mb-0"><small>O supervisor assinará em nome do funcionário que não está presente</small></p>
+                                            <p class="mb-0"><small>Quem assina o faz em nome do funcionário que não está presente</small></p>
                                         </div>
                                         <div class="panel-body">
                                             <div class="row">
                                                 <div class="col-md-4">
-                                                    <label>Nome do Supervisor</label>
+                                                    <label>Nome de quem assina</label>
                                                     <input type="text" id="supervisor_nome" class="form-control" placeholder="Nome completo">
                                                 </div>
                                                 <div class="col-md-4">
@@ -508,14 +512,14 @@
                                             <div class="row mt-3">
                                                 <div class="form-group col-md-12 text-left">
                                                     <p class="text-warning">
-                                                        <strong>Atenção:</strong> O supervisor está assinando em nome do funcionário ausente, 
+                                                        <strong>Atenção:</strong> Você está assinando em nome do funcionário ausente,
                                                         confirmando ciência dos lançamentos de descontos que serão realizados.
                                                     </p>
                                                 </div>
                                             </div>
                                             <div class="row">
                                                 <div class="form-group col-md-12 text-center">
-                                                    <label>Assinatura do Supervisor</label>
+                                                    <label>Assinatura</label>
                                                     <canvas id="signature-pad-supervisor"
                                                         style="border:1px solid #ccc; width:100%; height:150px;"></canvas>
                                                 </div>
@@ -611,6 +615,8 @@
                         <div class="row">
                             <div class="form-group col-md-12">
                                 <button class="btn btn-success widthFull" onclick="iniciarProcesso()">Confirmar</button>
+                                <button type="button" class="btn btn-default widthFull ui-btn-cancelar"
+                                    onclick="fecharModalAssinatura()">Voltar</button>
                             </div>
                         </div>
 
@@ -618,6 +624,115 @@
                 </div>
             </div>
         </div>
+
+        <!-- Feedback visual (somente front): loading nos botões lentos e no carregamento da lista de funcionários -->
+        <script>
+        (function () {
+            if (window.__uiFeedbackInit) return;
+            window.__uiFeedbackInit = true;
+
+            var SPIN = '<span class="ui-spin" aria-hidden="true"></span>';
+            var ACTIONS = [
+                { sel: '#btn-buscar', text: 'Consultando...', scroll: '#painelFuncionario' },
+                { sel: 'button[onclick^="abrirModalAtivos"]', text: 'Abrindo...' },
+                { sel: '#btnVincularEpiXFuncionario', text: 'Preparando revisão...' }
+            ];
+            var busy = false, replaying = false;
+
+            // Mostra o loading, deixa o navegador pintar e só então repete o clique original
+            // (as consultas ao dataset são síncronas e travam a tela enquanto rodam).
+            document.addEventListener('click', function (e) {
+                if (replaying || !e.target.closest) return;
+                for (var i = 0; i < ACTIONS.length; i++) {
+                    var btn = e.target.closest(ACTIONS[i].sel);
+                    if (!btn) continue;
+
+                    e.stopPropagation();
+                    e.preventDefault();
+                    if (busy) return;
+                    busy = true;
+
+                    var original = btn.innerHTML;
+                    btn.classList.add('is-busy');
+                    btn.setAttribute('aria-busy', 'true');
+                    btn.innerHTML = SPIN + ' ' + ACTIONS[i].text;
+
+                    (function (btn, original, action) {
+                        setTimeout(function () {
+                            replaying = true;
+                            try {
+                                btn.click();
+                            } finally {
+                                replaying = false;
+                                busy = false;
+                                btn.classList.remove('is-busy');
+                                btn.removeAttribute('aria-busy');
+                                btn.innerHTML = original;
+                                if (action.scroll) {
+                                    var alvo = document.querySelector(action.scroll);
+                                    if (alvo && alvo.offsetParent !== null && alvo.scrollIntoView) {
+                                        alvo.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                    }
+                                }
+                            }
+                        }, 80);
+                    })(btn, original, ACTIONS[i]);
+                    return;
+                }
+            }, true);
+
+            // Esc fecha o modal aberto que estiver por cima (o de assinatura primeiro)
+            document.addEventListener('keydown', function (e) {
+                if (e.key !== 'Escape') return;
+                var ids = ['modalAssinatura', 'modalAtivos'];
+                for (var i = 0; i < ids.length; i++) {
+                    var m = document.getElementById(ids[i]);
+                    if (m && m.style.display !== 'none' && m.offsetParent !== null) {
+                        var x = m.querySelector('.fechar');
+                        if (x) x.click();
+                        return;
+                    }
+                }
+            });
+
+            // Ao abrir um modal, leva a tela até o topo dele (o X de fechar fica à vista)
+            ['modalAtivos', 'modalAssinatura'].forEach(function (id) {
+                var m = document.getElementById(id);
+                if (!m || !window.MutationObserver) return;
+                var aberto = false;
+                new MutationObserver(function () {
+                    var visivel = m.style.display !== 'none' && m.style.display !== '';
+                    if (visivel && !aberto) {
+                        m.scrollTop = 0;
+                        var c = m.querySelector('.modal-content') || m;
+                        if (c.scrollIntoView) c.scrollIntoView({ block: 'start' });
+                    }
+                    aberto = visivel;
+                }).observe(m, { attributes: true, attributeFilter: ['style', 'class'] });
+            });
+
+            // Campo de funcionário: a lista é baixada ao abrir a tela; avisa enquanto isso
+            var campo = document.getElementById('funcionarioFiltro');
+            var coluna = campo && campo.closest('[class*="col-"]');
+            if (coluna) {
+                var aviso = document.createElement('div');
+                aviso.className = 'ui-field-status';
+                aviso.innerHTML = SPIN + ' Carregando lista de funcionários...';
+                coluna.classList.add('is-loading');
+                coluna.insertBefore(aviso, campo.nextSibling);
+
+                var tentativas = 0;
+                var timer = setInterval(function () {
+                    var pronto = window.funcionarioFiltro && !window.funcionarioFiltro.nodeType;
+                    if (pronto || ++tentativas > 400) {
+                        clearInterval(timer);
+                        coluna.classList.remove('is-loading');
+                        if (aviso.parentNode) aviso.parentNode.removeChild(aviso);
+                    }
+                }, 300);
+            }
+        })();
+        </script>
     </div>
 </body>
 

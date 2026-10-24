@@ -1,0 +1,528 @@
+/* =========================================================
+   Lançamento de Descontos - camada visual (somente CSS)
+   Carregar DEPOIS de wdg_lancamento_descontos_funcionario.css
+   Não altera ids, classes nem comportamento.
+   ========================================================= */
+
+.wdg-descontos {
+  --ui-bg: #faf9f5;
+  --ui-card: #ffffff;
+  --ui-border: #e6e3dc;
+  --ui-text: #1f1d1a;
+  --ui-muted: #6b6760;
+  --ui-primary: #7d1e0a;
+  --ui-primary-hover: #651808;
+  --ui-radius: 12px;
+  --ui-shadow: 0 1px 2px rgba(31, 29, 26, .04);
+
+  background: var(--ui-bg);
+  color: var(--ui-text);
+  font-family: "Poppins", sans-serif;
+  padding: 24px clamp(16px, 6vw, 96px) 48px;
+}
+
+/* ---------- Cabeçalho ---------- */
+.wdg-descontos > .card:first-of-type {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  margin: 0 0 8px;
+}
+.wdg-descontos > .card:first-of-type .card-body { padding: 0; }
+.wdg-descontos .css_header_img { flex-wrap: wrap; gap: 16px; margin-left: 0 !important; }
+.wdg-descontos .css_header_img img { width: 140px; height: auto; }
+.wdg-descontos .css_header_text {
+  background: transparent !important;
+  color: var(--ui-text) !important;
+  border: 0 !important;
+  font-size: 26px !important;
+  font-weight: 700 !important;
+  padding: 0 !important;
+  margin-left: 0 !important;
+  white-space: normal;
+}
+
+/* ---------- Cards e painéis ---------- */
+.wdg-descontos .card {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+.wdg-descontos .card > .card-body { padding: 0; }
+.wdg-descontos .card h2 { font-size: 20px; margin: 16px 0 12px; }
+.wdg-descontos .card h2 + br { display: none; }
+
+.wdg-descontos .panel {
+  background: var(--ui-card);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius);
+  box-shadow: var(--ui-shadow);
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+.wdg-descontos .panel-heading {
+  background: transparent !important;
+  border: 0;
+  padding: 18px 24px 0;
+}
+.wdg-descontos .panel-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ui-text) !important;
+}
+.wdg-descontos .panel-body { padding: 16px 24px 24px; }
+.wdg-descontos .panel-heading p { color: var(--ui-muted); margin: 4px 0 0; }
+
+.wdg-descontos h4 { font-size: 14px; color: var(--ui-text) !important; margin: 4px 0 12px; }
+.wdg-descontos hr { border-color: var(--ui-border); }
+
+/* ---------- Labels e campos ---------- */
+.wdg-descontos label {
+  color: var(--ui-text) !important;
+  font-size: 13px;
+  font-weight: 600 !important;
+  margin-bottom: 6px;
+}
+.wdg-descontos small { color: var(--ui-muted); font-size: 12px; }
+.wdg-descontos .form-control {
+  height: 44px;
+  border: 1px solid var(--ui-border);
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: none;
+  font-size: 14px;
+  padding: 8px 14px;
+}
+.wdg-descontos textarea.form-control { height: auto; }
+.wdg-descontos .form-control:focus {
+  border-color: var(--ui-primary);
+  box-shadow: 0 0 0 3px rgba(125, 30, 10, .12);
+  outline: 0;
+}
+.wdg-descontos .form-control[readonly] { background: var(--ui-bg); color: var(--ui-muted); }
+.wdg-descontos input[type="radio"] { accent-color: var(--ui-primary); margin-right: 6px; }
+
+/* ---------- Botões ---------- */
+.wdg-descontos .btn {
+  border-radius: 10px;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 10px 18px;
+  transition: background-color .15s, border-color .15s, color .15s;
+}
+.wdg-descontos .btn.form-control { height: 44px; }
+.wdg-descontos .btn-success {
+  background: var(--ui-primary);
+  border: 1px solid var(--ui-primary);
+  color: #fff;
+}
+.wdg-descontos .btn-success:hover,
+.wdg-descontos .btn-success:focus { background: var(--ui-primary-hover); border-color: var(--ui-primary-hover); color: #fff; }
+.wdg-descontos .btn-default {
+  background: #fff;
+  border: 1px solid var(--ui-border);
+  color: var(--ui-text);
+}
+.wdg-descontos .btn-default:hover { background: var(--ui-bg); }
+.wdg-descontos .btn-danger {
+  background: #fff;
+  border: 1px solid #e3b9b1;
+  color: #b81a1a;
+}
+.wdg-descontos .btn-danger:hover { background: #b81a1a; border-color: #b81a1a; color: #fff; }
+.wdg-descontos .btn-success.widthFull { padding: 14px 18px; font-size: 15px; }
+
+/* ---------- Tabelas (estilo "lista" da referência) ---------- */
+.wdg-descontos .table-responsive {
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius);
+  background: #fff;
+}
+.wdg-descontos .table { margin: 0; background: #fff; }
+.wdg-descontos .table-bordered,
+.wdg-descontos .table-bordered > thead > tr > th,
+.wdg-descontos .table-bordered > tbody > tr > td,
+.wdg-descontos .table-bordered > tbody > tr > th { border: 0; }
+.wdg-descontos .table > thead > tr > th {
+  background: var(--ui-bg);
+  color: var(--ui-muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--ui-border);
+}
+.wdg-descontos .table > tbody > tr > td,
+.wdg-descontos .table > tbody > tr > th {
+  padding: 14px 16px;
+  color: var(--ui-text);
+  vertical-align: middle;
+  border-top: 1px solid var(--ui-border);
+}
+.wdg-descontos .table > tbody > tr:first-child > td,
+.wdg-descontos .table > tbody > tr:first-child > th { border-top: 0; }
+.wdg-descontos .table > tbody > tr:hover { background: #fcfbf8; }
+
+/* Resumo geral vira cartão */
+.wdg-descontos #tabelaResumoGeral {
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius);
+  overflow: hidden;
+}
+.wdg-descontos #tabelaResumoGeral th { color: var(--ui-muted); font-weight: 500; font-size: 13px; }
+.wdg-descontos #tabelaResumoGeral td { font-weight: 700; text-align: right; }
+.wdg-descontos #quinzePorCentroSalario { color: var(--ui-primary); }
+
+/* DataTables (se o JS renderizar) */
+.wdg-descontos .dataTables_wrapper { padding: 0; font-size: 13px; color: var(--ui-muted); }
+.wdg-descontos .dataTables_wrapper .dataTables_filter input {
+  border: 1px solid var(--ui-border); border-radius: 8px; padding: 6px 10px;
+}
+.wdg-descontos .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+  background: var(--ui-primary) !important; color: #fff !important; border: 0; border-radius: 8px;
+}
+
+/* Valores de resumo */
+.wdg-descontos #totalFuturosValor,
+.wdg-descontos #tabelaFuturos_total { font-weight: 700; color: var(--ui-primary); }
+
+/* Campo de busca de funcionário: ocupa a largura e alinha o botão */
+.wdg-descontos .panel-body.row { margin: 0; display: flex; flex-wrap: wrap; align-items: flex-end; row-gap: 12px; }
+.wdg-descontos .panel-body.row > [class*="col-"] { padding-left: 0; padding-right: 8px; }
+
+/* ---------- Modais ---------- */
+.wdg-descontos .modal {
+  background: rgba(31, 29, 26, .55);
+  overflow-y: auto;
+  padding: 24px 12px;
+}
+.wdg-descontos .modal .modal-content {
+  width: min(960px, 100%);
+  margin: 0 auto;
+  padding: 24px;
+  border: 0;
+  border-radius: 16px;
+  background: var(--ui-bg);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, .25);
+  position: relative;
+}
+.wdg-descontos .modal .fechar {
+  position: absolute;
+  top: 10px; right: 16px;
+  float: none;
+  width: 36px; height: 36px; line-height: 34px;
+  text-align: center;
+  border-radius: 50%;
+  color: var(--ui-muted);
+  z-index: 2;
+}
+.wdg-descontos .modal .fechar:hover { background: #fff; color: var(--ui-primary); }
+.wdg-descontos .modal .panel .panel { box-shadow: none; }
+.wdg-descontos .modal .panel-primary { border: 0; background: transparent; box-shadow: none; }
+.wdg-descontos .modal .panel-primary > .panel-heading { padding: 4px 48px 12px 4px; }
+.wdg-descontos .modal .panel-primary > .panel-heading .panel-title { font-size: 20px; }
+.wdg-descontos .modal .panel-primary > .panel-body { padding: 0; }
+
+.wdg-descontos .destaqueText { font-size: 12px; font-weight: 600 !important; color: var(--ui-muted) !important; text-transform: uppercase; letter-spacing: .04em; }
+.wdg-descontos #codFilialModal, .wdg-descontos #codFuncionarioModal, .wdg-descontos #15salarioModal, .wdg-descontos #salarioModal { font-size: 15px; font-weight: 600; }
+
+/* Tipo de desconto: opções como cartões clicáveis */
+.wdg-descontos input[name="rdTipoDesconto"] ~ span { font-weight: 500; }
+.wdg-descontos label:has(input[name="rdTipoDesconto"]) {
+  display: block;
+  width: 100%;
+  border: 1px solid var(--ui-border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  background: #fff;
+  font-weight: 500 !important;
+}
+.wdg-descontos label:has(input[name="rdTipoDesconto"]:checked) {
+  border-color: var(--ui-primary);
+  background: #fbf3f1;
+}
+
+/* Upload */
+.wdg-descontos .button_attachments { padding: 10px 14px !important; height: auto !important; border-style: dashed !important; background: #fff !important; color: var(--ui-text) !important; }
+.wdg-descontos .button_attachments:hover { color: var(--ui-text) !important; border-color: var(--ui-primary) !important; }
+.wdg-descontos input[type="file"].form-control { padding: 9px 12px; height: auto; }
+.wdg-descontos .previewFotoEPI { border-radius: 10px; }
+.wdg-descontos .previewFotoEPI[src=""], .wdg-descontos .previewFotoEPI:not([src]) { display: none; }
+
+/* Selos (labels) */
+.wdg-descontos .label {
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-weight: 600;
+}
+
+/* Assinatura */
+.wdg-descontos canvas[id^="signature-pad"] {
+  background: #fff;
+  border: 1px dashed #c9c4b8 !important;
+  border-radius: 10px;
+}
+
+/* Tooltip dos ícones de ajuda continua igual (CSS original) */
+
+/* ---------- Responsivo ---------- */
+@media (max-width: 767px) {
+  .wdg-descontos { padding: 16px; }
+  .wdg-descontos .css_header_text { font-size: 20px !important; }
+  .wdg-descontos .panel-heading { padding: 16px 16px 0; }
+  .wdg-descontos .panel-body { padding: 14px 16px 18px; }
+  .wdg-descontos .modal .modal-content { padding: 16px; }
+  .wdg-descontos .panel-body.row > [class*="col-"] { width: 100%; padding-right: 0; }
+}
+
+/* ---------- Tablet (retrato e paisagem) e toque ---------- */
+@media (hover: none) and (pointer: coarse), (max-width: 1199px) {
+  .wdg-descontos .form-control,
+  .wdg-descontos .btn.form-control { height: 48px; font-size: 16px; } /* 16px evita zoom do iOS */
+  .wdg-descontos textarea.form-control { height: auto; }
+  .wdg-descontos .btn { min-height: 48px; padding: 12px 20px; }
+  .wdg-descontos .table > thead > tr > th,
+  .wdg-descontos .table > tbody > tr > td { padding: 14px 12px; }
+  .wdg-descontos .table .btn,
+  .wdg-descontos .table a { min-height: 40px; }
+  .wdg-descontos input[type="radio"] { width: 20px; height: 20px; vertical-align: middle; }
+  .wdg-descontos .modal .fechar { width: 44px; height: 44px; line-height: 42px; font-size: 32px; }
+}
+
+/* Tablet retrato (768-991): colunas empilham, botão de consulta fica abaixo do campo */
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .wdg-descontos { padding: 20px 24px 40px; }
+  .wdg-descontos .modal { padding: 12px 8px; }
+  .wdg-descontos .modal .modal-content { width: 100%; padding: 20px; }
+  .wdg-descontos .panel-body.row > [class*="col-"] { width: 100%; padding-right: 0; }
+  .wdg-descontos .col-md-2 > label:empty,
+  .wdg-descontos .col-md-2 > label[for=""] { display: none; }
+  .wdg-descontos .col-md-4 + .col-md-4 { margin-top: 10px; }
+}
+
+/* Tablet paisagem (992-1199): mantém colunas, modal quase tela cheia */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+  .wdg-descontos .modal .modal-content { width: 96%; }
+}
+
+/* Rolagem horizontal suave nas tabelas em telas menores */
+.wdg-descontos .table-responsive { -webkit-overflow-scrolling: touch; }
+
+/* ---------- Correções: alinhamento, botões e tabelas DataTables ---------- */
+.wdg-descontos .card-body { padding: 0 !important; }
+
+/* Consulta: botão alinhado ao topo do campo (que pode crescer com os "chips") */
+.wdg-descontos .panel-body.row { align-items: flex-start; }
+.wdg-descontos .panel-body.row .btn,
+.wdg-descontos .panel-body.row .btn.form-control {
+  height: 48px;
+  min-height: 48px;
+  line-height: 1.2;
+  padding-top: 0;
+  padding-bottom: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.wdg-descontos .panel-body.row .tag-input,
+.wdg-descontos .panel-body.row .select2-container,
+.wdg-descontos .panel-body.row .bootstrap-tagsinput { min-height: 48px; }
+
+/* Botões em geral: altura previsível */
+.wdg-descontos .btn { line-height: 1.3; }
+.wdg-descontos .btn-sm, .wdg-descontos .table .btn { min-height: 36px; padding: 6px 12px; }
+
+/* Tabelas DataTables */
+.wdg-descontos table.dataTable { border-collapse: collapse !important; width: 100% !important; margin: 0 !important; }
+.wdg-descontos table.dataTable.no-footer,
+.wdg-descontos .dataTables_scrollBody,
+.wdg-descontos .dataTables_scrollHead,
+.wdg-descontos .dataTables_scrollHeadInner { border-bottom: 0 !important; }
+.wdg-descontos table.dataTable thead th,
+.wdg-descontos table.dataTable thead td {
+  background-color: var(--ui-bg);
+  white-space: nowrap;
+  border-bottom: 1px solid var(--ui-border) !important;
+}
+/* setas de ordenação repetindo no cabeçalho */
+.wdg-descontos table.dataTable thead .sorting,
+.wdg-descontos table.dataTable thead .sorting_asc,
+.wdg-descontos table.dataTable thead .sorting_desc,
+.wdg-descontos table.dataTable thead .sorting_asc_disabled,
+.wdg-descontos table.dataTable thead .sorting_desc_disabled {
+  background-repeat: no-repeat !important;
+  background-position: right 10px center !important;
+  background-size: 10px 14px;
+  padding-right: 28px;
+}
+.wdg-descontos table.dataTable tbody td.dataTables_empty {
+  text-align: center;
+  color: var(--ui-muted);
+  padding: 28px 16px;
+}
+.wdg-descontos .dataTables_scroll { border: 0; }
+
+/* Dropdown do autocomplete não pode ser cortado pelo painel */
+.wdg-descontos .panel,
+.wdg-descontos .panel-body { overflow: visible; }
+.wdg-descontos .panel-heading { border-radius: var(--ui-radius) var(--ui-radius) 0 0; }
+.ui-autocomplete,
+.select2-dropdown,
+.typeahead.dropdown-menu { z-index: 1200; max-height: 320px; overflow-y: auto; }
+
+/* ---------- Feedback de carregamento ---------- */
+.wdg-descontos .ui-spin {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  vertical-align: -3px;
+  animation: ui-spin .7s linear infinite;
+}
+@keyframes ui-spin { to { transform: rotate(360deg); } }
+
+.wdg-descontos .btn.is-busy {
+  opacity: .85;
+  cursor: progress;
+  pointer-events: none;
+}
+
+/* Campo enquanto a lista de funcionários carrega */
+.wdg-descontos .is-loading input { opacity: .6; pointer-events: none; background: var(--ui-bg); }
+.wdg-descontos .ui-field-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--ui-primary);
+  font-weight: 500;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wdg-descontos .ui-spin { animation-duration: 1.6s; }
+}
+
+/* ---------- Botão fechar do modal sempre visível ao rolar ---------- */
+.wdg-descontos .modal .fechar {
+  position: sticky;
+  top: 8px;
+  float: none;
+  display: block;
+  width: 44px;
+  height: 44px;
+  line-height: 42px;
+  margin: -8px -8px -36px auto;
+  font-size: 30px;
+  background: #fff;
+  border: 1px solid var(--ui-border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .15);
+  color: var(--ui-text);
+  z-index: 20;
+}
+.wdg-descontos .modal .fechar:hover { background: var(--ui-primary); border-color: var(--ui-primary); color: #fff; }
+.wdg-descontos .modal .panel-primary > .panel-heading,
+.wdg-descontos .modal .panel-default > .panel-heading:first-child { padding-right: 56px; }
+
+.wdg-descontos .ui-btn-cancelar { margin-top: 10px; }
+
+/* ---------- Modal começa abaixo da barra superior do Fluig ---------- */
+.wdg-descontos { --ui-topbar: 84px; }
+.wdg-descontos .modal {
+  top: var(--ui-topbar);
+  height: calc(100% - var(--ui-topbar));
+  padding-top: 16px;
+}
+@media (max-width: 767px) {
+  .wdg-descontos { --ui-topbar: 68px; }
+}
+
+/* X de fechar: sem margem negativa no topo, para nunca ficar atrás da barra do Fluig */
+.wdg-descontos .modal .fechar {
+  top: 14px;
+  margin: 10px 4px -54px auto;
+}
+.wdg-descontos .modal .modal-content { padding-top: 16px; }
+
+/* Botão Voltar/Cancelar mais visível */
+.wdg-descontos .btn.ui-btn-cancelar {
+  background: #fbf3f1;
+  border: 2px solid var(--ui-primary);
+  color: var(--ui-primary);
+  font-weight: 700;
+}
+.wdg-descontos .btn.ui-btn-cancelar:hover,
+.wdg-descontos .btn.ui-btn-cancelar:focus {
+  background: var(--ui-primary);
+  color: #fff;
+}
+
+/* ---------- Remove a moldura (quadro branco com sombra) em volta da tela ---------- */
+*:has(> .wdg-descontos),
+*:has(> * > .wdg-descontos) {
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: #faf9f5 !important;
+}
+
+/* ---------- Títulos dos cards em vermelho e alinhados ---------- */
+.wdg-descontos .panel-title,
+.wdg-descontos .panel-heading .panel-title strong { color: var(--ui-primary) !important; }
+.wdg-descontos .panel-heading { padding-bottom: 4px; }
+.wdg-descontos .panel-heading p { margin: 2px 0 0; line-height: 1.5; }
+.wdg-descontos .panel-heading p + p { margin-top: 6px; }
+
+/* Dica abaixo do campo: não empurra o input para baixo e alinha entre colunas */
+.wdg-descontos .panel-body > .row > [class*="col-"] > label { display: block; }
+.wdg-descontos .panel-body > .row > [class*="col-"] > small { display: block; margin-top: 6px; }
+.wdg-descontos .panel-body > .row { display: flex; flex-wrap: wrap; align-items: flex-start; }
+
+/* ---------- Correção: colunas não podem ser maiores que o card (tabela larga no tablet) ---------- */
+.wdg-descontos .panel-body > .row > [class*="col-"] { min-width: 0; }
+.wdg-descontos .table-responsive { overflow-x: auto; max-width: 100%; }
+.wdg-descontos .table-responsive .dataTables_wrapper { min-width: 0; }
+
+/* Abaixo de 992px as colunas empilham, ocupando a largura toda */
+@media (max-width: 991.98px) {
+  .wdg-descontos .panel-body > .row > [class*="col-"] {
+    flex: 0 0 100%;
+    max-width: 100%;
+    width: 100%;
+  }
+}
+
+/* ---------- Tablet paisagem e retrato: tabela de lançamentos com largura total ---------- */
+@media (max-width: 1199.98px) {
+  /* Lançamentos Ativos em cima (largura total), Resumo Geral embaixo */
+  .wdg-descontos .panel-body > .row:has(#tabelaDescontos) > [class*="col-"] {
+    flex: 0 0 100%;
+    max-width: 100%;
+    width: 100%;
+    padding-right: 0;
+  }
+  .wdg-descontos .panel-body > .row:has(#tabelaDescontos) > [class*="col-"] + [class*="col-"] { margin-top: 20px; }
+
+  /* Resumo mais compacto, sem esticar demais */
+  .wdg-descontos #tabelaResumoGeral { max-width: 560px; }
+
+  /* Tabelas mais densas para caber mais colunas sem rolar tanto */
+  .wdg-descontos table.dataTable thead th,
+  .wdg-descontos table.dataTable tbody td {
+    padding: 12px 10px;
+    font-size: 13px;
+  }
+}
+
+/* Rolagem lateral visível (dica de que há mais colunas) */
+.wdg-descontos .table-responsive::-webkit-scrollbar { height: 10px; }
+.wdg-descontos .table-responsive::-webkit-scrollbar-track { background: var(--ui-bg); border-radius: 10px; }
+.wdg-descontos .table-responsive::-webkit-scrollbar-thumb { background: #cfc9bc; border-radius: 10px; }
